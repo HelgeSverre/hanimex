@@ -28,6 +28,7 @@ export interface DeskHost {
   stick(n: number, x: number, y: number): void;
   aim(value: { x: number; y: number; fire: boolean } | undefined): void;
   gesture(): void;
+  sound(event: "drop" | "explode", strength?: number): void;
 }
 type Hit =
   | { kind: "cart"; id: CartridgeId }
@@ -120,6 +121,7 @@ export class WebGLDesk {
   >();
   private exploded = false;
   private blastAge = 0;
+  private shakeOffset = new THREE.Vector3();
   private blast?: THREE.Mesh<
     THREE.IcosahedronGeometry,
     THREE.MeshBasicMaterial
@@ -1300,11 +1302,13 @@ export class WebGLDesk {
       );
       card.rotation.set(-Math.PI / 2, 0, 0);
       this.fallen.get(id)!.landed = true;
+      this.host.sound("drop", 0.7);
     }
   }
   private explodeConsole() {
     if (this.exploded) return;
     this.exploded = true;
+    this.host.sound("explode");
     this.blastAge = 0;
     if (!this.reduceMotion) {
       this.blast = new THREE.Mesh(
@@ -1385,6 +1389,7 @@ export class WebGLDesk {
       if (!overTable && card.position.y <= -3.14) {
         card.position.y = -3.14;
         card.rotation.set(-Math.PI / 2, 0, id.length * 0.7);
+        this.host.sound("drop", Math.abs(fall.velocity.y) / 14);
         fall.velocity.set(0, 0, 0);
         fall.landed = true;
       }
@@ -1564,7 +1569,20 @@ export class WebGLDesk {
         this.textureTime = now;
       }
       this.orbit.update();
+      // Apply shake only for this render; never feed it back into OrbitControls.
+      const shake =
+        this.exploded && !this.reduceMotion && this.blastAge < 0.55
+          ? 0.13 * (1 - this.blastAge / 0.55) ** 2
+          : 0;
+      this.shakeOffset.set(
+        Math.sin(this.blastAge * 83) * shake,
+        Math.sin(this.blastAge * 67) * shake,
+        0,
+      );
+      this.camera.position.add(this.shakeOffset);
       this.renderer.render(this.scene, this.camera);
+      this.camera.position.sub(this.shakeOffset);
+      this.camera.updateMatrixWorld();
       this.container.dataset.cartridge = state.active ?? "";
     }
     this.frameId = requestAnimationFrame((t) => this.render(t));

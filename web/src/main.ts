@@ -876,6 +876,7 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
         aim: (value) => {
           aim = value;
         },
+        sound: (event, strength) => audio.foley(event, strength),
         gesture: () => {
           void audio.wake();
         },
