@@ -57,10 +57,12 @@ npm run test:recovered
 
 These cartridges contain dedicated game circuitry, not conventional program ROMs. The “625-B RPG” photographs identify an RPG SD-050, a relative of the Hanimex machines; `625-B` belongs to the PAL television label.
 
+- [Cartridge photographs](research/CARTRIDGE-PHOTOS.md)
 - [Hardware and cartridge identification](research/HARDWARE.md)
 - [Recovered chips and remaining gaps](research/OTHER-CARTRIDGE-DATA.md)
 - [Submarine implementation and benchmarks](research/ay38605/TIMING-UPDATES.md)
 - [Wipeout adapter and validation](research/ay38606/PLAYABLE.md)
+- [Shared game-dependent latch banks](research/performance/LATCH-BANKS.md)
 - [Register-backed timing blocks](research/performance/REGISTERS.md)
 - [Chip profiling and browser scheduling](research/performance/README.md)
 - [Source provenance](research/PROVENANCE.md)

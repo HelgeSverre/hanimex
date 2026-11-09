@@ -1,0 +1,38 @@
+{
+  "baselineCommit": "28b5a9d",
+  "note": "Counts from the existing changing-input profile workload. Bank comparison expressions are not counted as cell evaluations.",
+  "chips": [
+    {
+      "id": "ay38605",
+      "clocks": 3000000,
+      "before": {
+        "evaluations": 535282459,
+        "nodeChanges": 132852360,
+        "queuedEvents": 220966975
+      },
+      "after": {
+        "evaluations": 478384780,
+        "nodeChanges": 132852360,
+        "queuedEvents": 220966975
+      },
+      "evaluationsPerClock": 159.46159333333333,
+      "evaluationReduction": 0.10629468244914042
+    },
+    {
+      "id": "ay38606",
+      "clocks": 3000000,
+      "before": {
+        "evaluations": 390765059,
+        "nodeChanges": 80239644,
+        "queuedEvents": 197738391
+      },
+      "after": {
+        "evaluations": 328083351,
+        "nodeChanges": 80239644,
+        "queuedEvents": 197738391
+      },
+      "evaluationsPerClock": 109.361117,
+      "evaluationReduction": 0.16040765814734725
+    }
+  ]
+}

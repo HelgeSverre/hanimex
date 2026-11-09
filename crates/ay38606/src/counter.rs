@@ -6920,14 +6920,7 @@ pub const BRIDGE: &[&[(usize, i16)]] = &[
 ];
 #[inline(never)]
 fn bank_0(c: &mut super::GateCircuit) {
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(390);
-    c.compiled_recalc(394);
-    c.compiled_recalc(402);
-    c.compiled_recalc(340);
-    c.compiled_recalc(375);
+    latch_bank_0(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -6949,33 +6942,13 @@ fn bank_0(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -6995,46 +6968,17 @@ fn bank_2(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7056,14 +7000,7 @@ fn bank_2(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_3(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(375);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(394);
+    latch_bank_11(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -7085,33 +7022,13 @@ fn bank_3(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7124,14 +7041,7 @@ fn bank_3(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_4(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(375);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(394);
+    latch_bank_12(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -7153,33 +7063,13 @@ fn bank_4(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7199,46 +7089,17 @@ fn bank_5(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7260,14 +7121,7 @@ fn bank_5(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_6(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(390);
-    c.compiled_recalc(394);
-    c.compiled_recalc(402);
-    c.compiled_recalc(375);
+    latch_bank_13(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -7289,33 +7143,13 @@ fn bank_6(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7328,14 +7162,7 @@ fn bank_6(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_7(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(390);
-    c.compiled_recalc(394);
-    c.compiled_recalc(402);
-    c.compiled_recalc(375);
+    latch_bank_13(c);
     c.compiled_recalc(1543);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
@@ -7358,33 +7185,13 @@ fn bank_7(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7397,14 +7204,7 @@ fn bank_7(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_8(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(375);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(394);
+    latch_bank_11(c);
     c.compiled_recalc(1543);
     c.compiled_recalc(950);
     c.compiled_recalc(6);
@@ -7428,33 +7228,13 @@ fn bank_8(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7467,14 +7247,7 @@ fn bank_8(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_9(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(375);
-    c.compiled_recalc(390);
-    c.compiled_recalc(394);
-    c.compiled_recalc(402);
+    latch_bank_14(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -7496,33 +7269,13 @@ fn bank_9(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -7543,46 +7296,17 @@ fn bank_10(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7610,46 +7334,17 @@ fn bank_11(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7679,46 +7374,17 @@ fn bank_12(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7747,46 +7413,17 @@ fn bank_13(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7815,46 +7452,17 @@ fn bank_14(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7895,46 +7503,17 @@ fn bank_15(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -7957,14 +7536,7 @@ fn bank_15(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_16(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(390);
-    c.compiled_recalc(394);
-    c.compiled_recalc(367);
-    c.compiled_recalc(375);
-    c.compiled_recalc(402);
+    latch_bank_15(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -7986,33 +7558,13 @@ fn bank_16(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -8025,14 +7577,7 @@ fn bank_16(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_17(c: &mut super::GateCircuit) {
-    c.compiled_recalc(375);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(367);
-    c.compiled_recalc(394);
+    latch_bank_16(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -8054,33 +7599,13 @@ fn bank_17(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -8093,14 +7618,7 @@ fn bank_17(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_18(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(394);
-    c.compiled_recalc(367);
-    c.compiled_recalc(375);
+    latch_bank_17(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -8122,33 +7640,13 @@ fn bank_18(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -8178,46 +7676,17 @@ fn bank_19(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8246,46 +7715,17 @@ fn bank_20(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8307,14 +7747,7 @@ fn bank_20(c: &mut super::GateCircuit) {
 }
 #[inline(never)]
 fn bank_21(c: &mut super::GateCircuit) {
-    c.compiled_recalc(340);
-    c.compiled_recalc(351);
-    c.compiled_recalc(364);
-    c.compiled_recalc(390);
-    c.compiled_recalc(402);
-    c.compiled_recalc(375);
-    c.compiled_recalc(367);
-    c.compiled_recalc(394);
+    latch_bank_18(c);
     c.compiled_recalc(6);
     c.compiled_recalc(123);
     c.compiled_recalc(7);
@@ -8336,33 +7769,13 @@ fn bank_21(c: &mut super::GateCircuit) {
     c.compiled_recalc(1016);
     c.compiled_recalc(1142);
     c.compiled_recalc(1260);
-    c.compiled_recalc(84);
-    c.compiled_recalc(96);
-    c.compiled_recalc(108);
-    c.compiled_recalc(124);
-    c.compiled_recalc(130);
-    c.compiled_recalc(145);
-    c.compiled_recalc(158);
-    c.compiled_recalc(172);
-    c.compiled_recalc(181);
-    c.compiled_recalc(198);
-    c.compiled_recalc(212);
-    c.compiled_recalc(219);
-    c.compiled_recalc(233);
-    c.compiled_recalc(240);
-    c.compiled_recalc(268);
-    c.compiled_recalc(265);
+    latch_bank_1(c);
+    latch_bank_2(c);
     c.compiled_recalc(307);
     c.compiled_recalc(387);
-    c.compiled_recalc(530);
-    c.compiled_recalc(522);
-    c.compiled_recalc(489);
+    latch_bank_3(c);
     c.compiled_recalc(537);
-    c.compiled_recalc(557);
-    c.compiled_recalc(595);
-    c.compiled_recalc(508);
-    c.compiled_recalc(650);
-    c.compiled_recalc(660);
+    latch_bank_4(c);
     c.compiled_recalc(706);
     c.compiled_recalc(805);
     c.compiled_recalc(880);
@@ -8381,46 +7794,17 @@ fn bank_22(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8448,46 +7832,17 @@ fn bank_23(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8516,46 +7871,17 @@ fn bank_24(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8585,46 +7911,17 @@ fn bank_25(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8652,46 +7949,17 @@ fn bank_26(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8720,46 +7988,17 @@ fn bank_27(c: &mut super::GateCircuit) {
     c.compiled_recalc(22);
     c.compiled_recalc(176);
     c.compiled_recalc(258);
-    c.compiled_recalc(92);
-    c.compiled_recalc(71);
-    c.compiled_recalc(133);
-    c.compiled_recalc(163);
-    c.compiled_recalc(186);
-    c.compiled_recalc(207);
-    c.compiled_recalc(222);
-    c.compiled_recalc(230);
-    c.compiled_recalc(249);
-    c.compiled_recalc(339);
-    c.compiled_recalc(46);
-    c.compiled_recalc(47);
-    c.compiled_recalc(48);
-    c.compiled_recalc(49);
-    c.compiled_recalc(50);
-    c.compiled_recalc(51);
-    c.compiled_recalc(52);
-    c.compiled_recalc(350);
-    c.compiled_recalc(363);
-    c.compiled_recalc(369);
-    c.compiled_recalc(374);
-    c.compiled_recalc(389);
-    c.compiled_recalc(393);
-    c.compiled_recalc(401);
+    latch_bank_5(c);
+    latch_bank_6(c);
+    latch_bank_7(c);
     c.compiled_recalc(411);
     c.compiled_recalc(488);
     c.compiled_recalc(524);
-    c.compiled_recalc(542);
-    c.compiled_recalc(555);
-    c.compiled_recalc(558);
-    c.compiled_recalc(591);
-    c.compiled_recalc(570);
+    latch_bank_8(c);
     c.compiled_recalc(656);
-    c.compiled_recalc(705);
-    c.compiled_recalc(804);
-    c.compiled_recalc(929);
+    latch_bank_9(c);
     c.compiled_recalc(946);
-    c.compiled_recalc(1054);
-    c.compiled_recalc(1181);
-    c.compiled_recalc(1303);
+    latch_bank_10(c);
     c.compiled_recalc(387);
     c.compiled_recalc(395);
     c.compiled_recalc(537);
@@ -8778,6 +8017,693 @@ fn bank_27(c: &mut super::GateCircuit) {
     c.compiled_recalc(1219);
     c.compiled_recalc(1304);
     c.compiled_recalc(1350);
+}
+#[inline(never)]
+fn latch_bank_0(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+            ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+                ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(390);
+        c.compiled_recalc(394);
+        c.compiled_recalc(402);
+        c.compiled_recalc(340);
+        c.compiled_recalc(375);
+    }
+}
+#[inline(never)]
+fn latch_bank_1(c: &mut super::GateCircuit) {
+    let changed = if c.state[1156] != 0 {
+        (((u16::from(c.state[84]) | (u16::from(c.state[91]) << 8))
+            ^ (if c.ground_count[84] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[168]) | (u16::from(c.state[96]) << 8))
+                ^ (if c.ground_count[168] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[108]) | (u16::from(c.state[106]) << 8))
+                ^ (if c.ground_count[108] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[146]) | (u16::from(c.state[124]) << 8))
+                ^ (if c.ground_count[146] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[157]) | (u16::from(c.state[130]) << 8))
+                ^ (if c.ground_count[157] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[145]) | (u16::from(c.state[151]) << 8))
+                ^ (if c.ground_count[145] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[171]) | (u16::from(c.state[158]) << 8))
+                ^ (if c.ground_count[171] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[172]) | (u16::from(c.state[180]) << 8))
+                ^ (if c.ground_count[172] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[84] ^ u8::from(c.ground_count[84] == 0))
+            | (c.state[108] ^ u8::from(c.ground_count[108] == 0))
+            | (c.state[145] ^ u8::from(c.ground_count[145] == 0))
+            | (c.state[172] ^ u8::from(c.ground_count[172] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(84);
+        c.compiled_recalc(96);
+        c.compiled_recalc(108);
+        c.compiled_recalc(124);
+        c.compiled_recalc(130);
+        c.compiled_recalc(145);
+        c.compiled_recalc(158);
+        c.compiled_recalc(172);
+    }
+}
+#[inline(never)]
+fn latch_bank_2(c: &mut super::GateCircuit) {
+    let changed = if c.state[1156] != 0 {
+        (((u16::from(c.state[576]) | (u16::from(c.state[181]) << 8))
+            ^ (if c.ground_count[576] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[198]) | (u16::from(c.state[206]) << 8))
+                ^ (if c.ground_count[198] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[212]) | (u16::from(c.state[214]) << 8))
+                ^ (if c.ground_count[212] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[219]) | (u16::from(c.state[226]) << 8))
+                ^ (if c.ground_count[219] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[233]) | (u16::from(c.state[245]) << 8))
+                ^ (if c.ground_count[233] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[240]) | (u16::from(c.state[248]) << 8))
+                ^ (if c.ground_count[240] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[268]) | (u16::from(c.state[275]) << 8))
+                ^ (if c.ground_count[268] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[304]) | (u16::from(c.state[265]) << 8))
+                ^ (if c.ground_count[304] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[198] ^ u8::from(c.ground_count[198] == 0))
+            | (c.state[212] ^ u8::from(c.ground_count[212] == 0))
+            | (c.state[219] ^ u8::from(c.ground_count[219] == 0))
+            | (c.state[233] ^ u8::from(c.ground_count[233] == 0))
+            | (c.state[240] ^ u8::from(c.ground_count[240] == 0))
+            | (c.state[268] ^ u8::from(c.ground_count[268] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(181);
+        c.compiled_recalc(198);
+        c.compiled_recalc(212);
+        c.compiled_recalc(219);
+        c.compiled_recalc(233);
+        c.compiled_recalc(240);
+        c.compiled_recalc(268);
+        c.compiled_recalc(265);
+    }
+}
+#[inline(never)]
+fn latch_bank_3(c: &mut super::GateCircuit) {
+    let changed = if c.state[1156] != 0 {
+        (((u16::from(c.state[530]) | (u16::from(c.state[538]) << 8))
+            ^ (if c.ground_count[530] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[522]) | (u16::from(c.state[539]) << 8))
+                ^ (if c.ground_count[522] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[489]) | (u16::from(c.state[540]) << 8))
+                ^ (if c.ground_count[489] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[530] ^ u8::from(c.ground_count[530] == 0))
+            | (c.state[522] ^ u8::from(c.ground_count[522] == 0))
+            | (c.state[489] ^ u8::from(c.ground_count[489] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(530);
+        c.compiled_recalc(522);
+        c.compiled_recalc(489);
+    }
+}
+#[inline(never)]
+fn latch_bank_4(c: &mut super::GateCircuit) {
+    let changed = if c.state[1156] != 0 {
+        (((u16::from(c.state[557]) | (u16::from(c.state[556]) << 8))
+            ^ (if c.ground_count[557] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[596]) | (u16::from(c.state[595]) << 8))
+                ^ (if c.ground_count[596] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[508]) | (u16::from(c.state[592]) << 8))
+                ^ (if c.ground_count[508] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[1347]) | (u16::from(c.state[650]) << 8))
+                ^ (if c.ground_count[1347] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[926]) | (u16::from(c.state[660]) << 8))
+                ^ (if c.ground_count[926] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[557] ^ u8::from(c.ground_count[557] == 0))
+            | (c.state[508] ^ u8::from(c.ground_count[508] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(557);
+        c.compiled_recalc(595);
+        c.compiled_recalc(508);
+        c.compiled_recalc(650);
+        c.compiled_recalc(660);
+    }
+}
+#[inline(never)]
+fn latch_bank_5(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[92]) | (u16::from(c.state[107]) << 8))
+            ^ (if c.ground_count[92] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[71]) | (u16::from(c.state[473]) << 8))
+                ^ (if c.ground_count[71] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[133]) | (u16::from(c.state[143]) << 8))
+                ^ (if c.ground_count[133] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[163]) | (u16::from(c.state[170]) << 8))
+                ^ (if c.ground_count[163] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[186]) | (u16::from(c.state[192]) << 8))
+                ^ (if c.ground_count[186] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[207]) | (u16::from(c.state[217]) << 8))
+                ^ (if c.ground_count[207] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[222]) | (u16::from(c.state[164]) << 8))
+                ^ (if c.ground_count[222] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[230]) | (u16::from(c.state[239]) << 8))
+                ^ (if c.ground_count[230] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[92] ^ u8::from(c.ground_count[92] == 0))
+            | (c.state[71] ^ u8::from(c.ground_count[71] == 0))
+            | (c.state[133] ^ u8::from(c.ground_count[133] == 0))
+            | (c.state[163] ^ u8::from(c.ground_count[163] == 0))
+            | (c.state[186] ^ u8::from(c.ground_count[186] == 0))
+            | (c.state[207] ^ u8::from(c.ground_count[207] == 0))
+            | (c.state[222] ^ u8::from(c.ground_count[222] == 0))
+            | (c.state[230] ^ u8::from(c.ground_count[230] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(92);
+        c.compiled_recalc(71);
+        c.compiled_recalc(133);
+        c.compiled_recalc(163);
+        c.compiled_recalc(186);
+        c.compiled_recalc(207);
+        c.compiled_recalc(222);
+        c.compiled_recalc(230);
+    }
+}
+#[inline(never)]
+fn latch_bank_6(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[249]) | (u16::from(c.state[325]) << 8))
+            ^ (if c.ground_count[249] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+                ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[46]) | (u16::from(c.state[388]) << 8))
+                ^ (if c.ground_count[46] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[47]) | (u16::from(c.state[377]) << 8))
+                ^ (if c.ground_count[47] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[48]) | (u16::from(c.state[378]) << 8))
+                ^ (if c.ground_count[48] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[49]) | (u16::from(c.state[379]) << 8))
+                ^ (if c.ground_count[49] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[50]) | (u16::from(c.state[380]) << 8))
+                ^ (if c.ground_count[50] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[51]) | (u16::from(c.state[327]) << 8))
+                ^ (if c.ground_count[51] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[249] ^ u8::from(c.ground_count[249] == 0))
+            | (c.state[46] ^ u8::from(c.ground_count[46] == 0))
+            | (c.state[47] ^ u8::from(c.ground_count[47] == 0))
+            | (c.state[48] ^ u8::from(c.ground_count[48] == 0))
+            | (c.state[49] ^ u8::from(c.ground_count[49] == 0))
+            | (c.state[50] ^ u8::from(c.ground_count[50] == 0))
+            | (c.state[51] ^ u8::from(c.ground_count[51] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(249);
+        c.compiled_recalc(339);
+        c.compiled_recalc(46);
+        c.compiled_recalc(47);
+        c.compiled_recalc(48);
+        c.compiled_recalc(49);
+        c.compiled_recalc(50);
+        c.compiled_recalc(51);
+    }
+}
+#[inline(never)]
+fn latch_bank_7(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[52]) | (u16::from(c.state[326]) << 8))
+            ^ (if c.ground_count[52] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        (c.state[52] ^ u8::from(c.ground_count[52] == 0)) != 0
+    };
+    if changed {
+        c.compiled_recalc(52);
+        c.compiled_recalc(350);
+        c.compiled_recalc(363);
+        c.compiled_recalc(369);
+        c.compiled_recalc(374);
+        c.compiled_recalc(389);
+        c.compiled_recalc(393);
+        c.compiled_recalc(401);
+    }
+}
+#[inline(never)]
+fn latch_bank_8(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[542]) | (u16::from(c.state[543]) << 8))
+            ^ (if c.ground_count[542] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[641]) | (u16::from(c.state[555]) << 8))
+                ^ (if c.ground_count[641] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[647]) | (u16::from(c.state[558]) << 8))
+                ^ (if c.ground_count[647] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[591]) | (u16::from(c.state[585]) << 8))
+                ^ (if c.ground_count[591] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[599]) | (u16::from(c.state[570]) << 8))
+                ^ (if c.ground_count[599] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[542] ^ u8::from(c.ground_count[542] == 0))
+            | (c.state[591] ^ u8::from(c.ground_count[591] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(542);
+        c.compiled_recalc(555);
+        c.compiled_recalc(558);
+        c.compiled_recalc(591);
+        c.compiled_recalc(570);
+    }
+}
+#[inline(never)]
+fn latch_bank_9(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[731]) | (u16::from(c.state[705]) << 8))
+            ^ (if c.ground_count[731] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[770]) | (u16::from(c.state[804]) << 8))
+                ^ (if c.ground_count[770] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[900]) | (u16::from(c.state[929]) << 8))
+                ^ (if c.ground_count[900] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        false
+    };
+    if changed {
+        c.compiled_recalc(705);
+        c.compiled_recalc(804);
+        c.compiled_recalc(929);
+    }
+}
+#[inline(never)]
+fn latch_bank_10(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[1019]) | (u16::from(c.state[1054]) << 8))
+            ^ (if c.ground_count[1019] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[1150]) | (u16::from(c.state[1181]) << 8))
+                ^ (if c.ground_count[1150] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[1268]) | (u16::from(c.state[1303]) << 8))
+                ^ (if c.ground_count[1268] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        false
+    };
+    if changed {
+        c.compiled_recalc(1054);
+        c.compiled_recalc(1181);
+        c.compiled_recalc(1303);
+    }
+}
+#[inline(never)]
+fn latch_bank_11(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(375);
+        c.compiled_recalc(390);
+        c.compiled_recalc(402);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(394);
+    }
+}
+#[inline(never)]
+fn latch_bank_12(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(375);
+        c.compiled_recalc(390);
+        c.compiled_recalc(402);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(394);
+    }
+}
+#[inline(never)]
+fn latch_bank_13(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(390);
+        c.compiled_recalc(394);
+        c.compiled_recalc(402);
+        c.compiled_recalc(375);
+    }
+}
+#[inline(never)]
+fn latch_bank_14(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(375);
+        c.compiled_recalc(390);
+        c.compiled_recalc(394);
+        c.compiled_recalc(402);
+    }
+}
+#[inline(never)]
+fn latch_bank_15(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(390);
+        c.compiled_recalc(394);
+        c.compiled_recalc(367);
+        c.compiled_recalc(375);
+        c.compiled_recalc(402);
+    }
+}
+#[inline(never)]
+fn latch_bank_16(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+            ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+                ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(375);
+        c.compiled_recalc(390);
+        c.compiled_recalc(402);
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(367);
+        c.compiled_recalc(394);
+    }
+}
+#[inline(never)]
+fn latch_bank_17(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(390);
+        c.compiled_recalc(402);
+        c.compiled_recalc(394);
+        c.compiled_recalc(367);
+        c.compiled_recalc(375);
+    }
+}
+#[inline(never)]
+fn latch_bank_18(c: &mut super::GateCircuit) {
+    let changed = if c.state[1149] != 0 {
+        (((u16::from(c.state[340]) | (u16::from(c.state[339]) << 8))
+            ^ (if c.ground_count[340] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[351]) | (u16::from(c.state[350]) << 8))
+                ^ (if c.ground_count[351] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[364]) | (u16::from(c.state[363]) << 8))
+                ^ (if c.ground_count[364] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[390]) | (u16::from(c.state[389]) << 8))
+                ^ (if c.ground_count[390] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[402]) | (u16::from(c.state[401]) << 8))
+                ^ (if c.ground_count[402] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[375]) | (u16::from(c.state[374]) << 8))
+                ^ (if c.ground_count[375] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[367]) | (u16::from(c.state[369]) << 8))
+                ^ (if c.ground_count[367] == 0 { 257 } else { 0 }))
+            | ((u16::from(c.state[394]) | (u16::from(c.state[393]) << 8))
+                ^ (if c.ground_count[394] == 0 { 257 } else { 0 })))
+            != 0
+    } else {
+        ((c.state[340] ^ u8::from(c.ground_count[340] == 0))
+            | (c.state[351] ^ u8::from(c.ground_count[351] == 0))
+            | (c.state[364] ^ u8::from(c.ground_count[364] == 0))
+            | (c.state[390] ^ u8::from(c.ground_count[390] == 0))
+            | (c.state[402] ^ u8::from(c.ground_count[402] == 0))
+            | (c.state[375] ^ u8::from(c.ground_count[375] == 0))
+            | (c.state[367] ^ u8::from(c.ground_count[367] == 0))
+            | (c.state[394] ^ u8::from(c.ground_count[394] == 0)))
+            != 0
+    };
+    if changed {
+        c.compiled_recalc(340);
+        c.compiled_recalc(351);
+        c.compiled_recalc(364);
+        c.compiled_recalc(390);
+        c.compiled_recalc(402);
+        c.compiled_recalc(375);
+        c.compiled_recalc(367);
+        c.compiled_recalc(394);
+    }
 }
 pub const BANKS: &[fn(&mut super::GateCircuit)] = &[
     bank_0, bank_1, bank_2, bank_1, bank_3, bank_1, bank_2, bank_1, bank_4, bank_1, bank_2, bank_1,

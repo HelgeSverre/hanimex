@@ -1,3 +1,4 @@
+import { createBankCompiler } from "./compile-latch-bank.mjs";
 import fs from "node:fs";
 import vm from "node:vm";
 import { findLatchCells, drivenNodes } from "./chip-latches.mjs";
@@ -244,8 +245,12 @@ for (const queue of queues) {
   if (!programs.has(key)) programs.set(key, { id: programs.size, queue });
   programIds.push(programs.get(key).id);
 }
-for (const { id, queue } of programs.values())
-  out += `#[inline(never)] fn bank_${id}(${queue.length ? "c" : "_c"}:&mut super::GateCircuit){${queue.map((n) => "c.compiled_recalc(" + n + ");").join("")}}\n`;
+const bankCompiler = createBankCompiler(storage);
+for (const { id, queue } of programs.values()) {
+  const body = bankCompiler.compile(queue);
+  out += `#[inline(never)] fn bank_${id}(${queue.length ? "c" : "_c"}:&mut super::GateCircuit){${body}}\n`;
+}
+out += bankCompiler.finish();
 out += `pub const BANKS: &[fn(&mut super::GateCircuit)]=&[${programIds.map((id) => "bank_" + id)}];\n`;
 const restore = rows.map((row) => {
   const counts = new Map([...internal].map((n) => [n, [0, 0, 0]]));
