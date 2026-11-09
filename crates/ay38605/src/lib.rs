@@ -5,6 +5,7 @@ mod compiled;
 mod counter;
 #[allow(dead_code)] // Preserve all recovered node names for probes.
 mod data;
+mod fanout;
 #[cfg(test)]
 mod latch_tests;
 mod latches;
@@ -31,7 +32,8 @@ pub struct GateCircuit {
     pub metrics: [u64; 3],
     pub state: [u8; NODE_COUNT],
     pulls: [i8; NODE_COUNT],
-    queued: [bool; NODE_COUNT],
+    queued: [u32; NODE_COUNT],
+    queue_generation: u32,
     next: Vec<usize>,
     work: Vec<usize>,
     ground_count: [u16; NODE_COUNT],
@@ -47,7 +49,8 @@ impl Default for GateCircuit {
             metrics: [0; 3],
             state: [0; NODE_COUNT],
             pulls: [0; NODE_COUNT],
-            queued: [false; NODE_COUNT],
+            queued: [0; NODE_COUNT],
+            queue_generation: 1,
             next: Vec::with_capacity(NODE_COUNT),
             work: Vec::with_capacity(NODE_COUNT),
             ground_count: [0; NODE_COUNT],
@@ -182,28 +185,28 @@ impl GateCircuit {
             self.metrics[1] += 1;
         }
         self.state[g] = value;
-        for &(a, b) in
-            &compiled::FANOUT[compiled::FANOUT_OFFSETS[g]..compiled::FANOUT_OFFSETS[g + 1]]
-        {
-            self.connection_change(a, b, value != 0);
-            self.enqueue(a);
-            if value == 0 {
-                self.enqueue(b);
-            }
-        }
+        fanout::RUN[g](self, value != 0);
     }
 
     #[inline(always)]
     fn enqueue(&mut self, n: usize) {
-        if n == GND || n == VCC || self.queued[n] {
+        if n == GND || n == VCC || self.queued[n] == self.queue_generation {
             return;
         }
         #[cfg(feature = "profile")]
         {
             self.metrics[2] += 1;
         }
-        self.queued[n] = true;
+        self.queued[n] = self.queue_generation;
         self.next.push(n);
+    }
+    #[inline(always)]
+    fn next_generation(&mut self) {
+        self.queue_generation = self.queue_generation.wrapping_add(1);
+        if self.queue_generation == 0 {
+            self.queued.fill(0);
+            self.queue_generation = 1;
+        }
     }
     fn settle(&mut self, list: Vec<usize>) -> Result<(), UnstableCircuit> {
         self.settle_with_limit(list, 100)
@@ -219,9 +222,7 @@ impl GateCircuit {
                 self.work = list;
                 return Ok(());
             }
-            for &n in &list {
-                self.queued[n] = false;
-            }
+            self.next_generation();
             for &n in &list {
                 if n == GND || n == VCC {
                     continue;
@@ -235,7 +236,7 @@ impl GateCircuit {
     }
     pub fn drive(&mut self, n: usize, high: bool) -> Result<(), UnstableCircuit> {
         // External writes invalidate the cursor. Re-entry checks the entire
-        // 86-node vector plus clock/disable, not just the nine-bit table index.
+        // 92-node vector plus clock/disable, not just the nine-bit table index.
         let target = if n == CLK && high != (self.state[CLK] != 0) {
             self.counter_cursor.or_else(|| counter::find(&self.state))
         } else {
@@ -259,6 +260,7 @@ impl GateCircuit {
             }
             self.counter_frozen = true;
             self.next.clear();
+            self.next_generation();
             counter::BANKS[row](self);
             std::mem::swap(&mut work, &mut self.next);
             let result = self.settle_with_limit(work, 99);
@@ -517,6 +519,40 @@ mod tests {
     }
 
     #[test]
+    fn generated_fanout_matches_ordered_transistor_events() {
+        for node in 0..NODE_COUNT {
+            for high in [false, true] {
+                let mut generated = GateCircuit::default();
+                let mut original = GateCircuit::default();
+                generated.state[node] = u8::from(!high);
+                generated.update_node(node, u8::from(high));
+                for &(a, b) in &compiled::FANOUT
+                    [compiled::FANOUT_OFFSETS[node]..compiled::FANOUT_OFFSETS[node + 1]]
+                {
+                    original.connection_change(a, b, high);
+                    original.enqueue(a);
+                    if !high {
+                        original.enqueue(b);
+                    }
+                }
+                assert_eq!(
+                    generated.ground_count, original.ground_count,
+                    "ground fanout {node}/{high}"
+                );
+                assert_eq!(
+                    generated.power_count, original.power_count,
+                    "power fanout {node}/{high}"
+                );
+                assert_eq!(
+                    generated.bridge_count, original.bridge_count,
+                    "bridge fanout {node}/{high}"
+                );
+                assert_eq!(generated.next, original.next, "event order {node}/{high}");
+            }
+        }
+    }
+
+    #[test]
     fn counter_matches_reference_through_disable_reset_and_repeated_levels()
     -> Result<(), UnstableCircuit> {
         let mut compiled = GateCircuit::default();
@@ -532,6 +568,9 @@ mod tests {
         assert_eq!(compiled.state, reference.state);
         let mut macro_edges = 0;
         for edge in 0..20_000 {
+            if edge == 10_000 {
+                compiled.queue_generation = u32::MAX;
+            }
             // Include the all-keys-down disable state, then re-enter the normal
             // orbit. External writes invalidate the cached transition index.
             if edge % 997 == 0 {

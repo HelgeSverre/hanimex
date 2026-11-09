@@ -1,0 +1,11 @@
+{
+  "commit": "d32997903d84d95dbbea6da0cb55496cc16ab387",
+  "sha256": {
+    "transdefs.js": "cc54f2757545a5109fb344fad109d1093350daf4080436bbd1bf85047376fea7",
+    "segdefs.js": "e087c877ba288affc3e41c47815ecfacb3c241a5e15cc2918d11ad4e913ba45e",
+    "nodenames.js": "c102aeb800124913a81b4daa24caf206e90a8916f7cc67e5bca59b788a73a09e"
+  },
+  "nodes": 973,
+  "nodeSlots": 973,
+  "transistors": 2347
+}

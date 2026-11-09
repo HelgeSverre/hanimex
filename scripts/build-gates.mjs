@@ -92,5 +92,5 @@ for (let gate = 0; gate < 1524; gate++) {
 }
 fs.appendFileSync(
   "crates/ay38605/src/compiled.rs",
-  `pub const FANOUT_OFFSETS:[usize;1525]=[${offsets}];\npub const FANOUT:&[(usize,usize)]=&[${fanout.map((t) => `(${t})`)}];\n`,
+  `#[cfg(test)]\npub const FANOUT_OFFSETS:[usize;1525]=[${offsets}];\n#[cfg(test)]\npub const FANOUT:&[(usize,usize)]=&[${fanout.map((t) => `(${t})`)}];\n`,
 );

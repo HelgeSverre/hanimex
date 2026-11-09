@@ -13,7 +13,9 @@
     "test:engines:long": "node scripts/check-chip-engines.mjs --long",
     "bench:chip": "node scripts/benchmark-chip.mjs",
     "test:edges": "node scripts/check-chip-edges.mjs",
-    "test:games": "node scripts/check-chip-games.mjs"
+    "test:games": "node scripts/check-chip-games.mjs",
+    "build:recovered": "node scripts/build-recovered-chips.mjs",
+    "test:recovered": "node scripts/check-recovered-chips.mjs"
   },
   "devDependencies": {
     "@types/three": "^0.187.0",

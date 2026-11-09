@@ -4,6 +4,7 @@ for (const script of [
   "build-netlist",
   "build-gates",
   "build-latches",
+  "build-fanout",
   "build-chip-layout",
 ])
   execFileSync(process.execPath, [`scripts/${script}.mjs`], {

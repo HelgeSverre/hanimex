@@ -1,6 +1,6 @@
 # Hanimex — Submarine chip experiment
 
-Branch: `submarine-latch-banks`. Submarine uses compiled timing and game-dependent latch banks, with a selectable transistor reference and live chip inspector. **Full speed is not reached.** [Implementation and validation](research/ay38605/LATCH-BANKS.md).
+Branch: `submarine-propagation`. Submarine uses compiled timing, latch and fanout logic, with a selectable transistor reference and live chip inspector. **Full speed is not reached.** [Implementation and validation](research/ay38605/PROPAGATION.md).
 
 [Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
 
@@ -14,6 +14,8 @@ Eight swappable cartridges, a CRT display, keyboard and touch controls, and opti
 
 Insert Submarine and choose **Chip** in the header to inspect its live silicon layout. Select a signal, pan/zoom, pause, or step the circuit by a clock edge, clock, or scanline. The viewer samples actual states from the same chip instance driving the TV.
 
+Wipeout and Fundamental now have separate circuit workbenches: [AY-3-8606](https://hanimex-chip.vercel.app/?lab=ay38606) · [AY-3-8500](https://hanimex-chip.vercel.app/?lab=ay38500). They run the recovered transistor networks with live wire inspection and clock stepping. Console controls and video adapters are still unfinished; the playable cartridges remain recreations.
+
 ## Run
 
 ```sh
@@ -26,7 +28,12 @@ Open the local URL printed by Vite. The app uses TypeScript, Three.js, and Canva
 ```sh
 npm run build
 npm test
+npm run test:edges
+npm run test:games
+npm run test:recovered
 ```
+
+To regenerate the checked-in Wasm binaries, install Rust with the `wasm32-unknown-unknown` target, then run `npm run build:chip` and `npm run build:recovered`.
 
 Vercel builds with `npm run build` and serves `web/dist`.
 

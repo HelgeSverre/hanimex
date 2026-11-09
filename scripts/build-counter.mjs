@@ -11,12 +11,12 @@ const trans = c.transdefs
     return [g, a, b];
   });
 import assert from "node:assert/strict";
-// Node 983 belongs to the horizontal timing latch bank. Close its incoming
+// Node 983 is horizontal timing; 479 adds its downstream latch chain. Close incoming
 // dependencies up to the input clock and selection-disable signal, then add
 // channel-connected decoder blocks whose gates are entirely inside the region.
 const rails = new Set([170, 1364]),
   boundary = new Set([170, 1364, 1365, 1337]);
-const region = new Set([983]);
+const region = new Set([983, 479]);
 let changed = true;
 while (changed) {
   changed = false;
@@ -68,7 +68,7 @@ while (changed) {
 const nodes = [...region].sort((a, b) => a - b);
 assert.equal(
   nodes.length,
-  86,
+  92,
   "review the macro boundary if the tracing changes",
 );
 for (const [g, a, b] of trans)

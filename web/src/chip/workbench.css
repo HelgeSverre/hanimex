@@ -1,0 +1,97 @@
+.circuit-workbench {
+  min-height: 100dvh;
+  padding: clamp(16px, 3vw, 40px);
+  background: #292620;
+  color: #e9e2d1;
+}
+.circuit-workbench header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.circuit-workbench nav {
+  display: flex;
+  gap: 20px;
+}
+.circuit-workbench a {
+  color: inherit;
+  text-underline-offset: 5px;
+}
+.circuit-workbench a[aria-current] {
+  color: #ffbc70;
+}
+.circuit-workbench main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  align-items: start;
+  gap: clamp(24px, 4vw, 64px);
+}
+.workbench-die canvas {
+  width: 100%;
+  display: block;
+  aspect-ratio: 1;
+  background: #0c1819;
+}
+.workbench-controls {
+  max-width: 440px;
+}
+.workbench-controls h1 {
+  font-size: clamp(24px, 4vw, 40px);
+  margin: 8px 0 16px;
+}
+.workbench-controls p {
+  line-height: 1.5;
+}
+.workbench-note {
+  color: #c5bdab;
+  margin: 24px 0;
+}
+.workbench-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.workbench-controls button,
+.workbench-controls select {
+  padding: 10px 14px;
+  border: 1px solid #81755e;
+  border-radius: 3px;
+  background: #373229;
+  color: #f5eddd;
+  font: inherit;
+}
+.workbench-controls button:disabled {
+  opacity: 0.45;
+}
+.workbench-controls label {
+  display: grid;
+  gap: 10px;
+}
+.workbench-controls output {
+  display: block;
+  font:
+    13px "Obel Mono",
+    monospace;
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+}
+.workbench-controls footer {
+  margin-top: 40px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #c5bdab;
+}
+@media (max-width: 700px) {
+  .circuit-workbench main {
+    grid-template-columns: 1fr;
+  }
+  .workbench-die canvas {
+    max-height: none;
+  }
+  .workbench-controls {
+    max-width: none;
+  }
+}

@@ -11,16 +11,17 @@ emulated.
 published input-to-netlist artifact set and a close family relationship to the
 existing AY-3-8605 work. The score circuitry is reported by its tracer to be
 shared with 8605, which makes it a good test for reusable counter/latch
-recognition. It must still be imported, wired to the PC-50x host, and compared
-against its original JavaScript simulation; no ready Rust or full-speed HDL core
-was found.
+recognition. Both 8606 and 8500 are now imported and run in separate Rust/Wasm
+transistor workbenches, compared with the preserved JavaScript solver.
+Console wiring and optimized engines are still unfinished. See the
+[8606 provenance](ay38606/PROVENANCE.md) and [8500 provenance](ay38500/PROVENANCE.md).
 
 ## Evidence matrix
 
 | PC-50x cartridge | IC | Preserved silicon artifacts | License | Inspector-ready? | Confidence |
 | --- | --- | --- | --- | --- | --- |
 | PC-508 Fundamental | AY-3-8500/-1 | `VisualP0NG` ships transistor definitions, polygons and node names; `chip-processing` also ships source layers, generated data and an AY-3-8500 Verilog implementation. | Generated data and annotations: CC BY-SA 4.0; `VisualP0NG` program code: MIT; confirm notices per file. | **Yes**, after adapter work. | 🟢 |
-| PC-506 Super Wipeout | AY-3-8606/-1 | `chip-processing/GIgames/ay38606` ships input layers plus generated `transdefs.js`, `segdefs.js`, and `nodenames.js`. The processor parameter file embeds CC BY 4.0 attribution. Cole reports the JavaScript circuit simulation worked. | CC BY 4.0 for die-photo derivatives/tracing; scripts CC0. | **Yes**, after adapter work. | 🟢 |
+| PC-506 Super Wipeout | AY-3-8606/-1 | `chip-processing/GIgames/ay38606` ships input layers plus generated `transdefs.js`, `segdefs.js`, and `nodenames.js`. The processor parameter file embeds CC BY 4.0 attribution. Cole reports the JavaScript circuit simulation worked. | Conflicting BY 3.0 / BY 4.0 / BY-SA 4.0 notices; imported derivatives use BY-SA 4.0. | **Yes**, after adapter work. | 🟢 |
 | PC-505 Submarine | AY-3-8605 | This repository preserves recovered `transdefs.js`, polygons and node names from the archived simulation. | CC BY 4.0 data; MIT reference simulator framework. | **Already implemented.** | 🟢 |
 | PC-502 Motor Cycle | AY-3-8765 PAL (AY-3-8760 NTSC) | GI system material and cartridge lists identify the part, and catalog/datasheet copies document its external circuit. No public transistor set, annotated die layers, or inspector-compatible HDL was found in the checked primary repositories. | N/A | No. | 🟡 for identity, 🔴 for silicon data |
 | PC-503 Tank Battle | AY-3-8710 PAL (AY-3-8710-1 NTSC) | GI's *GIMINI TV Game Circuits* documents the 28-pin circuit and pin-level host wiring. No public transistor set, annotated die layers, or inspector-compatible HDL was found in the checked primary repositories. | N/A | No. | 🟢 for identity/interface, 🔴 for silicon data |
@@ -47,9 +48,10 @@ AY-3-8500 is a dedicated pong IC in the PC-508 mapping; it is not a ROM dump.
 
 ## Recommended implementation order
 
-1. Import **AY-3-8606** under a separate `research/ay38606` provenance folder;
-   preserve its original notices and hashes, generate Rust/TypeScript data, then
-   build reference-versus-compiled differential tests before changing the UI.
+1. **Imported:** AY-3-8606 and AY-3-8500 under separate provenance folders,
+   with original notices, hashes, Rust data and layout derivatives. Their
+   transistor ports match the preserved JavaScript solver through 10,200
+   edges each. Optimized circuit engines remain to be implemented.
 2. Reuse the 8605 host abstraction only after verifying pin-level differences:
    selection is strobed, and paddle/ball/skill pins differ. Keep a distinct
    PC-506 adapter and inspector title so it cannot silently pretend to be 8605.
