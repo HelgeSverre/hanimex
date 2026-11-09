@@ -75,10 +75,14 @@ A fictional bonus cartridge, separate from the eight historical games. In 3D, cl
 
 The ten scene keys select chrome Clippy, a window tunnel, raster bars, a folder storm, cascading errors, a starfield, plasma, a paperclip army, desktop meltdown and the finale. Left stick / WASD moves the view; right stick / arrows bends and stretches Clippy. Left fire / Space drops a beat; right fire / Enter triggers a glitch. SPEED changes tempo, L-TEAM changes palette, R-TEAM adds trails, AUTO cycles scenes. Power displays a fictional blue screen; Reset reboots. Music is synthesized locally and follows the sound toggle, pause, dialogs and tab visibility. Reduced motion disables the automatic visual movement, trails and glitch bursts.
 
-[Open the demo directly](https://hanimex.vercel.app/?cartridge=clippy). This is new artwork and code, not an emulation of a historical cartridge. The repair-crew Easter egg is planned as a separate release.
+[Open the demo directly](https://hanimex.vercel.app/?cartridge=clippy). This is new artwork and code, not an emulation of a historical cartridge.
 
 ### Channel 13
 
 Turn VHF once, then UHF three times (within six seconds between turns). Click the TV knobs in either view, or press **V, U, U, U**. The cartridge pauses while the fictional pirate teletext station is on.
 
 Keys **1–4** select the index, Pong results, classifieds and weather; VHF/UHF browse backward/forward. On Weather, press **Fire** to start a 30-second challenge. Move either joystick left/right (A/D or arrows) to catch rain and avoid lightning. **Back to game** or **Escape** returns to the cartridge; inserting another cartridge also retunes the TV. The broadcast works with console power off or the RF cable disconnected.
+
+### Field service
+
+Throw all eight original cartridges off the 3D desk. After the explosion, three tiny technicians arrive, hammer the console back together, return the cartridges and reconnect the TV. They leave a **NO WARRANTY** sign. The whole visit takes about 14 seconds; **Put it back** skips it. Reduced motion uses static crew poses and an instant rebuild. Repairs stop advancing while the tab is hidden, and tool sounds follow the sound toggle.

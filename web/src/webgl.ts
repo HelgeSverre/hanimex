@@ -1,3 +1,4 @@
+import { RepairCrew } from "./repair-crew";
 import type { TuningBand } from "./channel13";
 import { cartridgeLabelUrl } from "./cartridge-art";
 import * as THREE from "three";
@@ -140,6 +141,7 @@ export class WebGLDesk {
     { velocity: THREE.Vector3; landed: boolean }
   >();
   private exploded = false;
+  private repairCrew = new RepairCrew();
   private blastAge = 0;
   private shakeOffset = new THREE.Vector3();
   private blast?: THREE.Mesh<
@@ -698,7 +700,7 @@ export class WebGLDesk {
     const group = new THREE.Group();
     group.position.set(4, 0.05, 0.6);
     this.consoleBody = group;
-    this.scene.add(this.debris);
+    this.scene.add(this.debris, this.repairCrew.group);
     this.scene.add(group);
     const cream = standard(colors.cream, 0.65),
       charcoal = standard(colors.charcoal, 0.65),
@@ -1361,6 +1363,7 @@ export class WebGLDesk {
   private explodeConsole() {
     if (this.exploded) return;
     this.exploded = true;
+    this.repairCrew.start();
     this.host.sound("explode");
     this.blastAge = 0;
     if (!this.reduceMotion) {
@@ -1383,7 +1386,7 @@ export class WebGLDesk {
     const status = this.container.querySelector("#scene-mischief-status");
     if (status)
       status.textContent =
-        "All eight cartridges on the floor. The console exploded. Use Put it back to restore the desk.";
+        "All eight cartridges on the floor. The console exploded. Repair crew on the way. Put it back skips the repair.";
     const materialColors = [
       colors.cream,
       colors.charcoal,
@@ -1451,6 +1454,11 @@ export class WebGLDesk {
       this.explodeConsole();
     if (!this.exploded || this.reduceMotion) return;
     this.blastAge += dt;
+    const rebuild = Math.max(0, Math.min(1, (this.blastAge - 7) / 4));
+    if (rebuild > 0 && this.consoleBody) {
+      this.consoleBody.visible = true;
+      this.consoleBody.scale.y = rebuild;
+    }
     if (this.blast) {
       this.blast.scale.setScalar(0.1 + Math.min(this.blastAge, 0.8) * 4);
       this.blast.material.opacity = Math.max(
@@ -1461,6 +1469,15 @@ export class WebGLDesk {
     }
     for (const fragment of this.fragments) {
       const { mesh, velocity, spin } = fragment;
+      if (rebuild > 0) {
+        velocity.set(0, 0, 0);
+        mesh.position.lerp(
+          new THREE.Vector3(4, 0.7, 0.6),
+          1 - Math.exp(-dt * 2),
+        );
+        mesh.scale.setScalar(1 - rebuild);
+        continue;
+      }
       if (velocity.lengthSq() === 0) continue;
       velocity.y -= 18 * dt;
       mesh.position.addScaledVector(velocity, dt);
@@ -1479,7 +1496,8 @@ export class WebGLDesk {
       }
     }
   }
-  restoreDesk() {
+  restoreDesk(fromCrew = false) {
+    if (!fromCrew) this.repairCrew.stop();
     this.cancelDrag();
     this.exploded = false;
     this.fallen.clear();
@@ -1495,14 +1513,20 @@ export class WebGLDesk {
     this.blast?.material.dispose();
     this.blast = undefined;
     this.debris.clear();
-    if (this.consoleBody) this.consoleBody.visible = true;
+    if (this.consoleBody) {
+      this.consoleBody.visible = true;
+      this.consoleBody.scale.setScalar(1);
+    }
     for (const [id, card] of this.cards) {
       card.position.copy(this.homes.get(id)!);
       card.rotation.set(-0.14, 0, 0);
     }
     this.setCableConnected(true);
     const status = this.container.querySelector("#scene-mischief-status");
-    if (status) status.textContent = "Desk restored.";
+    if (status)
+      status.textContent = fromCrew
+        ? "Repair complete. No warranty. The cartridges are back on the desk."
+        : "Desk restored.";
   }
   /** A close TV view makes the existing games usable without changing their render core. */
   setTVView(tv: boolean) {
@@ -1602,6 +1626,20 @@ export class WebGLDesk {
         card.rotation.z = THREE.MathUtils.lerp(card.rotation.z, 0, factor);
       }
       this.updateMischief(dt);
+      const repairPhase = this.repairCrew.sequence.phase;
+      if (
+        this.repairCrew.update(dt, this.reduceMotion, () =>
+          this.host.sound("drop", 0.25),
+        )
+      )
+        this.restoreDesk(true);
+      if (
+        repairPhase !== this.repairCrew.sequence.phase &&
+        this.repairCrew.sequence.phase === "working"
+      ) {
+        const status = this.container.querySelector("#scene-mischief-status");
+        if (status) status.textContent = "Repair crew at work.";
+      }
       const tidy =
         this.container.querySelector<HTMLButtonElement>("#scene-tidy");
       if (tidy) tidy.hidden = this.fallen.size === 0 && !this.exploded;
