@@ -418,16 +418,87 @@ export class WebGLDesk {
     const group = new THREE.Group();
     group.position.set(-4, 0, -1.85);
     this.scene.add(group);
-    const shell = standard(0x53534b, 0.7);
-    this.mesh(group, 9.6, 7, 3.4, 0, 3.7, -0.8, shell, 0.12);
+    const shell = standard(0x33342e, 0.8);
+    const veneer = new THREE.MeshStandardMaterial({
+      map: this.woodTexture(),
+      color: 0x896447,
+      roughness: 0.65,
+    });
+    // Separate cabinet sleeve and moulded rear cover give the tube its depth.
+    this.mesh(group, 9.6, 7, 4.9, 0, 3.7, -1.55, veneer, 0.08);
+    const rear = this.mesh(group, 8.95, 6.4, 1.2, 0, 3.7, -4.35, shell, 0.1);
+    const rearPositions = rear.geometry.getAttribute("position");
+    for (let n = 0; n < rearPositions.count; n++) {
+      const taper = 1 - 0.12 * (0.5 - rearPositions.getZ(n) / 1.2);
+      rearPositions.setXY(
+        n,
+        rearPositions.getX(n) * taper,
+        rearPositions.getY(n) * taper,
+      );
+    }
+    rear.geometry.computeVertexNormals();
+    this.mesh(group, 9.32, 6.72, 0.24, 0, 3.7, 0.94, shell, 0.06);
     const dark = standard(colors.rubber, 0.85);
-    this.mesh(group, 7.8, 5.9, 0.25, -0.5, 3.7, 0.98, dark, 0.1);
+    // A stepped escutcheon surrounds the rounded glass aperture.
+    const roundedContour = (w: number, h: number, r: number) => {
+      const shape = new THREE.Shape();
+      shape.moveTo(-w / 2 + r, -h / 2);
+      shape.lineTo(w / 2 - r, -h / 2);
+      shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+      shape.lineTo(w / 2, h / 2 - r);
+      shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+      shape.lineTo(-w / 2 + r, h / 2);
+      shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+      shape.lineTo(-w / 2, -h / 2 + r);
+      shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+      return shape;
+    };
+    const bezel = (
+      w: number,
+      h: number,
+      iw: number,
+      ih: number,
+      z: number,
+      material: THREE.Material,
+    ) => {
+      const shape = roundedContour(w, h, 0.48);
+      shape.holes.push(
+        new THREE.Path(roundedContour(iw, ih, 0.4).getPoints(24).reverse()),
+      );
+      const frame = new THREE.Mesh(
+        new THREE.ExtrudeGeometry(shape, {
+          depth: 0.12,
+          bevelEnabled: true,
+          bevelSegments: 3,
+          steps: 1,
+          bevelSize: 0.035,
+          bevelThickness: 0.035,
+          curveSegments: 16,
+        }),
+        material,
+      );
+      frame.position.set(-0.5, 3.7, z);
+      group.add(frame);
+    };
+    bezel(8.04, 6.22, 7.6, 5.8, 1.08, standard(0x99968a, 0.38, 0.65));
+    bezel(7.7, 5.9, 6.99, 5.22, 1.17, dark);
+    this.mesh(
+      group,
+      1.06,
+      6.12,
+      0.13,
+      4.03,
+      3.7,
+      1.09,
+      standard(0x20221f),
+      0.04,
+    );
     const screenGeometry = new THREE.PlaneGeometry(7.1, 5.325, 60, 40);
     const positions = screenGeometry.getAttribute("position");
     for (let n = 0; n < positions.count; n++) {
       const x = positions.getX(n),
         y = positions.getY(n);
-      positions.setZ(n, 0.13 * (1 - (x / 3.55) ** 2) * (1 - (y / 2.6625) ** 2));
+      positions.setZ(n, 0.27 * (1 - (x / 3.55) ** 2) * (1 - (y / 2.6625) ** 2));
     }
     screenGeometry.computeVertexNormals();
     const screen = new THREE.Mesh(
@@ -442,7 +513,7 @@ export class WebGLDesk {
     this.pickObject(screen, { kind: "screen" });
     const metal = standard(0x85867a, 0.5, 0.28);
     for (const y of [5.35, 4.15]) {
-      const knob = this.cylinder(group, 0.35, 0.22, 4.03, y, 1.03, dark);
+      const knob = this.cylinder(group, 0.37, 0.28, 4.03, y, 1.3, dark);
       knob.rotation.x = Math.PI / 2;
       const bar = this.mesh(
         group,
@@ -451,23 +522,23 @@ export class WebGLDesk {
         0.08,
         4.03,
         y,
-        1.16,
+        1.48,
         metal,
         0.02,
       );
       bar.rotation.z = -0.6;
     }
-    this.label(group, "VHF", 0.48, 0.17, 4.03, 5.88, 1.03, false);
-    this.label(group, "UHF", 0.48, 0.17, 4.03, 4.68, 1.03, false);
+    this.label(group, "VHF", 0.48, 0.17, 4.03, 5.88, 1.19, false);
+    this.label(group, "UHF", 0.48, 0.17, 4.03, 4.68, 1.19, false);
     for (let n = 0; n < 23; n++)
       this.mesh(
         group,
-        0.57,
-        0.025,
+        0.79,
+        0.035,
         0.025,
         4.03,
         1.15 + n * 0.075,
-        0.902,
+        1.18,
         dark,
         0.005,
       );
@@ -475,7 +546,7 @@ export class WebGLDesk {
       new THREE.SphereGeometry(0.035, 12, 8),
       new THREE.MeshBasicMaterial({ color: colors.orange }),
     );
-    lamp.position.set(4.03, 0.6, 0.98);
+    lamp.position.set(4.03, 0.8, 1.19);
     group.add(lamp);
     for (const x of [-2.5, 2.5])
       this.mesh(group, 1.05, 0.24, 2.3, x, 0.12, -0.4, dark, 0.04);
@@ -486,10 +557,23 @@ export class WebGLDesk {
       0.15,
       -0.4,
       0.45,
-      0.91,
+      1.08,
       false,
       "#aaaa96",
     );
+    for (let n = 0; n < 28; n++) {
+      this.mesh(
+        group,
+        0.06,
+        1.15,
+        0.02,
+        -3.5 + n * 0.26,
+        5.3,
+        -4.96,
+        dark,
+        0.005,
+      );
+    }
     this.batchStatic(group);
     return screen;
   }
