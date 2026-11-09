@@ -1,3 +1,4 @@
+import { cartridgeLabelUrl } from "./cartridge-art";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -59,16 +60,6 @@ const colors = {
   red: 0xd34125,
   wood: 0x66503b,
   tableEdge: 0x3b3025,
-};
-const paper: Record<string, string> = {
-  orange: "#d49b5c",
-  yellow: "#dac77e",
-  red: "#cf9c86",
-  blue: "#a7bec6",
-  teal: "#a7c6b2",
-  purple: "#bfb2c5",
-  green: "#b8c397",
-  cream: "#d6c9a1",
 };
 const standard = (color: number, roughness = 0.66, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -842,58 +833,13 @@ export class WebGLDesk {
     return { mesh: slot, material: slotMaterial };
   }
   private cartridgeTexture(id: CartridgeId) {
-    const cart = cartridges.find((c) => c.id === id);
-    if (!cart) throw new Error("Cartridge not found");
-    const canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 640;
-    const c = canvas.getContext("2d");
-    if (!c) throw new Error("Cartridge canvas unavailable");
-    c.fillStyle = paper[cart.color];
-    c.fillRect(0, 0, 512, 640);
-    c.fillStyle = "#292c22";
-    c.font = '25px "Obel Mono",monospace';
-    c.fillText(cart.code, 29, 47);
-    c.textAlign = "right";
-    c.fillText("TV GAME", 483, 47);
-    c.fillRect(28, 65, 456, 2);
-    c.textAlign = "left";
-    c.font = '600 44px "Obel Mono",monospace';
-    const words = cart.name.split(" ");
-    let line = "",
-      y = 133;
-    for (const word of words) {
-      if (c.measureText(`${line} ${word}`).width > 450 && line) {
-        c.fillText(line, 28, y);
-        line = word;
-        y += 53;
-      } else line += (line ? " " : "") + word;
-    }
-    c.fillText(line, 28, y);
-    c.fillRect(28, 563, 456, 2);
-    c.font = '19px "Obel Mono",monospace';
-    c.fillText("PROGRAMMABLE CARTRIDGE", 28, 604);
-    const t = new THREE.CanvasTexture(canvas);
-    t.colorSpace = THREE.SRGBColorSpace;
-    t.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
-    const original = document.querySelector(`[data-id="${id}"] .cart-art svg`);
-    if (original) {
-      const svg = original.cloneNode(true) as SVGElement;
-      svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      svg.setAttribute("width", "420");
-      svg.setAttribute("height", "252");
-      const source = new XMLSerializer()
-        .serializeToString(svg)
-        .replaceAll("currentColor", "#292c22");
-      const image = new Image();
-      image.onload = () => {
-        if (this.disposed) return;
-        c.drawImage(image, 46, 263, 420, 252);
-        t.needsUpdate = true;
-      };
-      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
-    }
-    return t;
+    const texture = new THREE.TextureLoader().load(cartridgeLabelUrl(id));
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(
+      8,
+      this.renderer.capabilities.getMaxAnisotropy(),
+    );
+    return texture;
   }
   private addCartridge(id: CartridgeId, index: number) {
     const group = new THREE.Group();
@@ -903,29 +849,44 @@ export class WebGLDesk {
     this.scene.add(group);
     this.homes.set(id, position.clone());
     this.cards.set(id, group);
-    const dark = standard(colors.rubber, 0.75);
-    this.mesh(group, 1.65, 1.94, 0.28, 0, 1.02, 0, dark, 0.07);
+    const dark = standard(0x1b1d1e, 0.75);
+    this.mesh(group, 1.84, 1.6, 0.28, 0, 0.86, 0, dark, 0.07);
     for (let n = 0; n < 6; n++)
       this.mesh(
         group,
-        1.42,
+        1.64,
         0.018,
         0.012,
         0,
-        1.79 + n * 0.026,
+        1.44 + n * 0.031,
         0.148,
         standard(0x11140f),
         0.003,
       );
     const label = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.39, 1.57),
-      new THREE.MeshStandardMaterial({
+      new THREE.PlaneGeometry(1.6, 1.2),
+      new THREE.MeshBasicMaterial({
         map: this.cartridgeTexture(id),
-        roughness: 0.9,
-        metalness: 0,
+        transparent: true,
+        toneMapped: false,
       }),
     );
-    label.position.set(0, 0.95, 0.147);
+    label.position.set(0, 0.75, 0.147);
+    for (const side of [-1, 1]) {
+      for (let n = 0; n < 11; n++) {
+        this.mesh(
+          group,
+          0.04,
+          0.018,
+          0.23,
+          side * 0.918,
+          1.02 + n * 0.047,
+          0,
+          dark,
+          0.004,
+        );
+      }
+    }
     group.add(label);
     this.mesh(group, 1.12, 0.11, 0.13, 0, 0.04, 0, dark, 0.01);
     for (let n = 0; n < 16; n++)

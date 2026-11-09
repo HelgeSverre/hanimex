@@ -1,3 +1,4 @@
+import { cartridgeLabelMarkup } from "./cartridge-art";
 import { ChipGame } from "./chip/game";
 import "./style.css";
 import { cartridges, cartridgeById, type Cartridge } from "./catalog";
@@ -22,44 +23,7 @@ const icon = (name: string) => {
   };
   return `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${paths[name] ?? paths.help}</svg>`;
 };
-function art(id: string) {
-  let paths = "";
-  switch (id) {
-    case "sports":
-    case "fundamental":
-      paths =
-        '<path d="M12 10v40m76-40v40M50 5v8m0 7v8m0 7v8m0 7v8"/><rect x="62" y="24" width="6" height="6" fill="currentColor"/>';
-      break;
-    case "submarine":
-      paths =
-        '<path d="M5 20h90M20 17l5 8h46l9-8H20Zm24-7h14v7H44Zm-12 36 7 7h38l8-7H32Zm17-8h12v8H49Zm8-7v7m-24 2v-9m0-4v-3m34 9v8"/>';
-      break;
-    case "race":
-      paths =
-        '<path d="M19 1v58M81 1v58M50 1v9m0 7v9m0 7v9m0 7v9"/><rect x="31" y="30" width="12" height="21"/><path d="M27 34v5m20-5v5m-20 6v5m20-5v5"/><rect x="59" y="7" width="10" height="19"/>';
-      break;
-    case "motorcycle":
-      paths =
-        '<circle cx="30" cy="37" r="8"/><circle cx="66" cy="37" r="8"/><path d="m30 37 14-15 9 15H30m14-15h13l9 15m-8-25 3 3h-9l-8 7m-2-10h4m-8 34 47 10M8 54h17"/>';
-      break;
-    case "tank":
-      paths =
-        '<path d="M18 17h28v24H18Zm-4-3v30m36-30v30m-4-15h18m10 4h13v17H74Zm-4-3v23m21-23v23m-17-14H61"/><path d="M26 5h3m32 17h3M6 39h3"/>';
-      break;
-    case "wipeout":
-      paths =
-        '<path d="M8 7h84M8 19h84M8 31h55M8 7v24m21-24v24M50 7v24M71 7v12M92 7v12M35 55h32"/><rect x="65" y="39" width="4" height="4" fill="currentColor"/>';
-      break;
-    case "shooting":
-      paths =
-        '<circle cx="50" cy="30" r="20"/><circle cx="50" cy="30" r="10"/><path d="M50 2v14m0 28v14M22 30H8m84 0H78M50 27v6m-3-3h6"/>';
-      break;
-  }
-  return `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2">${paths}</svg>`;
-}
-const cartColor = (c: Cartridge) => `var(--color-cart-${c.color})`;
-const cartridgeMarkup = (c: Cartridge) =>
-  `<span class="cartridge-label"><span class="cart-code"><span>${c.code}</span><span>TV GAME</span></span><strong class="cart-name">${c.name}</strong><span class="cart-art">${art(c.id)}</span><span class="cart-footer">PROGRAMMABLE CARTRIDGE</span></span>`;
+const cartridgeMarkup = (c: Cartridge) => cartridgeLabelMarkup(c.id);
 const wing = (n: number) =>
   `<div class="wing"><div class="vent" aria-hidden="true"></div><div class="controller"><div class="joystick-base" tabindex="0" id="joystick-${n}" aria-label="Player ${n + 1} joystick. Drag to move, or use ${n === 0 ? "W A S D" : "arrow"} keys."><span class="stick" aria-hidden="true"></span></div><button class="fire-button" id="fire-${n}" aria-label="Player ${n + 1} serve or fire"></button><span class="controller-label">SERVE / FIRE</span></div></div>`;
 const switchMarkup = (id: string, title: string, on: boolean, cls = "") =>
@@ -70,7 +34,7 @@ root.innerHTML = `<a class="skip-link" href="#screen">Skip to game screen</a><di
 <header class="masthead"><div class="wordmark"><span class="brand-symbol" aria-hidden="true">H</span><div><h1>HANIMEX</h1><p>PROGRAMMABLE TV GAME</p></div></div><div class="top-actions"><button class="quiet-button" id="audio-toggle" aria-pressed="true" aria-label="Sound on">${icon("sound")}<span class="button-label">Sound on</span></button><button class="quiet-button" id="help-open" aria-label="How to play">${icon("help")}<span class="button-label">How to play</span></button></div></header>
 <main class="workbench"><section class="tv-area" aria-label="Television"><div class="television" id="television"><div class="screen-surround"><div class="screen" id="crt"><canvas id="screen" width="640" height="480" tabindex="0" aria-label="Game screen. Insert a cartridge, then use W A S D and Space for player one, arrows and Enter for player two.">Game graphics require a canvas-capable browser.</canvas></div></div><div class="tv-panel" aria-hidden="true"><span class="tv-channel">VHF</span><span class="tv-knob"></span><span class="tv-channel">UHF</span><span class="tv-knob"></span><div class="speaker"></div><span class="tv-lamp"></span></div><span class="tv-foot left"></span><span class="tv-foot right"></span></div><div class="tv-under"><span class="channel-label" id="channel-label">CHANNEL 01 / NO CARTRIDGE</span><div class="tv-actions"><button class="text-button" id="pause-toggle" aria-pressed="false">${icon("pause")}Pause</button><button class="text-button" id="fullscreen">${icon("expand")}Full screen</button></div></div><div class="mobile-controls"><div class="mobile-control-group"><button data-mobile="left" aria-label="Move left">${icon("left")}</button><button data-mobile="right" aria-label="Move right">${icon("right")}</button><button data-mobile="up" aria-label="Move up">${icon("up")}</button><button data-mobile="down" aria-label="Move down">${icon("down")}</button></div><button class="mobile-fire" data-mobile="fire">FIRE</button></div></section>
 <section class="console-area" aria-label="Hanimex-inspired game console"><div class="console-intro"><h2 class="sr-only">Console</h2><span class="status-led on" id="power-status">POWER ON</span></div><div class="console" id="console">${wing(0)}<div class="console-middle"><button class="cartridge-slot" id="slot" aria-label="Empty cartridge slot. Select a cartridge from the shelf."><span class="slot-caption">INSERT CARTRIDGE</span></button><div class="key-bank" aria-label="Game selection">${Array.from({ length: 10 }, (_, n) => `<button class="game-key" data-mode="${n}" aria-label="Game ${n + 1}" aria-pressed="false" disabled>${n + 1}</button>`).join("")}</div><div class="console-controls">${switchMarkup("power", "ON/OFF", true, "power")}${switchMarkup("speed", "SPEED", false)}${switchMarkup("left-size", "L-TEAM", false)}${switchMarkup("right-size", "R-TEAM", false)}${switchMarkup("serve", "AUTO", true)}<div class="toggle-cell reset-cell"><span>GAME RESET</span><button id="reset" class="reset-key" aria-label="Reset game">RESET</button></div></div><div class="console-badge">HANIMEX</div></div>${wing(1)}</div><div class="console-bottom"><div class="mode-title"><p id="game-title"></p><span id="game-mode"></span></div><button class="text-button" id="eject" disabled>${icon("eject")}Eject</button></div><div class="insert-hint" id="insert-hint">Drag or click a cartridge to insert.</div><div class="state-toast" role="status" aria-live="polite" id="status-message"></div></section></main>
-<section class="library" aria-labelledby="library-title"><div class="library-heading"><h2 id="library-title">Cartridges</h2></div><div class="cartridge-shelf">${cartridges.map((c) => `<div class="cartridge-wrap" data-cartridge="${c.id}"><button class="cartridge" data-id="${c.id}" style="--cart-color:${cartColor(c)}" aria-label="Insert ${c.short}, ${c.code}" aria-pressed="false">${cartridgeMarkup(c)}</button><span class="cartridge-caption">${c.code}</span></div>`).join("")}</div></section>
+<section class="library" aria-labelledby="library-title"><div class="library-heading"><h2 id="library-title">Cartridges</h2></div><div class="cartridge-shelf">${cartridges.map((c) => `<div class="cartridge-wrap" data-cartridge="${c.id}"><button class="cartridge" data-id="${c.id}" aria-label="Insert ${c.short}, ${c.code}" aria-pressed="false">${cartridgeMarkup(c)}</button><span class="cartridge-caption">${c.code}</span></div>`).join("")}</div></section>
 <footer class="app-footer"><div class="footer-controls"><p><span class="keycap">W A S D</span> Player 1 <span class="keycap">SPACE</span> Fire</p><p class="secondary-control"><span class="keycap">← ↑ ↓ →</span> Player 2 <span class="keycap">ENTER</span> Fire</p><p class="secondary-control"><span class="keycap">P</span> Pause</p></div><button class="recreation-note" id="about-open">About</button></footer></div>
 <dialog class="dialog" id="help-dialog" aria-labelledby="help-title"><button class="dialog-close" data-close="help-dialog">Close</button><h2 id="help-title">How to play</h2><p>Drag a cartridge from the shelf into the console slot. You can also click one or press Enter while it’s focused. The orange keys select the games on that cartridge.</p><div class="dialog-controls"><div><strong>PLAYER ONE</strong><p>W A S D to move<br>Space to serve / fire</p></div><div><strong>PLAYER TWO</strong><p>Arrow keys to move<br>Enter to serve / fire</p></div></div><p>Drag either stick on the console to move. The red buttons serve or fire. SPEED, L-TEAM and R-TEAM change the ball or bat settings in the sports games. AUTO serves the ball for you.</p><h3 id="help-game-name">The game</h3><p id="help-game-info">Insert a cartridge to see its controls.</p><h3>Optional contact faults</h3><label><input id="nostalgia-toggle" type="checkbox"/>Nostalgia mode: occasional bad contacts</label><p>When enabled, each cartridge insertion has a 30% chance of bad contacts. Blow into your microphone or use the hold button, then reinsert. Turn this setting off for normal loading.</p><button class="quiet-button" id="try-ritual">Try a contact fault</button></dialog>
 <dialog class="dialog" id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" data-close="about-dialog">Close</button><h2 id="about-title">About the console</h2><p>Inspired by the Hanimex and RPG SD-050 consoles in the Soundic PC-50x family. “625-B” was part of the PAL television label. Each cartridge held an entire game chip, rather than an ordinary ROM.</p><h3>What is implemented</h3><p>Submarine and Super Wipeout run recovered chip circuits in Rust/WebAssembly. Open Chip to inspect the wires or switch to the transistor reference. Both run below hardware speed. Original colour and analog sound are not modeled; Wipeout uses the recovered NTSC chip. The other six cartridges are recreations.</p><p>The chip data was traced by Cole Johnson from Sean Riddle’s die photographs. The console and cartridge labels are newly drawn.</p><h3>Credits</h3><p><a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson’s Submarine study</a> · tracing with Sean Riddle’s die photos · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br><a href="https://nerdstuffbycole.blogspot.com/2019/03/the-ay-3-8606-another-successfully.html" target="_blank" rel="noopener">Cole Johnson’s Wipeout study</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a><br><a href="https://www.pong-story.com/sd050.htm" target="_blank" rel="noopener">David Winter’s Pong-Story</a><br><a href="https://typographic.systems/obel-mono" target="_blank" rel="noopener">Obel Mono by Typographic Systems</a> · SIL OFL<br>Inter by Rasmus Andersson · SIL OFL</p></dialog>
@@ -156,7 +120,7 @@ function syncUI() {
       : "Empty cartridge slot. Select a cartridge from the shelf.",
   );
   slot.innerHTML = active
-    ? `<span class="inserted-cart" style="--cart-color:${cartColor(active)}"><span class="inserted-label"><strong>${active.name}</strong><span>${active.code} / PROGRAMMABLE</span></span></span>`
+    ? `<span class="inserted-cart">${cartridgeMarkup(active)}</span>`
     : '<span class="slot-caption">INSERT CARTRIDGE</span>';
   document
     .querySelectorAll<HTMLButtonElement>(".game-key")
@@ -637,8 +601,7 @@ function openRepair() {
   el(".blow-progress").setAttribute("aria-valuenow", "0");
   el("#blow-status").textContent =
     "Use your microphone, or hold the button for a second.";
-  el("#blow-cart").style.setProperty("--cart-color", cartColor(active));
-  el("#blow-cart").innerHTML = `<span>${active.name}<br>${active.code}</span>`;
+  el("#blow-cart").innerHTML = cartridgeMarkup(active);
   el<HTMLButtonElement>("#hold-blow").disabled = false;
   el<HTMLButtonElement>("#use-mic").disabled = false;
   el<HTMLButtonElement>("#use-mic").hidden = false;
