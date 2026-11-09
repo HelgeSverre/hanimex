@@ -1,3 +1,4 @@
+import type { TuningBand } from "./channel13";
 import { cartridgeLabelUrl } from "./cartridge-art";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -15,6 +16,7 @@ class DeskCableCurve extends THREE.CatmullRomCurve3 {
 }
 export interface DeskState {
   active?: CartridgeId;
+  teletext: boolean;
   mode: number;
   modeCount: number;
   fault: boolean;
@@ -36,6 +38,7 @@ export interface DeskHost {
   stick(n: number, x: number, y: number): void;
   aim(value: { x: number; y: number; fire: boolean } | undefined): void;
   discover(): void;
+  tune(band: TuningBand): void;
   gesture(): void;
   sound(event: "drop" | "explode", strength?: number): void;
 }
@@ -47,6 +50,7 @@ type Hit =
   | { kind: "stick"; index: number }
   | { kind: "cable" }
   | { kind: "screen" }
+  | { kind: "tuner"; band: TuningBand }
   | { kind: "tv" };
 interface Drag {
   pointer: number;
@@ -94,6 +98,7 @@ export class WebGLDesk {
     material: THREE.MeshStandardMaterial;
     index: number;
   }[] = [];
+  private tunerBars: Partial<Record<TuningBand, THREE.Mesh>> = {};
   private levers = new Map<string, THREE.Object3D>();
   private sticks: THREE.Group[] = [];
   private slotMaterial: THREE.MeshStandardMaterial;
@@ -595,7 +600,10 @@ export class WebGLDesk {
     group.add(screen);
     this.pickObject(screen, { kind: "screen" });
     const metal = standard(0x85867a, 0.5, 0.28);
-    for (const y of [5.35, 4.15]) {
+    for (const [band, y] of [
+      ["vhf", 5.35],
+      ["uhf", 4.15],
+    ] as const) {
       const knob = this.cylinder(group, 0.37, 0.28, 4.03, y, 1.3, dark);
       knob.rotation.x = Math.PI / 2;
       const bar = this.mesh(
@@ -610,6 +618,9 @@ export class WebGLDesk {
         0.02,
       );
       bar.rotation.z = -0.6;
+      this.tunerBars[band] = bar;
+      this.pickObject(knob, { kind: "tuner", band });
+      this.pickObject(bar, { kind: "tuner", band });
     }
     this.label(group, "VHF", 0.48, 0.17, 4.03, 5.88, 1.19, false);
     this.label(group, "UHF", 0.48, 0.17, 4.03, 4.68, 1.19, false);
@@ -1291,7 +1302,11 @@ export class WebGLDesk {
         else this.host.insert(h.id);
       } else if (this.host.state().active === h.id) this.host.eject();
     } else if (h.kind === "tv" && !d.moved) this.liftTV();
-    else if (h.kind === "mode" && !d.moved) this.host.mode(h.index);
+    else if (h.kind === "tuner") {
+      this.host.tune(h.band);
+      const bar = this.tunerBars[h.band];
+      if (bar) bar.rotation.z += Math.PI / 6;
+    } else if (h.kind === "mode" && !d.moved) this.host.mode(h.index);
     else if (h.kind === "switch" && !d.moved) this.host.toggle(h.id);
     this.cancelDrag();
     this.renderer.domElement.releasePointerCapture(e.pointerId);
@@ -1524,6 +1539,10 @@ export class WebGLDesk {
     this.previous = now;
     if (!document.hidden) {
       const state = this.host.state();
+      this.screen.material =
+        state.teletext || this.cableConnected
+          ? this.gameScreenMaterial
+          : this.snowMaterial;
       const factor = this.reduceMotion ? 1 : 1 - Math.exp(-dt * 11);
       if (this.cameraGoal) {
         this.camera.position.lerp(this.cameraGoal.position, factor);
@@ -1593,7 +1612,8 @@ export class WebGLDesk {
         this.container.querySelector<HTMLButtonElement>("#scene-repair");
       if (repair) repair.hidden = !state.fault;
       this.buttons.forEach((b) => {
-        const enabled = !!state.active && b.index < state.modeCount;
+        const enabled =
+          (!!state.active || state.teletext) && b.index < state.modeCount;
         b.material.color.setHex(
           !enabled
             ? 0xbf6629
