@@ -45,6 +45,8 @@ interface Drag {
   moved: boolean;
   object?: THREE.Group;
   offset?: THREE.Vector3;
+  velocity?: THREE.Vector3;
+  sampleTime?: number;
   cableStart?: THREE.Vector3;
   cableEnd?: THREE.Vector3;
 }
@@ -111,6 +113,23 @@ export class WebGLDesk {
   });
   private slotPosition = new THREE.Vector3();
   private cameraGesture = false;
+  private consoleBody?: THREE.Group;
+  private fallen = new Map<
+    CartridgeId,
+    { velocity: THREE.Vector3; landed: boolean }
+  >();
+  private exploded = false;
+  private blastAge = 0;
+  private blast?: THREE.Mesh<
+    THREE.IcosahedronGeometry,
+    THREE.MeshBasicMaterial
+  >;
+  private debris = new THREE.Group();
+  private fragments: {
+    mesh: THREE.Mesh;
+    velocity: THREE.Vector3;
+    spin: THREE.Vector3;
+  }[] = [];
   private drag?: Drag;
   private frameId = 0;
   private previous = 0;
@@ -615,12 +634,37 @@ export class WebGLDesk {
         0.005,
       );
     }
+    const stickerTexture = new THREE.TextureLoader().load(
+      "/stickers/helge-was-here.png",
+    );
+    stickerTexture.colorSpace = THREE.SRGBColorSpace;
+    stickerTexture.anisotropy = Math.min(
+      8,
+      this.renderer.capabilities.getMaxAnisotropy(),
+    );
+    const sticker = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.2, (3.2 * 1024) / 1536),
+      new THREE.MeshStandardMaterial({
+        map: stickerTexture,
+        transparent: true,
+        opacity: 0.88,
+        alphaTest: 0.03,
+        roughness: 1,
+        depthWrite: false,
+      }),
+    );
+    sticker.name = "Helge Sverre was here";
+    sticker.position.set(-0.7, 3.1, -4.968);
+    sticker.rotation.set(0, Math.PI, -0.055);
+    group.add(sticker);
     this.batchStatic(group);
     return screen;
   }
   private addConsole() {
     const group = new THREE.Group();
     group.position.set(4, 0.05, 0.6);
+    this.consoleBody = group;
+    this.scene.add(this.debris);
     this.scene.add(group);
     const cream = standard(colors.cream, 0.65),
       charcoal = standard(colors.charcoal, 0.65),
@@ -1054,7 +1098,7 @@ export class WebGLDesk {
     const intersection = this.hit(e);
     if (!intersection) return;
     const hit = this.hitData(intersection.object);
-    if (!hit) return;
+    if (!hit || this.exploded) return;
     this.cameraGoal = undefined;
     this.orbit.enabled = false;
     this.renderer.domElement.setPointerCapture(e.pointerId);
@@ -1077,7 +1121,10 @@ export class WebGLDesk {
     if (hit.kind === "cart") {
       const card = this.cards.get(hit.id);
       if (card) {
+        this.fallen.delete(hit.id);
         this.drag.object = card;
+        this.drag.velocity = new THREE.Vector3();
+        this.drag.sampleTime = performance.now();
         const point = new THREE.Vector3();
         if (this.ray.ray.intersectPlane(this.plane, point))
           this.drag.offset = card.position.clone().sub(point);
@@ -1162,11 +1209,17 @@ export class WebGLDesk {
       const p = new THREE.Vector3();
       if (this.ray.ray.intersectPlane(this.plane, p)) {
         p.add(d.offset ?? new THREE.Vector3());
-        d.object.position.set(
-          THREE.MathUtils.clamp(p.x, -8.6, 8.6),
+        p.set(
+          THREE.MathUtils.clamp(p.x, -16, 16),
           Math.max(0.65, p.y),
-          THREE.MathUtils.clamp(p.z, -3.7, 4.8),
+          THREE.MathUtils.clamp(p.z, -12, 12),
         );
+        const now = performance.now();
+        const elapsed = Math.max(0.008, (now - (d.sampleTime ?? now)) / 1000);
+        const velocity = p.clone().sub(d.object.position).divideScalar(elapsed);
+        d.velocity?.lerp(velocity, 0.65);
+        d.sampleTime = now;
+        d.object.position.copy(p);
         d.object.rotation.set(-0.04, 0, -0.04);
         this.slotMaterial.color.setHex(
           this.nearSlot(d.object) ? colors.orange : colors.well,
@@ -1194,7 +1247,18 @@ export class WebGLDesk {
     )
       this.setCableConnected(true);
     if (h.kind === "cart") {
-      if (!d.moved || (d.object && this.nearSlot(d.object))) {
+      const freshFlick =
+        d.moved &&
+        d.velocity &&
+        performance.now() - (d.sampleTime ?? 0) < 140 &&
+        d.velocity.length() > 5;
+      const offTable =
+        d.object &&
+        (Math.abs(d.object.position.x) > 10 ||
+          Math.abs(d.object.position.z - 0.1) > 6);
+      if (d.object && !this.nearSlot(d.object) && (freshFlick || offTable)) {
+        this.throwCartridge(h.id, d.velocity ?? new THREE.Vector3(0, 0, 12));
+      } else if (!d.moved || (d.object && this.nearSlot(d.object))) {
         if (!d.moved && this.host.state().active === h.id) this.host.eject();
         else this.host.insert(h.id);
       } else if (this.host.state().active === h.id) this.host.eject();
@@ -1218,6 +1282,172 @@ export class WebGLDesk {
     this.orbit.enabled = true;
     this.renderer.domElement.style.cursor = "grab";
     this.slotMaterial.color.setHex(colors.well);
+  }
+  private throwCartridge(id: CartridgeId, velocity: THREE.Vector3) {
+    const card = this.cards.get(id);
+    if (!card || this.exploded) return;
+    if (this.host.state().active === id) this.host.eject();
+    const flight = new THREE.Vector3(velocity.x, 0, velocity.z);
+    if (flight.length() < 1) flight.set(0, 0, 1);
+    flight.setLength(THREE.MathUtils.clamp(flight.length(), 12, 22));
+    flight.y = 4;
+    this.fallen.set(id, { velocity: flight, landed: false });
+    if (this.reduceMotion) {
+      card.position.set(
+        -8 + cartridges.findIndex((c) => c.id === id) * 2.2,
+        -3.14,
+        7.4,
+      );
+      card.rotation.set(-Math.PI / 2, 0, 0);
+      this.fallen.get(id)!.landed = true;
+    }
+  }
+  private explodeConsole() {
+    if (this.exploded) return;
+    this.exploded = true;
+    this.blastAge = 0;
+    if (!this.reduceMotion) {
+      this.blast = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1, 1),
+        new THREE.MeshBasicMaterial({
+          color: 0xffa52f,
+          transparent: true,
+          opacity: 0.85,
+          depthWrite: false,
+        }),
+      );
+      this.blast.position.set(4, 1, 0.6);
+      this.blast.scale.setScalar(0.1);
+      this.debris.add(this.blast);
+    }
+    this.host.eject();
+    this.setCableConnected(false);
+    if (this.consoleBody) this.consoleBody.visible = false;
+    const status = this.container.querySelector("#scene-mischief-status");
+    if (status)
+      status.textContent =
+        "All eight cartridges on the floor. The console exploded. Use Put it back to restore the desk.";
+    const materialColors = [
+      colors.cream,
+      colors.charcoal,
+      colors.orange,
+      colors.rubber,
+    ];
+    for (let i = 0; i < 44; i++) {
+      const angle = i * 2.399963;
+      const mesh = this.mesh(
+        this.debris,
+        0.18 + (i % 4) * 0.12,
+        0.12,
+        0.22 + (i % 3) * 0.1,
+        4 + Math.sin(angle) * 1.8,
+        0.7,
+        0.6 + Math.cos(angle),
+        standard(materialColors[i % 4]),
+        0.025,
+      );
+      const velocity = new THREE.Vector3(
+        Math.sin(angle) * (3 + (i % 5)),
+        5 + (i % 7),
+        Math.cos(angle) * (3 + (i % 4)),
+      );
+      if (this.reduceMotion) {
+        mesh.position.addScaledVector(velocity, 0.6);
+        mesh.position.y =
+          Math.abs(mesh.position.x) < 9.6 &&
+          Math.abs(mesh.position.z - 0.1) < 5.5
+            ? 0.1
+            : -3.2;
+        velocity.set(0, 0, 0);
+      }
+      this.fragments.push({
+        mesh,
+        velocity,
+        spin: new THREE.Vector3(2 + (i % 4), 3, i % 2 ? 4 : -4),
+      });
+    }
+  }
+  private updateMischief(dt: number) {
+    for (const [id, fall] of this.fallen) {
+      if (fall.landed) continue;
+      const card = this.cards.get(id)!;
+      fall.velocity.y -= 15 * dt;
+      card.position.addScaledVector(fall.velocity, dt);
+      card.rotation.x += dt * 4;
+      card.rotation.z += dt * 2;
+      const overTable =
+        Math.abs(card.position.x) < 10.5 &&
+        Math.abs(card.position.z - 0.1) < 6.5;
+      if (overTable && card.position.y < 0.8) {
+        card.position.y = 0.8;
+        fall.velocity.y = 0;
+      }
+      if (!overTable && card.position.y <= -3.14) {
+        card.position.y = -3.14;
+        card.rotation.set(-Math.PI / 2, 0, id.length * 0.7);
+        fall.velocity.set(0, 0, 0);
+        fall.landed = true;
+      }
+    }
+    if (
+      this.fallen.size === cartridges.length &&
+      [...this.fallen.values()].every((f) => f.landed)
+    )
+      this.explodeConsole();
+    if (!this.exploded || this.reduceMotion) return;
+    this.blastAge += dt;
+    if (this.blast) {
+      this.blast.scale.setScalar(0.1 + Math.min(this.blastAge, 0.8) * 4);
+      this.blast.material.opacity = Math.max(
+        0,
+        0.85 * (1 - this.blastAge / 0.8),
+      );
+      this.blast.visible = this.blastAge < 0.8;
+    }
+    for (const fragment of this.fragments) {
+      const { mesh, velocity, spin } = fragment;
+      if (velocity.lengthSq() === 0) continue;
+      velocity.y -= 18 * dt;
+      mesh.position.addScaledVector(velocity, dt);
+      mesh.rotation.x += spin.x * dt;
+      mesh.rotation.y += spin.y * dt;
+      mesh.rotation.z += spin.z * dt;
+      const overTable =
+        Math.abs(mesh.position.x) < 9.6 &&
+        Math.abs(mesh.position.z - 0.1) < 5.5;
+      const floor = overTable ? 0.16 : -3.14;
+      if (mesh.position.y <= floor && velocity.y < 0) {
+        mesh.position.y = floor;
+        velocity.multiplyScalar(0.5);
+        velocity.y = -velocity.y;
+        if (velocity.length() < 1 || this.blastAge > 5) velocity.set(0, 0, 0);
+      }
+    }
+  }
+  restoreDesk() {
+    this.cancelDrag();
+    this.exploded = false;
+    this.fallen.clear();
+    this.fragments.forEach(({ mesh }) => {
+      mesh.geometry.dispose();
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material];
+      materials.forEach((m) => m.dispose());
+    });
+    this.fragments = [];
+    this.blast?.geometry.dispose();
+    this.blast?.material.dispose();
+    this.blast = undefined;
+    this.debris.clear();
+    if (this.consoleBody) this.consoleBody.visible = true;
+    for (const [id, card] of this.cards) {
+      card.position.copy(this.homes.get(id)!);
+      card.rotation.set(-0.14, 0, 0);
+    }
+    this.setCableConnected(true);
+    const status = this.container.querySelector("#scene-mischief-status");
+    if (status) status.textContent = "Desk restored.";
   }
   /** A close TV view makes the existing games usable without changing their render core. */
   setTVView(tv: boolean) {
@@ -1269,6 +1499,10 @@ export class WebGLDesk {
           this.drag.moved
         )
           continue;
+        if (this.fallen.has(id)) {
+          if (state.active === id && !this.exploded) this.fallen.delete(id);
+          else continue;
+        }
         const target =
           state.active === id ? this.slotPosition : this.homes.get(id);
         if (target) card.position.lerp(target, factor);
@@ -1279,6 +1513,10 @@ export class WebGLDesk {
         );
         card.rotation.z = THREE.MathUtils.lerp(card.rotation.z, 0, factor);
       }
+      this.updateMischief(dt);
+      const tidy =
+        this.container.querySelector<HTMLButtonElement>("#scene-tidy");
+      if (tidy) tidy.hidden = this.fallen.size === 0 && !this.exploded;
       const eject =
         this.container.querySelector<HTMLButtonElement>("#scene-eject");
       if (eject) eject.disabled = !state.active;
