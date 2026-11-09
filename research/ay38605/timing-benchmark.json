@@ -1,0 +1,47 @@
+{
+  "node": "v26.9.0",
+  "arch": "arm64",
+  "nominalClockHz": 3579545,
+  "warmupClocks": 100000,
+  "measuredClocks": 500000,
+  "engines": [
+    {
+      "file": "web/src/chip/ay38605-reference.wasm",
+      "sha256": "a3839a89a5d6aca340702a6c7f79c6c36b22430f4ce1340970dafba92252b049",
+      "samplesClocksPerSecond": [
+        66885.90006170684,
+        67994.13273787423,
+        65399.007900738674,
+        63089.79030701667
+      ],
+      "medianClocksPerSecond": 66142.45398122276,
+      "hardwareSpeedPercent": 1.8477894252264675
+    },
+    {
+      "file": "work/propagation-baseline.wasm",
+      "sha256": "a347779618732a5c78a080080328623fd0f5905301e01dc33853d91703a4aac6",
+      "samplesClocksPerSecond": [
+        685657.5524493738,
+        656857.6648964612,
+        701662.6774219867,
+        773729.111248313
+      ],
+      "medianClocksPerSecond": 693660.1149356803,
+      "hardwareSpeedPercent": 19.378443766894403
+    },
+    {
+      "file": "web/src/chip/ay38605.wasm",
+      "sha256": "22d09fcad0adf82e00853cc70147abe1a462758cc7f499200b7d2a09cadf8ad0",
+      "samplesClocksPerSecond": [
+        748539.4595375643,
+        633748.5694520285,
+        667964.3352306231,
+        694846.5144848553
+      ],
+      "medianClocksPerSecond": 681405.4248577392,
+      "hardwareSpeedPercent": 19.036090476799124
+    }
+  ],
+  "speedup": 10.302088656268847,
+  "speedupOverBaseline": 0.9823332928993944
+}

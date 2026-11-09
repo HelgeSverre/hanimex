@@ -6,6 +6,15 @@ if (!["ay38605", "ay38606"].includes(id)) throw new Error("Unknown chip");
 const baseline = process.argv
   .find((arg) => arg.startsWith("--baseline="))
   ?.slice("--baseline=".length);
+const measuredClocks = Number(
+  process.argv.find((arg) => arg.startsWith("--clocks="))?.slice(9) ?? 100000,
+);
+if (
+  !Number.isSafeInteger(measuredClocks) ||
+  measuredClocks < 1 ||
+  measuredClocks > 10000000
+)
+  throw new Error("Measured clocks must be an integer from 1 to 10000000");
 const files = [
   `web/src/chip/${id}-reference.wasm`,
   ...(baseline ? [baseline] : []),
@@ -24,8 +33,8 @@ for (let round = 0; round < 4; round++) {
     if (e.chip_init() || e.chip_run(100000))
       throw new Error("chip warmup failed");
     const start = performance.now();
-    if (e.chip_run(100000)) throw new Error("chip benchmark failed");
-    samples[which].push(100000 / ((performance.now() - start) / 1000));
+    if (e.chip_run(measuredClocks)) throw new Error("chip benchmark failed");
+    samples[which].push(measuredClocks / ((performance.now() - start) / 1000));
   }
 }
 const median = (a) => {
@@ -41,7 +50,7 @@ console.log(
       arch: process.arch,
       nominalClockHz: 3579545,
       warmupClocks: 100000,
-      measuredClocks: 100000,
+      measuredClocks,
       engines: files.map((file, i) => ({
         file,
         sha256: createHash("sha256").update(binaries[i]).digest("hex"),

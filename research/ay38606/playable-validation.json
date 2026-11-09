@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-09",
+  "halfClockEdges": 200000,
+  "latchCombinations": 572608,
+  "longRun": {
+    "modes": 10,
+    "requestedFieldsByMode": [
+      128,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      128,
+      8
+    ],
+    "nodeAndRasterMatch": true
+  },
+  "gameplayChecks": [
+    "serve",
+    "ball motion",
+    "brick removal",
+    "paddle movement",
+    "NTSC field timing",
+    "reset"
+  ],
+  "referenceSourceUnchanged": true
+}

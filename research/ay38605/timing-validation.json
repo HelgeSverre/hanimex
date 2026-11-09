@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-09",
+  "longRun": {
+    "modes": 6,
+    "fieldsPerMode": 256,
+    "clocks": 109264896,
+    "seconds": 610.834688792,
+    "passed": true
+  },
+  "halfClockEdges": 200000,
+  "latchCombinations": 303328,
+  "referenceSourceUnchanged": true
+}

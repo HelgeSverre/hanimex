@@ -24,3 +24,5 @@ Pixels come from the video output pins. There are no host-side balls, bricks, co
 This is the recovered NTSC variant, not a verified PAL Hanimex cartridge. Paddle charging is a line-based approximation of the external analog circuit. Video is monochrome; colour decoding and analog sound remain unfinished. Reference agreement validates the optimization, not the original tracing or physical-console behavior. Both engines run below hardware speed.
 
 See [provenance](PROVENANCE.md), [benchmark samples](timing-benchmark.json), and the preserved [support code](support.js).
+
+The recorded benchmark measured 859,094 clocks/s, or 24.00% of nominal speed and 10.89× the transistor reference, on Node 26.9.0 / arm64. Browser throughput includes scheduling and rendering. [Validation results](playable-validation.json) record the completed checks.
