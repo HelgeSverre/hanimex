@@ -2,6 +2,7 @@ import { names } from "./netlist";
 import type { ChipFrame } from "./runtime";
 type Snapshot = Extract<ChipFrame, { kind: "frame" }>;
 interface Callbacks {
+  engine: "compiled" | "reference";
   pause(paused: boolean): void;
   step(clocks: number): void;
 }
@@ -38,8 +39,22 @@ export class ChipInspector {
     this.dialog.setAttribute("aria-labelledby", "chip-inspector-title");
     this.dialog.innerHTML = `<header><div><span class="chip-part">PC-505 / SUBMARINE</span><h2 id="chip-inspector-title">AY-3-8605</h2></div><button data-action="close">Close cartridge</button></header>
     <div class="chip-inspector-body"><section class="chip-die"><div class="chip-die-tools"><button data-action="out" aria-label="Zoom out">−</button><button data-action="in" aria-label="Zoom in">+</button><button data-action="fit">Fit</button><span>Drag to pan · click a wire</span></div><canvas class="die-map" width="1000" height="1000" tabindex="0" aria-label="Chip layout. Select a named signal using the signal menu for its current value."></canvas></section>
-    <section class="chip-probes"><canvas class="chip-video" width="640" height="480" aria-label="Live output from the chip"></canvas><output class="chip-time"></output><div class="chip-step"><button data-action="pause">Pause chip</button><button data-action="edge" disabled>½ clock</button><button data-action="clock" disabled>1 clock</button><button data-action="line" disabled>1 line</button></div><label>Signal<select class="chip-signal"></select></label><output class="chip-value"></output><dl class="chip-pins"></dl><p class="chip-caption">Lit wires are high. Running view samples the circuit; pause and step to inspect changes.</p></section></div>
+    <section class="chip-probes"><nav class="chip-engines" aria-label="Simulation engine"></nav><p class="chip-caption">Switching engines restarts the cartridge.</p><canvas class="chip-video" width="640" height="480" aria-label="Live output from the chip"></canvas><output class="chip-time" aria-live="off"></output><div class="chip-step"><button data-action="pause">Pause chip</button><button data-action="edge" disabled>½ clock</button><button data-action="clock" disabled>1 clock</button><button data-action="line" disabled>1 line</button></div><label>Signal<select class="chip-signal"></select></label><output class="chip-value"></output><dl class="chip-pins"></dl><p class="chip-caption">Lit wires are high. Running view samples the circuit; pause and step to inspect changes.</p></section></div>
     <footer>1,524 nodes · 2,789 transistor entries · <a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson / Sean Riddle</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></footer>`;
+    const engines = this.dialog.querySelector(".chip-engines")!;
+    for (const [value, label] of [
+      ["compiled", "Compiled logic"],
+      ["reference", "Transistor reference"],
+    ] as const) {
+      const link = document.createElement("a"),
+        url = new URL(location.href);
+      url.searchParams.set("engine", value);
+      url.searchParams.set("inspect", "1");
+      link.href = url.href;
+      link.textContent = label;
+      if (value === callbacks.engine) link.setAttribute("aria-current", "page");
+      engines.append(link);
+    }
     document.body.append(this.dialog);
     this.canvas = this.dialog.querySelector(".die-map")!;
     const context = this.canvas.getContext("2d");
@@ -83,7 +98,7 @@ export class ChipInspector {
       this.updateButtons();
     });
     this.dialog.addEventListener("keydown", (event) => {
-      if ((event.target as HTMLElement).closest("button,select"))
+      if ((event.target as HTMLElement).closest("button,select,a"))
         event.stopPropagation();
     });
     this.canvas.addEventListener("pointerdown", (event) => {
@@ -230,7 +245,7 @@ export class ChipInspector {
       `${label} · node ${this.selected} · ${state ? (state[this.selected] ? "HIGH" : "LOW") : "—"}`;
     if (!this.latest) return;
     this.dialog.querySelector(".chip-time")!.textContent =
-      `${this.latest.clocks.toLocaleString()} clocks · ${(this.latest.clocks / 3579545).toFixed(4)} s simulated · field ${this.latest.fields}`;
+      `${(this.latest.speed * 100).toFixed(1)}% speed · ${this.latest.clocks.toLocaleString()} clocks · ${(this.latest.clocks / 3579545).toFixed(4)} s simulated · field ${this.latest.fields}`;
     const probes: [string, number][] = [
       ["Clock", names.clk],
       ["Sync", names.pin2Sync],

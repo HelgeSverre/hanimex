@@ -6,17 +6,24 @@ const modules = await Promise.all(
   ),
 );
 const long = process.argv.includes("--long");
+const selectedMode = process.argv.find((arg) => arg.startsWith("--mode="));
+const modeNumber = selectedMode ? Number(selectedMode.slice(7)) : undefined;
+if (modeNumber !== undefined)
+  assert.ok(Number.isInteger(modeNumber) && modeNumber >= 1 && modeNumber <= 6);
 const start = performance.now();
 let checkpoints = 0,
   clocks = 0;
-for (let mode = 1; mode <= 6; mode++) {
+for (const mode of modeNumber === undefined
+  ? [1, 2, 3, 4, 5, 6]
+  : [modeNumber]) {
   const engines = await Promise.all(
     modules.map(
       async (module) => (await WebAssembly.instantiate(module)).exports,
     ),
   );
   engines.forEach((e) => assert.equal(e.chip_init(), 0));
-  const target = 71_136 * (long && mode === 1 ? 256 : 4);
+  const target =
+    71_136 * (long && (mode === 1 || modeNumber !== undefined) ? 256 : 4);
   for (let at = 0; at < target; at += 2048) {
     if (at % (2048 * 16) === 0) {
       const phase = Math.floor(at / (2048 * 16));

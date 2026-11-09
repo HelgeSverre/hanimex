@@ -2,6 +2,8 @@
 
 Branch: `submarine-sequential-blocks`, based on `submarine-gate-logic`.
 
+The next version compiles game-dependent cells and propagation banks; see [LATCH-BANKS.md](LATCH-BANKS.md). The measurements here describe the earlier timing-block version.
+
 The horizontal timing circuit now runs as one **86-node sequential block**.
 Its 456 states cover both half-clock phases of the chip's 228-clock line.
 Each transition writes actual node values back into the same state array used

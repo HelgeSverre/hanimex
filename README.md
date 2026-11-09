@@ -1,6 +1,6 @@
 # Hanimex — Submarine chip experiment
 
-Branch: `submarine-sequential-blocks`. Submarine uses an 86-node horizontal timing state machine alongside the compiled gate solver. The transistor reference and live chip inspector remain available. **Full speed is not reached.** [Implementation and validation](research/ay38605/SEQUENTIAL-BLOCKS.md).
+Branch: `submarine-latch-banks`. Submarine uses compiled timing and game-dependent latch banks, with a selectable transistor reference and live chip inspector. **Full speed is not reached.** [Implementation and validation](research/ay38605/LATCH-BANKS.md).
 
 [Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
 
@@ -12,7 +12,7 @@ Eight swappable cartridges, a CRT display, keyboard and touch controls, and opti
 
 **The other seven cartridges are behavioral recreations, not cycle-accurate emulators.** Some selections share a simplified game model. Original-chip timing, graphics, audio, and every variation remain unverified.
 
-Insert Submarine and choose **Open cartridge** to inspect its live silicon layout. Select a signal, pan/zoom, pause, or step the circuit by a clock edge, clock, or scanline. The viewer samples actual states from the same chip instance driving the TV.
+Insert Submarine and choose **Chip** in the header to inspect its live silicon layout. Select a signal, pan/zoom, pause, or step the circuit by a clock edge, clock, or scanline. The viewer samples actual states from the same chip instance driving the TV.
 
 ## Run
 

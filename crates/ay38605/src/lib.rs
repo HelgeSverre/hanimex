@@ -5,6 +5,9 @@ mod compiled;
 mod counter;
 #[allow(dead_code)] // Preserve all recovered node names for probes.
 mod data;
+#[cfg(test)]
+mod latch_tests;
+mod latches;
 pub mod reference;
 #[cfg(not(feature = "reference-engine"))]
 pub use GateCircuit as Circuit;
@@ -82,12 +85,12 @@ impl GateCircuit {
             self.ground_count[a] = self.ground_count[a].wrapping_add(delta);
         } else if b == VCC {
             self.power_count[a] = self.power_count[a].wrapping_add(delta);
-        } else {
+        } else if latches::SOURCE[a] == 65535 {
             self.bridge_count[a] = self.bridge_count[a].wrapping_add(delta);
             self.bridge_count[b] = self.bridge_count[b].wrapping_add(delta);
         }
     }
-    #[inline(always)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
     fn compiled_recalc(&mut self, n: usize) {
         debug_assert!(
             !(self.counter_frozen && counter::IS_NODE[n]),
@@ -98,6 +101,19 @@ impl GateCircuit {
             self.metrics[0] += 1;
         }
         let other = compiled::PEERS[n];
+        let source = latches::SOURCE[n];
+        if source != 65535 {
+            let open = self.state[latches::CLOCK[n]] != 0;
+            if n != source && !open {
+                return;
+            }
+            let value = u8::from(self.ground_count[source] == 0);
+            self.update_node(n, value);
+            if open {
+                self.update_node(other, value);
+            }
+            return;
+        }
         if other == 65535 {
             let (gates, base, size) = compiled::BLOCKS[compiled::NODE_BLOCK[n]];
             let mut pattern = 0;
@@ -189,9 +205,16 @@ impl GateCircuit {
         self.queued[n] = true;
         self.next.push(n);
     }
-    fn settle(&mut self, mut list: Vec<usize>) -> Result<(), UnstableCircuit> {
+    fn settle(&mut self, list: Vec<usize>) -> Result<(), UnstableCircuit> {
+        self.settle_with_limit(list, 100)
+    }
+    fn settle_with_limit(
+        &mut self,
+        mut list: Vec<usize>,
+        limit: usize,
+    ) -> Result<(), UnstableCircuit> {
         self.next.clear();
-        for _ in 0..100 {
+        for _ in 0..limit {
             if list.is_empty() {
                 self.work = list;
                 return Ok(());
@@ -234,9 +257,11 @@ impl GateCircuit {
                 self.power_count[node] = self.power_count[node].wrapping_add_signed(power);
                 self.bridge_count[node] = self.bridge_count[node].wrapping_add_signed(bridge);
             }
-            work.extend_from_slice(counter::QUEUES[row]);
             self.counter_frozen = true;
-            let result = self.settle(work);
+            self.next.clear();
+            counter::BANKS[row](self);
+            std::mem::swap(&mut work, &mut self.next);
+            let result = self.settle_with_limit(work, 99);
             self.counter_frozen = false;
             self.counter_cursor = result.as_ref().ok().map(|()| counter::NEXT[row]);
             result

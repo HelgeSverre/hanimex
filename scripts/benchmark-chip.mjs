@@ -18,7 +18,7 @@ for (let round = 0; round < 4; round++) {
   if (round % 2) order.reverse();
   for (const which of order) {
     const e = (await WebAssembly.instantiate(modules[which])).exports;
-    if (e.chip_init() || e.chip_run(10000))
+    if (e.chip_init() || e.chip_run(100000))
       throw new Error("chip warmup failed");
     const start = performance.now();
     if (e.chip_run(100000)) throw new Error("chip benchmark failed");
@@ -37,6 +37,8 @@ console.log(
       node: process.version,
       arch: process.arch,
       nominalClockHz: 3579545,
+      warmupClocks: 100000,
+      measuredClocks: 100000,
       engines: files.map((file, i) => ({
         file,
         sha256: createHash("sha256").update(binaries[i]).digest("hex"),
@@ -45,7 +47,7 @@ console.log(
         hardwareSpeedPercent: (rates[i] / 3579545) * 100,
       })),
       speedup: last / rates[0],
-      ...(baseline ? { speedupOverGateBaseline: last / rates[1] } : {}),
+      ...(baseline ? { speedupOverBaseline: last / rates[1] } : {}),
     },
     null,
     2,

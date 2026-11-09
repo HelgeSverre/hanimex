@@ -1,6 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { copyFileSync, chmodSync } from "node:fs";
-for (const script of ["build-netlist", "build-gates", "build-chip-layout"])
+for (const script of [
+  "build-netlist",
+  "build-gates",
+  "build-latches",
+  "build-chip-layout",
+])
   execFileSync(process.execPath, [`scripts/${script}.mjs`], {
     stdio: "inherit",
   });
