@@ -11,3 +11,5 @@
 .env*
 
 /.impeccable/review/
+
+/crates/*/target/

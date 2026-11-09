@@ -25,6 +25,8 @@ export const emptyControls = (): Controls => ({
 });
 export type SoundEvent = "bat" | "wall" | "score" | "fire" | "hit";
 export interface Game {
+  dispose?(): void;
+  setRunning?(running: boolean): void;
   update(dt: number, input: Controls): void;
   draw(ctx: CanvasRenderingContext2D): void;
   scores: number[];

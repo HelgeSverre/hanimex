@@ -1,4 +1,6 @@
-# Hanimex
+# Hanimex — Submarine chip experiment
+
+Branch: `submarine-netlist`. Submarine runs the recovered transistor netlist in Rust/WebAssembly. It currently runs well below normal speed, with diagnostic monochrome video and no analog audio. [Implementation and accuracy limits](research/ay38605/EMULATOR.md).
 
 [Play](https://hanimex.vercel.app) · [2D view](https://hanimex.vercel.app/?view=2d)
 
@@ -8,7 +10,7 @@ A browser recreation of the Hanimex / Soundic PC-50x console family. Drag a cart
 
 Eight swappable cartridges, a CRT display, keyboard and touch controls, and optional contact failures. Blow into the microphone or hold a button to clean the contacts. Microphone audio stays in the browser; it is not recorded or uploaded.
 
-**The games are behavioral recreations, not cycle-accurate emulators.** Some selections share a simplified game model. Original-chip timing, graphics, audio, and every variation remain unverified.
+**The other seven cartridges are behavioral recreations, not cycle-accurate emulators.** Some selections share a simplified game model. Original-chip timing, graphics, audio, and every variation remain unverified.
 
 ## Run
 
@@ -47,7 +49,7 @@ The “625-B RPG” photographs identify an RPG SD-050, a relative of the Hanime
 - [Recovered AY-3-8605 Submarine data](research/ay38605/README.md)
 - [Interface-writing research](research/WRITING.md)
 
-The recovered chip data retains its original attribution and license notices. Manufacturer PDFs are kept locally; their source URLs are recorded in the research. The webapp does not execute the transistor netlist yet.
+The recovered chip data retains its original attribution and license notices. Manufacturer PDFs are kept locally; their source URLs are recorded in the research. This branch executes the Submarine transistor netlist; see the implementation notes above.
 
 An earlier experimental Rust submarine model is in `src/`. Run it with `cargo run -- play`; check it with `cargo test` and `cargo clippy --all-targets -- -D warnings`. It follows an early GI system description that differs from the later AY-3-8605 datasheet; see the provenance notes.
 

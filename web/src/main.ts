@@ -1,3 +1,4 @@
+import { SubmarineChipGame } from "./chip/game";
 import "./style.css";
 import { cartridges, cartridgeById, type Cartridge } from "./catalog";
 import { createGame, emptyControls, H, W, type Game } from "./games";
@@ -72,7 +73,7 @@ root.innerHTML = `<a class="skip-link" href="#screen">Skip to game screen</a><di
 <section class="library" aria-labelledby="library-title"><div class="library-heading"><h2 id="library-title">Cartridges</h2></div><div class="cartridge-shelf">${cartridges.map((c) => `<div class="cartridge-wrap" data-cartridge="${c.id}"><button class="cartridge" data-id="${c.id}" style="--cart-color:${cartColor(c)}" aria-label="Insert ${c.short}, ${c.code}" aria-pressed="false">${cartridgeMarkup(c)}</button><span class="cartridge-caption">${c.code}</span></div>`).join("")}</div></section>
 <footer class="app-footer"><div class="footer-controls"><p><span class="keycap">W A S D</span> Player 1 <span class="keycap">SPACE</span> Fire</p><p class="secondary-control"><span class="keycap">← ↑ ↓ →</span> Player 2 <span class="keycap">ENTER</span> Fire</p><p class="secondary-control"><span class="keycap">P</span> Pause</p></div><button class="recreation-note" id="about-open">Browser recreation · About</button></footer></div>
 <dialog class="dialog" id="help-dialog" aria-labelledby="help-title"><button class="dialog-close" data-close="help-dialog">Close</button><h2 id="help-title">How to play</h2><p>Drag a cartridge from the shelf into the console slot. You can also click one or press Enter while it’s focused. The orange keys select the games on that cartridge.</p><div class="dialog-controls"><div><strong>PLAYER ONE</strong><p>W A S D to move<br>Space to serve / fire</p></div><div><strong>PLAYER TWO</strong><p>Arrow keys to move<br>Enter to serve / fire</p></div></div><p>Drag either stick on the console to move. The red buttons serve or fire. SPEED, L-TEAM and R-TEAM change the ball or bat settings in the sports games. AUTO serves the ball for you.</p><h3 id="help-game-name">The game</h3><p id="help-game-info">Insert a cartridge to see its controls.</p><h3>Optional contact faults</h3><label><input id="nostalgia-toggle" type="checkbox"/>Nostalgia mode: occasional bad contacts</label><p>When enabled, cartridges occasionally fail to load. Blow into your microphone or use the hold button, then reinsert. Turn this setting off for normal loading.</p><button class="quiet-button" id="try-ritual">Try a contact fault</button></dialog>
-<dialog class="dialog" id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" data-close="about-dialog">Close</button><h2 id="about-title">About this recreation</h2><p>Inspired by the Hanimex and RPG SD-050 consoles in the Soundic PC-50x family. “625-B” was part of the PAL television label. Each cartridge held an entire game chip, rather than an ordinary ROM.</p><h3>What is implemented</h3><p>Browser recreations, not cycle-accurate emulation. Some selections share a simplified game model. The console and cartridge labels are newly drawn.</p><p>The project includes research, a Rust prototype, and recovered Submarine chip data traced by Cole Johnson from Sean Riddle’s die photographs.</p><h3>Credits</h3><p><a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson’s Submarine study</a><br><a href="https://www.pong-story.com/sd050.htm" target="_blank" rel="noopener">David Winter’s Pong-Story</a><br><a href="https://typographic.systems/obel-mono" target="_blank" rel="noopener">Obel Mono by Typographic Systems</a> · SIL OFL<br>Inter by Rasmus Andersson · SIL OFL</p></dialog>
+<dialog class="dialog" id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" data-close="about-dialog">Close</button><h2 id="about-title">About this recreation</h2><p>Inspired by the Hanimex and RPG SD-050 consoles in the Soundic PC-50x family. “625-B” was part of the PAL television label. Each cartridge held an entire game chip, rather than an ordinary ROM.</p><h3>What is implemented</h3><p>Submarine runs the recovered AY-3-8605 transistor netlist in Rust/WebAssembly. It is experimental and runs below hardware speed; colour decoding and analog sound are not yet modeled. Other cartridges remain behavioral recreations. The console and cartridge labels are newly drawn.</p><p>The project includes research, a Rust prototype, and recovered Submarine chip data traced by Cole Johnson from Sean Riddle’s die photographs.</p><h3>Credits</h3><p><a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson’s Submarine study</a> · tracing with Sean Riddle’s die photos · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br><a href="https://www.pong-story.com/sd050.htm" target="_blank" rel="noopener">David Winter’s Pong-Story</a><br><a href="https://typographic.systems/obel-mono" target="_blank" rel="noopener">Obel Mono by Typographic Systems</a> · SIL OFL<br>Inter by Rasmus Andersson · SIL OFL</p></dialog>
 <dialog class="dialog" id="blow-dialog" aria-labelledby="blow-title"><button class="dialog-close" data-close="blow-dialog">Close</button><h2 id="blow-title">Cartridge not detected</h2><p>Clean the contacts, then reinsert the cartridge.</p><div class="blow-cartridge" id="blow-cart"><span>SUBMARINE<br>PC-505</span></div><div class="blow-progress" role="progressbar" aria-label="Cartridge cleaning" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="blow-meter"></span></div><p id="blow-status" class="blow-status" role="status" aria-live="polite">Use your microphone, or hold the button for a second.</p><div class="blow-actions"><button class="primary-button" id="use-mic">Use microphone</button><button class="quiet-button hold-blow" id="hold-blow">Hold to blow</button><button class="primary-button" id="reinsert" hidden>Reinsert cartridge</button></div><p class="tiny-note">Microphone audio is measured only in this tab. Nothing is recorded or uploaded.</p></dialog>`;
 function el<T extends HTMLElement = HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -201,10 +202,15 @@ function syncUI() {
   el("#audio-toggle").innerHTML =
     `${icon(audio.enabled ? "sound" : "muted")}<span class="button-label">Sound ${audio.enabled ? "on" : "off"}</span>`;
 }
+function replaceGame(id: Cartridge["id"], mode: number) {
+  game?.dispose?.();
+  game =
+    id === "submarine" ? new SubmarineChipGame(mode) : createGame(id, mode);
+}
 function insert(cartridge: Cartridge, clean = false) {
   active = cartridge;
   mode = cartridge.id === "sports" ? 2 : cartridge.id === "submarine" ? 3 : 0;
-  game = createGame(cartridge.id, mode);
+  replaceGame(cartridge.id, mode);
   contactFault = !clean && nostalgia && Math.random() < 0.22;
   bootTime = 0.3;
   paused = false;
@@ -226,6 +232,7 @@ function eject() {
   audio.play("eject");
   const name = active.short;
   active = undefined;
+  game?.dispose?.();
   game = undefined;
   contactFault = false;
   clearInput();
@@ -235,7 +242,7 @@ function eject() {
 function setMode(n: number) {
   if (!active || n >= active.modes.length) return;
   mode = n;
-  game = createGame(active.id, mode);
+  replaceGame(active.id, mode);
   clearInput();
   audio.play("switch");
   syncUI();
@@ -260,7 +267,7 @@ slot.addEventListener("click", () => {
 el("#power").addEventListener("click", () => {
   powered = !powered;
   clearInput();
-  if (powered && active) game = createGame(active.id, mode);
+  if (powered && active) replaceGame(active.id, mode);
   audio.play("switch");
   syncUI();
 });
@@ -277,7 +284,7 @@ for (const [id, property] of [
   });
 }
 el("#reset").addEventListener("click", () => {
-  if (active) game = createGame(active.id, mode);
+  if (active) replaceGame(active.id, mode);
   paused = false;
   clearInput();
   syncPause();
@@ -789,6 +796,9 @@ function frame(now: number) {
     fire: keys.has("Enter") || stickInputs[1].fire,
   };
   controls.aim = aim;
+  game?.setRunning?.(
+    !!(powered && active && !contactFault && !blocked && bootTime <= 0),
+  );
   if (powered && active && game && !contactFault) {
     if (bootTime > 0) {
       bootTime -= dt;
@@ -957,3 +967,5 @@ if (new URLSearchParams(location.search).get("view") === "2d") {
   link.style.textDecoration = "none";
   el(".top-actions").prepend(link);
 }
+
+window.addEventListener("pagehide", () => game?.setRunning?.(false));

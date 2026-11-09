@@ -16,3 +16,6 @@ bun.lock
 .DS_Store
 # Local tooling creates numeric-named Unix sockets.
 [0-9]*
+
+/crates/
+/scripts/
