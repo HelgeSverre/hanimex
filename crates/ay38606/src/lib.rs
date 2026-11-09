@@ -34,6 +34,8 @@ pub struct GateCircuit {
     pub visits: [u64; NODE_COUNT],
     #[cfg(feature = "profile")]
     pub waves: std::collections::HashMap<Vec<usize>, u64>,
+    /// Exposed wires are current. Call `materialize_counter` before reading
+    /// hidden horizontal wires after batched execution.
     pub state: [u8; NODE_COUNT],
     pulls: [i8; NODE_COUNT],
     queued: [u32; NODE_COUNT],
@@ -247,12 +249,27 @@ impl GateCircuit {
         }
         Err(UnstableCircuit)
     }
+    /// Expand the phase register into every recovered wire and connection count.
+    pub fn materialize_counter(&mut self) {
+        if let Some(row) = self.counter_cursor {
+            for (&n, &packed) in counter::INTERNAL.iter().zip(counter::RESTORE[row]) {
+                self.state[n] = (packed & 1) as u8;
+                self.ground_count[n] = (packed >> 1) & 31;
+                self.power_count[n] = (packed >> 6) & 31;
+                self.bridge_count[n] = packed >> 11;
+            }
+        }
+    }
     pub fn drive(&mut self, n: usize, high: bool) -> Result<(), UnstableCircuit> {
-        // External writes invalidate the cursor. Re-entry checks the entire
-        // 111-node vector plus external clock, not just the nine-bit table index.
+        // Only upstream writes invalidate the phase register. Internal wire
+        // values are reconstructed before falling back to the gate solver.
+        let preserve = self.counter_cursor.is_some() && !counter::INVALIDATES[n];
         let target = if n == CLK && high != (self.state[CLK] != 0) {
             self.counter_cursor.or_else(|| counter::find(&self.state))
+        } else if preserve {
+            None
         } else {
+            self.materialize_counter();
             self.counter_cursor = None;
             None
         };
@@ -260,8 +277,8 @@ impl GateCircuit {
         let mut work = std::mem::take(&mut self.work);
         work.clear();
         if let Some(row) = target {
-            // Preserve canonical node bytes and connection counts so both the
-            // inspector and an immediate return to the gate solver see reality.
+            // Update exposed wires immediately; hidden wires remain encoded
+            // by the phase register until observation or fallback.
             self.state[CLK] = u8::from(high);
             for &(node, value) in counter::CHANGES[row] {
                 self.state[node] = value;
@@ -282,11 +299,22 @@ impl GateCircuit {
             std::mem::swap(&mut work, &mut self.next);
             let result = self.settle_with_limit(work, 99);
             self.counter_frozen = false;
-            self.counter_cursor = result.as_ref().ok().map(|()| counter::NEXT[row]);
+            self.counter_cursor = Some(counter::NEXT[row]);
+            if result.is_err() {
+                self.materialize_counter();
+                self.counter_cursor = None;
+            }
             result
         } else {
             work.push(n);
-            self.settle(work)
+            self.counter_frozen = preserve;
+            let result = self.settle(work);
+            self.counter_frozen = false;
+            if result.is_err() {
+                self.materialize_counter();
+                self.counter_cursor = None;
+            }
+            result
         }
     }
 }
@@ -496,10 +524,18 @@ pub extern "C" fn chip_raster() -> *const u8 {
 }
 #[unsafe(no_mangle)]
 pub extern "C" fn chip_nodes() -> *const u8 {
-    INSTANCE.with(|c| {
+    #[cfg(feature = "reference-engine")]
+    return INSTANCE.with(|c| {
         c.borrow()
             .as_ref()
             .map_or(std::ptr::null(), |c| c.circuit.state.as_ptr())
+    });
+    #[cfg(not(feature = "reference-engine"))]
+    INSTANCE.with(|c| {
+        c.borrow_mut().as_mut().map_or(std::ptr::null(), |c| {
+            c.circuit.materialize_counter();
+            c.circuit.state.as_ptr()
+        })
     })
 }
 #[unsafe(no_mangle)]
@@ -528,9 +564,12 @@ pub extern "C" fn chip_reset() -> u32 {
 #[unsafe(no_mangle)]
 pub extern "C" fn chip_half_step() -> u32 {
     INSTANCE.with(|c| {
-        c.borrow_mut()
-            .as_mut()
-            .map_or(1, |c| u32::from(c.half_step().is_err()))
+        c.borrow_mut().as_mut().map_or(1, |c| {
+            let result = c.half_step();
+            #[cfg(not(feature = "reference-engine"))]
+            c.circuit.materialize_counter();
+            u32::from(result.is_err())
+        })
     })
 }
 #[cfg(test)]
@@ -545,6 +584,31 @@ mod tests {
     ) -> Result<(), UnstableCircuit> {
         compiled.drive(node, high)?;
         reference.drive(node, high)?;
+        compiled.materialize_counter();
+        // Independently count conducting devices after observation. Fallback
+        // needs these counts as well as the visible bits to be exact.
+        let mut ground = [0_u16; NODE_COUNT];
+        let mut power = [0_u16; NODE_COUNT];
+        let mut bridge = [0_u16; NODE_COUNT];
+        for &(g, mut a, mut b) in TRANSISTORS {
+            if reference.state[g] == 0 {
+                continue;
+            }
+            if a == GND || a == VCC {
+                std::mem::swap(&mut a, &mut b);
+            }
+            if b == GND {
+                ground[a] += 1;
+            } else if b == VCC {
+                power[a] += 1;
+            } else if latches::SOURCE[a] == 65535 {
+                bridge[a] += 1;
+                bridge[b] += 1;
+            }
+        }
+        assert_eq!(compiled.ground_count, ground);
+        assert_eq!(compiled.power_count, power);
+        assert_eq!(compiled.bridge_count, bridge);
         assert_eq!(
             compiled.state, reference.state,
             "after driving node {node} to {high}"
@@ -617,7 +681,7 @@ mod tests {
                 compiled.queue_generation = u32::MAX;
             }
             // Include the all-keys-down disable state, then re-enter the normal
-            // orbit. External writes invalidate the cached transition index.
+            // orbit. Upstream writes invalidate the cached transition index.
             if edge % 997 == 0 {
                 for (bit, node) in [PIN_S1, PIN_S2, PIN_S3, PIN_LEFT_SERVE, PIN_RIGHT_SERVE]
                     .into_iter()

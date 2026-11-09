@@ -6,7 +6,9 @@ The shipped change replaces the worker's repeated zero-delay timers with Message
 
 The [HTML timer algorithm](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timer-initialisation-steps) imposes a minimum delay on sufficiently nested short timers. That delay consumed execution time between slices. Message tasks avoid that timer nesting while retaining a task boundary for input and pause commands.
 
-**The four playable Wasm binaries are unchanged.** No simulated clocks, state transitions or inspector nodes are omitted. None of the experimental circuit optimizations described below ships.
+This page records the scheduler change at `4ecafc4`. Subsequent core changes are documented in [Register-backed timing blocks](REGISTERS.md).
+
+**The four playable Wasm binaries were unchanged by the scheduler change.** No simulated clocks, state transitions or inspector nodes are omitted. None of the experimental circuit optimizations described below ships.
 
 ## Measurements
 

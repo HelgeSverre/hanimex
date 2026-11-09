@@ -19,6 +19,8 @@ The other six playable cartridges are behavioral recreations. Some selections sh
 
 Click or drag a cartridge to insert it. The orange keys select a game. P pauses; reset restarts. On-screen sticks and buttons support touch. Wipeout uses W/S and Up/Down for its bats; SPEED changes ball speed, L-TEAM changes bat size, and R-TEAM changes ball size.
 
+Pull the TV cable far enough to unplug it and the screen turns to snow. Drag the plug back to its socket or use **Reconnect cable**. With the 3D canvas focused, C toggles the connection.
+
 Contact failures are off by default. **Nostalgia mode** adds a 30% insertion-failure chance. Blow into the microphone or hold the button to clean the contacts. Audio stays in the browser and is never recorded or uploaded.
 
 ## Run
@@ -44,6 +46,7 @@ Circuit checks:
 
 ```sh
 npm run test:edges
+npm run test:snapshots
 npm run test:games
 npm run test:wipeout
 npm run test:wipeout:long
@@ -58,6 +61,7 @@ These cartridges contain dedicated game circuitry, not conventional program ROMs
 - [Recovered chips and remaining gaps](research/OTHER-CARTRIDGE-DATA.md)
 - [Submarine implementation and benchmarks](research/ay38605/TIMING-UPDATES.md)
 - [Wipeout adapter and validation](research/ay38606/PLAYABLE.md)
+- [Register-backed timing blocks](research/performance/REGISTERS.md)
 - [Chip profiling and browser scheduling](research/performance/README.md)
 - [Source provenance](research/PROVENANCE.md)
 

@@ -852,7 +852,7 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
     stage.className = "scene-stage";
     stage.setAttribute("aria-label", "3D console desk");
     stage.innerHTML =
-      '<div class="scene-toolbar"><button class="quiet-button" id="scene-library">Cartridges</button><span class="scene-hint">Drag to rotate · Scroll to zoom</span><div class="scene-view-actions"><button class="quiet-button" id="scene-repair" hidden>Clean contacts</button><button class="quiet-button" id="scene-eject" disabled>Eject</button><button class="quiet-button" id="scene-tv">TV view</button></div></div>';
+      '<div class="scene-toolbar"><button class="quiet-button" id="scene-library">Cartridges</button><span class="scene-hint">Drag to rotate · Scroll to zoom</span><div class="scene-view-actions"><button class="quiet-button" id="scene-repair" hidden>Clean contacts</button><button class="quiet-button" id="scene-cable" hidden>Reconnect cable</button><button class="quiet-button" id="scene-eject" disabled>Eject</button><button class="quiet-button" id="scene-tv">TV view</button></div></div>';
     const app = el(".app");
     const library = el<HTMLElement>(".library");
     const workbench = el<HTMLElement>(".workbench");
@@ -930,6 +930,10 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
         eject();
         desk.focus();
       });
+      el("#scene-cable").addEventListener("click", () => {
+        desk.reconnectCable();
+        desk.focus();
+      });
       el("#scene-tv").addEventListener("click", () => {
         tv = !tv;
         desk.setTVView(tv);
@@ -942,7 +946,9 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
       const viewUrl = new URL(location.href);
       viewUrl.searchParams.set("view", "2d");
       view2d.href = viewUrl.href;
-      view2d.textContent = "2D view";
+      view2d.textContent = "2D";
+      view2d.setAttribute("aria-label", "Switch to 2D view");
+      view2d.title = "Switch to 2D view";
       el(".top-actions").prepend(view2d);
       document.querySelectorAll<HTMLButtonElement>(".cartridge").forEach((b) =>
         b.addEventListener("click", () => {
@@ -976,7 +982,9 @@ if (new URLSearchParams(location.search).get("view") === "2d") {
   const viewUrl = new URL(location.href);
   viewUrl.searchParams.delete("view");
   link.href = viewUrl.href;
-  link.textContent = "3D view";
+  link.textContent = "3D";
+  link.setAttribute("aria-label", "Switch to 3D view");
+  link.title = "Switch to 3D view";
   link.style.textDecoration = "none";
   el(".top-actions").prepend(link);
 }

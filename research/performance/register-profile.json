@@ -1,0 +1,169 @@
+{
+  "date": "2026-11-09",
+  "chips": [
+    {
+      "id": "ay38605",
+      "clocks": 3000000,
+      "metrics": {
+        "evaluations": 535282459,
+        "nodeChanges": 132852360,
+        "queuedEvents": 220966975
+      },
+      "evaluationsPerClock": 178.42748633333332,
+      "latchEvaluationFraction": 0.6313449718328992,
+      "previousMetrics": {
+        "evaluations": 535282459,
+        "nodeChanges": 132852360,
+        "queuedEvents": 220966975
+      },
+      "topNodes": [
+        {
+          "node": 107,
+          "count": 4537772
+        },
+        {
+          "node": 734,
+          "count": 4263164
+        },
+        {
+          "node": 853,
+          "count": 4263164
+        },
+        {
+          "node": 1331,
+          "count": 4263159
+        },
+        {
+          "node": 495,
+          "count": 4263157
+        },
+        {
+          "node": 736,
+          "count": 4236849
+        },
+        {
+          "node": 497,
+          "count": 4236842
+        },
+        {
+          "node": 735,
+          "count": 4105269
+        },
+        {
+          "node": 496,
+          "count": 4105262
+        },
+        {
+          "node": 733,
+          "count": 4105249
+        },
+        {
+          "node": 732,
+          "count": 3736845
+        },
+        {
+          "node": 887,
+          "count": 3710532
+        },
+        {
+          "node": 639,
+          "count": 3710526
+        },
+        {
+          "node": 116,
+          "count": 3403329
+        },
+        {
+          "node": 84,
+          "count": 3026315
+        },
+        {
+          "node": 1259,
+          "count": 3006535
+        }
+      ]
+    },
+    {
+      "id": "ay38606",
+      "clocks": 3000000,
+      "metrics": {
+        "evaluations": 390765059,
+        "nodeChanges": 80239644,
+        "queuedEvents": 197738391
+      },
+      "evaluationsPerClock": 130.25501966666667,
+      "latchEvaluationFraction": 0.5045957755399005,
+      "previousMetrics": {
+        "evaluations": 390765059,
+        "nodeChanges": 80239644,
+        "queuedEvents": 197738391
+      },
+      "topNodes": [
+        {
+          "node": 991,
+          "count": 5789476
+        },
+        {
+          "node": 960,
+          "count": 4342107
+        },
+        {
+          "node": 51,
+          "count": 4289473
+        },
+        {
+          "node": 47,
+          "count": 4263141
+        },
+        {
+          "node": 46,
+          "count": 4263137
+        },
+        {
+          "node": 49,
+          "count": 4250010
+        },
+        {
+          "node": 48,
+          "count": 4236892
+        },
+        {
+          "node": 1157,
+          "count": 4197354
+        },
+        {
+          "node": 52,
+          "count": 4144731
+        },
+        {
+          "node": 50,
+          "count": 4105324
+        },
+        {
+          "node": 258,
+          "count": 3710587
+        },
+        {
+          "node": 880,
+          "count": 3526313
+        },
+        {
+          "node": 656,
+          "count": 3263157
+        },
+        {
+          "node": 1144,
+          "count": 3157884
+        },
+        {
+          "node": 1171,
+          "count": 3157884
+        },
+        {
+          "node": 946,
+          "count": 3105262
+        }
+      ]
+    }
+  ]
+}

@@ -34,6 +34,7 @@ type Hit =
   | { kind: "switch"; id: string }
   | { kind: "fire"; index: number }
   | { kind: "stick"; index: number }
+  | { kind: "cable" }
   | { kind: "screen" };
 interface Drag {
   pointer: number;
@@ -43,6 +44,8 @@ interface Drag {
   moved: boolean;
   object?: THREE.Group;
   offset?: THREE.Vector3;
+  cableStart?: THREE.Vector3;
+  cableEnd?: THREE.Vector3;
 }
 const colors = {
   cream: 0xd5ceb6,
@@ -92,6 +95,29 @@ export class WebGLDesk {
   private slotMaterial: THREE.MeshStandardMaterial;
   private screenTexture: THREE.CanvasTexture;
   private screen: THREE.Mesh;
+  private cable!: THREE.Mesh;
+  private cableHit!: THREE.Mesh;
+  private cablePlug!: THREE.Group;
+  private cableSocket = new THREE.Vector3(1.02, 0.55, -2.15);
+  private cableEnd = this.cableSocket.clone();
+  private cableBend = new THREE.Vector3(3, 0.1, -3.5);
+  private cableConnected = true;
+  private gameScreenMaterial!: THREE.Material | THREE.Material[];
+  private snowMaterial = new THREE.ShaderMaterial({
+    uniforms: { time: { value: 0 } },
+    vertexShader: `varying vec2 uvScreen;
+      void main() { uvScreen = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform float time; varying vec2 uvScreen;
+      void main() {
+        vec2 cell = floor(uvScreen * vec2(320.0, 240.0));
+        float noise = fract(sin(dot(cell, vec2(12.9898, 78.233)) + floor(time * 24.0) * 17.17) * 43758.5453);
+        float grain = mix(0.035, 0.8, noise * noise);
+        float edge = 1.0 - 0.3 * length(uvScreen - 0.5);
+        gl_FragColor = vec4(vec3(grain * edge), 1.0);
+        #include <colorspace_fragment>
+      }`,
+    toneMapped: false,
+  });
   private slotPosition = new THREE.Vector3(4, 0.59, -0.95);
   private drag?: Drag;
   private frameId = 0;
@@ -106,6 +132,19 @@ export class WebGLDesk {
   private move = (e: PointerEvent) => this.pointerMove(e);
   private up = (e: PointerEvent) => this.pointerUp(e);
   private cancel = () => this.cancelDrag();
+  private cableKey = (event: KeyboardEvent) => {
+    if (
+      event.code !== "KeyC" ||
+      event.repeat ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.setCableConnected(!this.cableConnected);
+  };
   private visibility = () => {
     if (document.hidden) this.cancelDrag();
   };
@@ -137,7 +176,7 @@ export class WebGLDesk {
     this.renderer.domElement.id = "scene-screen";
     this.renderer.domElement.setAttribute(
       "aria-label",
-      "3D console desk. Drag empty space to rotate. Scroll to zoom. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
+      "3D console desk. Drag empty space to rotate. Scroll to zoom. Pull the TV cable to unplug it. Press C to unplug or reconnect it. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
     );
     this.container.prepend(this.renderer.domElement);
     this.scene.background = new THREE.Color(0x29251f);
@@ -163,6 +202,7 @@ export class WebGLDesk {
     this.screenTexture.magFilter = THREE.LinearFilter;
     this.screenTexture.generateMipmaps = false;
     this.screen = this.addTelevision();
+    this.gameScreenMaterial = this.screen.material;
     const slot = this.addConsole();
     this.slotMaterial = slot.material;
     cartridges.forEach((c, n) => this.addCartridge(c.id, n));
@@ -176,6 +216,7 @@ export class WebGLDesk {
     dom.addEventListener("pointerup", this.up, true);
     dom.addEventListener("pointercancel", this.cancel, true);
     dom.addEventListener("lostpointercapture", this.cancel);
+    dom.addEventListener("keydown", this.cableKey);
     dom.addEventListener("webglcontextlost", this.contextLost);
     window.addEventListener("blur", this.cancel);
     document.addEventListener("visibilitychange", this.visibility);
@@ -914,18 +955,83 @@ export class WebGLDesk {
     );
   }
   private addCable() {
+    const socket = this.cylinder(
+      this.scene,
+      0.13,
+      0.12,
+      0.88,
+      0.55,
+      -2.15,
+      standard(colors.metal, 0.3, 0.7),
+    );
+    socket.rotation.z = Math.PI / 2;
+    this.cablePlug = new THREE.Group();
+    const grip = this.cylinder(
+      this.cablePlug,
+      0.105,
+      0.32,
+      0.12,
+      0,
+      0,
+      standard(colors.rubber),
+    );
+    grip.rotation.z = Math.PI / 2;
+    const tip = this.cylinder(
+      this.cablePlug,
+      0.055,
+      0.18,
+      -0.1,
+      0,
+      0,
+      standard(colors.metal, 0.3, 0.8),
+    );
+    tip.rotation.z = Math.PI / 2;
+    this.scene.add(this.cablePlug);
+    this.pickObject(this.cablePlug, { kind: "cable" });
+    this.cable = new THREE.Mesh(
+      new THREE.BufferGeometry(),
+      standard(0x191b16, 0.85),
+    );
+    this.cable.castShadow = true;
+    // A wider invisible sleeve makes the thin lead usable with mouse and touch.
+    this.cableHit = new THREE.Mesh(
+      new THREE.BufferGeometry(),
+      new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false }),
+    );
+    this.scene.add(this.cable, this.cableHit);
+    this.pickObject(this.cableHit, { kind: "cable" });
+    this.setCableConnected(true);
+  }
+  private updateCable() {
     const curve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(5, 0.18, -1.14),
       new THREE.Vector3(6, 0.09, -3),
-      new THREE.Vector3(1, 0.07, -4.3),
-      new THREE.Vector3(-3, 0.1, -3.2),
+      this.cableBend.clone(),
+      this.cableEnd.clone().add(new THREE.Vector3(0.32, 0, 0)),
     ]);
-    const mesh = new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 60, 0.028, 8, false),
-      standard(0x191b16, 0.85),
-    );
-    mesh.castShadow = true;
-    this.scene.add(mesh);
+    this.cable.geometry.dispose();
+    this.cableHit.geometry.dispose();
+    this.cable.geometry = new THREE.TubeGeometry(curve, 40, 0.035, 8, false);
+    this.cableHit.geometry = new THREE.TubeGeometry(curve, 40, 0.17, 6, false);
+    this.cablePlug.position.copy(this.cableEnd);
+  }
+  private setCableConnected(connected: boolean) {
+    this.cableConnected = connected;
+    if (connected) this.cableEnd.copy(this.cableSocket);
+    else if (this.cableEnd.distanceTo(this.cableSocket) < 0.3)
+      this.cableEnd.add(new THREE.Vector3(1.5, -0.4, 0.6));
+    this.cableBend.set(3, 0.1, -3.5);
+    this.screen.material = connected
+      ? this.gameScreenMaterial
+      : this.snowMaterial;
+    this.container.dataset.tvCable = connected ? "connected" : "disconnected";
+    const reconnect =
+      this.container.querySelector<HTMLButtonElement>("#scene-cable");
+    if (reconnect) reconnect.hidden = connected;
+    this.updateCable();
+  }
+  reconnectCable() {
+    this.setCableConnected(true);
   }
   private resize() {
     const { width, height } = this.container.getBoundingClientRect();
@@ -966,7 +1072,7 @@ export class WebGLDesk {
     return undefined;
   }
   private pointerDown(e: PointerEvent) {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || this.drag) return;
     this.host.gesture();
     this.focus();
     const intersection = this.hit(e);
@@ -984,6 +1090,14 @@ export class WebGLDesk {
       startY: e.clientY,
       moved: false,
     };
+    if (hit.kind === "cable") {
+      const point = new THREE.Vector3();
+      if (this.ray.ray.intersectPlane(this.plane, point)) {
+        this.drag.cableStart = point;
+        this.drag.cableEnd = this.cableEnd.clone();
+      }
+      this.renderer.domElement.style.cursor = "grabbing";
+    }
     if (hit.kind === "cart") {
       const card = this.cards.get(hit.id);
       if (card) {
@@ -1010,7 +1124,11 @@ export class WebGLDesk {
     const d = this.drag;
     if (!d) {
       this.renderer.domElement.style.cursor =
-        data?.kind === "cart" ? "grab" : data ? "pointer" : "grab";
+        data?.kind === "cart" || data?.kind === "cable"
+          ? "grab"
+          : data
+            ? "pointer"
+            : "grab";
       if (data?.kind === "screen" && intersection?.uv)
         this.host.aim({
           x: intersection.uv.x * 640,
@@ -1024,6 +1142,29 @@ export class WebGLDesk {
     e.stopImmediatePropagation();
     if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) > 5)
       d.moved = true;
+    if (d.hit.kind === "cable" && d.moved && d.cableStart && d.cableEnd) {
+      const point = new THREE.Vector3();
+      if (this.ray.ray.intersectPlane(this.plane, point)) {
+        const pull = point.sub(d.cableStart);
+        if (this.cableConnected && pull.length() > 1.25)
+          this.setCableConnected(false);
+        if (this.cableConnected) this.cableBend.set(3, 0.1, -3.5).add(pull);
+        else {
+          this.cableEnd.copy(d.cableEnd).add(pull);
+          this.cableEnd.set(
+            THREE.MathUtils.clamp(this.cableEnd.x, 1, 8.6),
+            0.16,
+            THREE.MathUtils.clamp(this.cableEnd.z, -4.8, 4.8),
+          );
+          this.cableBend.lerpVectors(
+            new THREE.Vector3(6, 0.09, -3),
+            this.cableEnd,
+            0.5,
+          );
+        }
+        this.updateCable();
+      }
+    }
     if (d.hit.kind === "stick") {
       this.host.stick(
         d.hit.index,
@@ -1066,6 +1207,12 @@ export class WebGLDesk {
     if (!d || d.pointer !== e.pointerId) return;
     e.stopImmediatePropagation();
     const h = d.hit;
+    if (
+      h.kind === "cable" &&
+      !this.cableConnected &&
+      this.cableEnd.distanceTo(this.cableSocket) < 1
+    )
+      this.setCableConnected(true);
     if (h.kind === "cart") {
       if (!d.moved || (d.object && this.nearSlot(d.object))) {
         if (!d.moved && this.host.state().active === h.id) this.host.eject();
@@ -1077,6 +1224,10 @@ export class WebGLDesk {
     this.renderer.domElement.releasePointerCapture(e.pointerId);
   }
   private cancelDrag() {
+    if (this.drag?.hit.kind === "cable" && this.cableConnected) {
+      this.cableBend.set(3, 0.1, -3.5);
+      this.updateCable();
+    }
     if (this.drag?.hit.kind === "stick")
       this.host.stick(this.drag.hit.index, 0, 0);
     this.host.fire(0, false);
@@ -1084,6 +1235,7 @@ export class WebGLDesk {
     this.host.aim(undefined);
     this.drag = undefined;
     this.orbit.enabled = true;
+    this.renderer.domElement.style.cursor = "grab";
     this.slotMaterial.color.setHex(colors.well);
   }
   /** A close TV view makes the existing games usable without changing their render core. */
@@ -1187,6 +1339,9 @@ export class WebGLDesk {
       });
       if (now - this.textureTime > 32) {
         this.screenTexture.needsUpdate = true;
+        this.snowMaterial.uniforms.time.value = this.reduceMotion
+          ? 0
+          : now / 1000;
         this.textureTime = now;
       }
       this.orbit.update();
@@ -1209,6 +1364,7 @@ export class WebGLDesk {
     dom.removeEventListener("pointerup", this.up, true);
     dom.removeEventListener("pointercancel", this.cancel, true);
     dom.removeEventListener("lostpointercapture", this.cancel);
+    dom.removeEventListener("keydown", this.cableKey);
     dom.removeEventListener("webglcontextlost", this.contextLost);
     const geometries = new Set<THREE.BufferGeometry>(),
       materials = new Set<THREE.Material>(),
@@ -1225,6 +1381,12 @@ export class WebGLDesk {
         });
       }
     });
+    textures.add(this.screenTexture);
+    materials.add(this.snowMaterial);
+    for (const material of Array.isArray(this.gameScreenMaterial)
+      ? this.gameScreenMaterial
+      : [this.gameScreenMaterial])
+      materials.add(material);
     geometries.forEach((g) => g.dispose());
     materials.forEach((m) => m.dispose());
     textures.forEach((t) => t.dispose());

@@ -18,7 +18,8 @@
     "test:recovered": "node scripts/check-recovered-chips.mjs",
     "build:wipeout": "node scripts/build-wipeout.mjs",
     "test:wipeout": "node scripts/check-wipeout.mjs && node scripts/check-wipeout-play.mjs",
-    "test:wipeout:long": "node scripts/check-wipeout.mjs --long"
+    "test:wipeout:long": "node scripts/check-wipeout.mjs --long",
+    "test:snapshots": "node scripts/check-chip-snapshots.mjs"
   },
   "devDependencies": {
     "@types/three": "^0.187.0",
