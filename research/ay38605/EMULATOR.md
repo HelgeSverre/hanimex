@@ -50,3 +50,9 @@ Original archive notices are preserved. The transistor and polygon data are attr
 ## Long-run observation
 
 A 240-field run with the submarine control at threshold 300 cleared `subMoveDisable` between fields 176 and 192. The submarine's horizontal pixel centroid then advanced from 53.5 at field 192 to 61.5, 69.5, and 77.5 at successive 16-field intervals. Earlier short runs showed blinking and an apparent startup hit/score rather than movement. This startup sequence is not yet calibrated against physical hardware; the roughly 3.6-second initial inhibit must not be assumed to be correct power-on behavior. A later clocked reset is also available through the Wasm API for investigation.
+
+## Inspector branch
+
+`submarine-chip-inspector` is stacked on the emulator milestone. **Open cartridge** loads the recovered segment polygons only when needed. The display colors each polygon from its node's actual state in the worker that supplies the TV raster. It is a sampled live view, not an animation of every transition at hardware speed. Named signals are selectable without a pointer; pointer selection also supports unnamed nodes. Pan/zoom, pause/resume, half-clock, full-clock, and 228-clock scanline stepping are available. The sidebar shows raw pins and the live TV output. Closing the inspector releases its pause; ejecting destroys the inspector and worker.
+
+`npm run build:chip` also regenerates `layout.json` on this branch. The layout preserves all recovered segments and the in-app attribution links to the authors and CC BY 4.0.

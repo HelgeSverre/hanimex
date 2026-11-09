@@ -1,3 +1,4 @@
+import type { ChipInspector } from "./inspector";
 import type { Controls, Game, SoundEvent } from "../games";
 import type { ChipFrame, ChipCommand } from "./runtime";
 
@@ -13,6 +14,11 @@ export class SubmarineChipGame implements Game {
   private image = new ImageData(228, 320);
   private status = document.createElement("aside");
   private running = false;
+  private desiredRunning = false;
+  private inspectorPaused = false;
+  private inspector?: ChipInspector;
+  private disposed = false;
+  private latest?: Extract<ChipFrame, { kind: "frame" }>;
   private previousInput = "";
   private error = "";
   private received = false;
@@ -24,14 +30,38 @@ export class SubmarineChipGame implements Game {
     this.context = context;
     this.status.className = "chip-status";
     this.status.innerHTML =
-      "<span>AY-3-8605 · starting</span><small>Transistor simulation · sound not modeled</small>";
+      "<span>AY-3-8605 · starting</span><small>Transistor simulation · sound not modeled</small><button class='chip-open'>Open cartridge</button>";
     document.body.append(this.status);
+    this.status.querySelector("button")!.onclick = async () => {
+      const button = this.status.querySelector("button")!;
+      button.disabled = true;
+      try {
+        const { ChipInspector } = await import("./inspector");
+        if (this.disposed) return;
+        this.inspector ??= new ChipInspector(
+          {
+            pause: (paused) => {
+              this.inspectorPaused = paused;
+              this.setRunning(this.desiredRunning);
+            },
+            step: (clocks) => this.send({ kind: "step", clocks }),
+          },
+          this.display,
+        );
+        this.inspector.open(this.latest);
+      } catch {
+        button.textContent = "Retry opening cartridge";
+      } finally {
+        button.disabled = false;
+      }
+    };
     this.worker.onmessage = ({ data }: MessageEvent<ChipFrame>) => {
       if (data.kind === "error") {
         this.error = data.message;
         this.status.firstElementChild!.textContent = data.message;
         return;
       }
+      this.latest = data;
       this.received = true;
       this.status.firstElementChild!.textContent = `AY-3-8605 · ${(data.speed * 100).toFixed(1)}% speed · field ${data.fields}`;
       for (let n = 0; n < data.raster.length; n++) {
@@ -46,6 +76,7 @@ export class SubmarineChipGame implements Game {
         this.image.data[offset + 3] = 255;
       }
       this.context.putImageData(this.image, 0, 0);
+      this.inspector?.update(data);
     };
     this.worker.onerror = () => {
       this.error = "Chip simulator failed";
@@ -56,6 +87,8 @@ export class SubmarineChipGame implements Game {
     this.worker.postMessage(data);
   }
   setRunning(running: boolean) {
+    this.desiredRunning = running;
+    running = running && !this.inspectorPaused;
     if (running !== this.running) {
       this.running = running;
       this.send({ kind: "run", running });
@@ -96,6 +129,8 @@ export class SubmarineChipGame implements Game {
     return [];
   }
   dispose() {
+    this.disposed = true;
+    this.inspector?.dispose();
     this.worker.terminate();
     this.status.remove();
   }

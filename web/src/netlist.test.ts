@@ -91,14 +91,27 @@ test("Rust/Wasm and TypeScript agree on every node and raw raster sample after a
   }
 });
 
-test('the recovered chip generates a PAL-length field and ship pixels after reset', async () => {
-  const {instance}=await WebAssembly.instantiate(readFileSync('web/src/chip/ay38605.wasm'));
-  const e=instance.exports as unknown as {chip_init():number;chip_run(n:number):number;chip_field_clocks():number;chip_raster():number;memory:WebAssembly.Memory};
-  assert.equal(e.chip_init(),0);
-  assert.equal(e.chip_run(150000),0);
-  assert.equal(e.chip_field_clocks(),228*312);
-  const raster=new Uint8Array(e.memory.buffer,e.chip_raster(),228*320);
-  let shipPixels=0;
-  for(let y=130;y<260;y++)for(let x=20;x<204;x++)if((raster[y*228+x]&3)===2)shipPixels++;
-  assert.ok(shipPixels>20,`expected submarine pixels, received ${shipPixels}`);
+test("the recovered chip generates a PAL-length field and ship pixels after reset", async () => {
+  const { instance } = await WebAssembly.instantiate(
+    readFileSync("web/src/chip/ay38605.wasm"),
+  );
+  const e = instance.exports as unknown as {
+    chip_init(): number;
+    chip_run(n: number): number;
+    chip_field_clocks(): number;
+    chip_raster(): number;
+    memory: WebAssembly.Memory;
+  };
+  assert.equal(e.chip_init(), 0);
+  assert.equal(e.chip_run(150000), 0);
+  assert.equal(e.chip_field_clocks(), 228 * 312);
+  const raster = new Uint8Array(e.memory.buffer, e.chip_raster(), 228 * 320);
+  let shipPixels = 0;
+  for (let y = 130; y < 260; y++)
+    for (let x = 20; x < 204; x++)
+      if ((raster[y * 228 + x] & 3) === 2) shipPixels++;
+  assert.ok(
+    shipPixels > 20,
+    `expected submarine pixels, received ${shipPixels}`,
+  );
 });

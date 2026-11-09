@@ -378,3 +378,13 @@ pub extern "C" fn chip_reset() -> u32 {
         })
     })
 }
+
+/// Advance one clock edge for interactive circuit inspection.
+#[unsafe(no_mangle)]
+pub extern "C" fn chip_half_step() -> u32 {
+    INSTANCE.with(|c| {
+        c.borrow_mut()
+            .as_mut()
+            .map_or(1, |c| u32::from(c.half_step().is_err()))
+    })
+}

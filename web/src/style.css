@@ -1834,3 +1834,28 @@ a {
 
 .chip-status { position: fixed; z-index: 6; left: 50%; top: 6.5rem; transform: translateX(-50%); display: grid; gap: .25rem; padding: .6rem .9rem; background: #24231eed; color: #e5e3d6; border: 1px solid #77705b; font: 12px "Obel Mono", monospace; max-width: calc(100vw - 2rem); }
 .chip-status small { font: 11px Inter, sans-serif; color: #bdb6a5; }
+.chip-open { padding: .3rem .5rem; font: inherit; color: inherit; background: transparent; border: 1px solid #77705b; cursor: pointer; }
+.chip-inspector { width: min(1220px, 96vw); max-width: 96vw; max-height: 94dvh; padding: 0; color: #e3deca; background: #202621; border: 1px solid #80785e; overflow: auto; }
+.chip-inspector::backdrop { background: #111c; }
+.chip-inspector header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid #4d5745; }
+.chip-inspector h2 { margin: .25rem 0 0; font: 24px 'Obel Mono', monospace; }
+.chip-part, .chip-inspector footer { font: 11px 'Obel Mono', monospace; color: #b1ad96; }
+.chip-inspector button, .chip-inspector select { font: 12px Inter, sans-serif; padding: .55rem .7rem; border: 1px solid #77705b; color: #e3deca; background: #282d26; cursor: pointer; }
+.chip-inspector button:disabled { opacity: .4; cursor: default; }
+.chip-inspector button:focus-visible, .chip-inspector select:focus-visible, .die-map:focus-visible { outline: 2px solid #ff7841; outline-offset: 2px; }
+.chip-inspector-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 1.5rem; padding: 1rem 1.5rem; }
+.chip-die { min-width: 0; }
+.chip-die-tools, .chip-step { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; margin-bottom: .7rem; }
+.chip-die-tools span { font: 11px Inter, sans-serif; color: #b1ad96; margin-left: .4rem; }
+.die-map { width: 100%; aspect-ratio: 1; display: block; background: #0c1819; border: 8px solid #141915; box-sizing: border-box; cursor: grab; touch-action: none; }
+.die-map:active { cursor: grabbing; }
+.chip-video { width: 100%; aspect-ratio: 4/3; background: #080a08; display: block; margin-bottom: 1rem; }
+.chip-time, .chip-value { display: block; font: 12px/1.6 'Obel Mono', monospace; overflow-wrap: anywhere; margin-bottom: .8rem; }
+.chip-probes label { display: grid; gap: .4rem; font: 12px Inter, sans-serif; margin-bottom: .7rem; }
+.chip-pins { display: grid; grid-template-columns: 1fr auto; gap: .4rem; font: 11px 'Obel Mono', monospace; }
+.chip-pins dd { margin: 0; color: #e7c97e; }
+.chip-caption { font: 12px/1.5 Inter, sans-serif; color: #b1ad96; }
+.chip-inspector footer { padding: 0 1.5rem 1rem; }
+.chip-inspector a { color: inherit; }
+@media(max-width: 700px) { .chip-inspector-body { grid-template-columns: 1fr; padding: .75rem; } .chip-inspector header { padding: .75rem; } .chip-probes { display: grid; gap: .4rem; } .chip-video { max-width: 300px; } }
+.chip-inspector header { position: sticky; top: 0; z-index: 1; background: #202621; }

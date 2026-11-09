@@ -3,7 +3,8 @@ const worker = self as unknown as {
   postMessage(message: ChipFrame, transfer?: Transferable[]): void;
   onmessage: ((e: MessageEvent<ChipCommand>) => void) | null;
 };
-let running = false;
+let running = false,
+  dirty = true;
 let input: Extract<ChipCommand, { kind: "input" }> = {
   kind: "input",
   mode: 1,
@@ -11,12 +12,74 @@ let input: Extract<ChipCommand, { kind: "input" }> = {
   des: 200,
   buttons: 0,
 };
-let dirty = true;
+let chip: ChipWasm | undefined;
+let clocks = 128,
+  elapsed = 0,
+  lastSent = 0;
+const fail = (error: unknown) => {
+  running = false;
+  worker.postMessage({
+    kind: "error",
+    message: error instanceof Error ? error.message : "Chip simulator failed",
+  });
+};
+function publish() {
+  if (!chip) return;
+  const raster = new Uint8Array(
+    chip.memory.buffer,
+    chip.chip_raster(),
+    228 * 320,
+  ).slice();
+  const nodes = new Uint8Array(
+    chip.memory.buffer,
+    chip.chip_nodes(),
+    1524,
+  ).slice();
+  worker.postMessage(
+    {
+      kind: "frame",
+      raster,
+      nodes,
+      clocks,
+      fields: chip.chip_fields(),
+      speed: elapsed ? clocks / (elapsed / 1000) / 3_579_545 : 0,
+    },
+    [raster.buffer, nodes.buffer],
+  );
+  lastSent = performance.now();
+}
+function advance(count: number) {
+  if (!chip) return;
+  if (dirty) {
+    if (chip.chip_input(input.mode, input.sub, input.des, input.buttons))
+      throw new Error("Chip input failed");
+    dirty = false;
+  }
+  const start = performance.now();
+  if (count === 0.5 ? chip.chip_half_step() : chip.chip_run(count))
+    throw new Error("Chip circuit did not settle");
+  elapsed += performance.now() - start;
+  clocks += count;
+}
 worker.onmessage = ({ data }) => {
-  if (data.kind === "input") {
-    input = data;
-    dirty = true;
-  } else running = data.running;
+  try {
+    if (data.kind === "input") {
+      input = data;
+      dirty = true;
+    } else if (data.kind === "run") {
+      running = data.running;
+      if (!running) publish();
+    } else if (!running) {
+      advance(
+        data.clocks === 0.5
+          ? 0.5
+          : Math.max(1, Math.min(228, Math.round(data.clocks))),
+      );
+      publish();
+    }
+  } catch (error) {
+    fail(error);
+  }
 };
 async function start() {
   const response = await fetch(new URL("./ay38605.wasm", import.meta.url));
@@ -24,62 +87,20 @@ async function start() {
   const { instance } = await WebAssembly.instantiate(
     await response.arrayBuffer(),
   );
-  const e = instance.exports as unknown as ChipWasm;
-  if (e.chip_init()) throw new Error("Chip reset failed");
-  let clocks = 128,
-    elapsed = 0,
-    lastSent = 0;
+  chip = instance.exports as unknown as ChipWasm;
+  if (chip.chip_init()) throw new Error("Chip reset failed");
+  publish();
   const tick = () => {
     try {
       if (running) {
-        if (dirty) {
-          if (e.chip_input(input.mode, input.sub, input.des, input.buttons))
-            throw new Error("Chip input failed");
-          dirty = false;
-        }
-        const start = performance.now();
-        if (e.chip_run(2048)) throw new Error("Chip circuit did not settle");
-        elapsed += performance.now() - start;
-        clocks += 2048;
-        if (performance.now() - lastSent > 100) {
-          const raster = new Uint8Array(
-            e.memory.buffer,
-            e.chip_raster(),
-            228 * 320,
-          ).slice();
-          const nodes = new Uint8Array(
-            e.memory.buffer,
-            e.chip_nodes(),
-            1524,
-          ).slice();
-          worker.postMessage(
-            {
-              kind: "frame",
-              raster,
-              nodes,
-              clocks,
-              fields: e.chip_fields(),
-              speed: clocks / (elapsed / 1000) / 3_579_545,
-            },
-            [raster.buffer, nodes.buffer],
-          );
-          lastSent = performance.now();
-        }
+        advance(2048);
+        if (performance.now() - lastSent > 100) publish();
       }
       setTimeout(tick, running ? 0 : 50);
     } catch (error) {
-      worker.postMessage({
-        kind: "error",
-        message:
-          error instanceof Error ? error.message : "Chip simulator failed",
-      });
+      fail(error);
     }
   };
   tick();
 }
-void start().catch((error) =>
-  worker.postMessage({
-    kind: "error",
-    message: error instanceof Error ? error.message : "Chip simulator failed",
-  }),
-);
+void start().catch(fail);

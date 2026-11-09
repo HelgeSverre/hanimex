@@ -1,8 +1,8 @@
 # Hanimex — Submarine chip experiment
 
-Branch: `submarine-netlist`. Submarine runs the recovered transistor netlist in Rust/WebAssembly. It currently runs well below normal speed, with diagnostic monochrome video and no analog audio. [Implementation and accuracy limits](research/ay38605/EMULATOR.md).
+Branch: `submarine-chip-inspector`, based on `submarine-netlist`. Submarine runs the recovered transistor netlist in Rust/WebAssembly. It currently runs well below normal speed, with diagnostic monochrome video and no analog audio. [Implementation and accuracy limits](research/ay38605/EMULATOR.md).
 
-[Play](https://hanimex.vercel.app) · [2D view](https://hanimex.vercel.app/?view=2d)
+[Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
 
 The scene uses Three.js/WebGL: a deep CRT cabinet with a live game-canvas texture, a modeled console, raycast cartridge dragging, physical game keys and sticks, orbit/zoom controls, and a close TV view. The original interface remains available at `?view=2d`.
 
@@ -11,6 +11,8 @@ A browser recreation of the Hanimex / Soundic PC-50x console family. Drag a cart
 Eight swappable cartridges, a CRT display, keyboard and touch controls, and optional contact failures. Blow into the microphone or hold a button to clean the contacts. Microphone audio stays in the browser; it is not recorded or uploaded.
 
 **The other seven cartridges are behavioral recreations, not cycle-accurate emulators.** Some selections share a simplified game model. Original-chip timing, graphics, audio, and every variation remain unverified.
+
+Insert Submarine and choose **Open cartridge** to inspect its live silicon layout. Select a signal, pan/zoom, pause, or step the circuit by a clock edge, clock, or scanline. The viewer samples actual states from the same chip instance driving the TV.
 
 ## Run
 
