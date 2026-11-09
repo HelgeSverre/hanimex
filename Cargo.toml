@@ -1,0 +1,7 @@
+[package]
+name = "hanimex"
+version = "0.1.0"
+edition = "2024"
+description = "PC-50x preservation research and experimental behavioral cores"
+
+[dependencies]

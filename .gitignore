@@ -1,0 +1,13 @@
+/target/
+/work/
+*.ppm
+
+.DS_Store
+/node_modules/
+/web/dist/
+/.vercel/
+/research/*.pdf
+.vercel
+.env*
+
+/.impeccable/review/

@@ -1,0 +1,18 @@
+.git
+node_modules
+/work/
+/target/
+/research/
+.impeccable
+.hallmark
+/outputs/
+/src/
+/tests/
+/web/dist/
+Cargo.toml
+Cargo.lock
+bun.lock
+.env*
+.DS_Store
+# Local tooling creates numeric-named Unix sockets.
+[0-9]*

@@ -1,0 +1,85 @@
+/* Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5 · custom hardware palette */
+@font-face {
+  font-family: "Obel Mono";
+  src: url("/fonts/obel-mono.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+}
+:root {
+  --font-display: "Obel Mono", monospace;
+  --font-body: "Inter", sans-serif;
+  --color-paper: oklch(26% 0.012 70);
+  --color-paper-2: oklch(30% 0.012 70);
+  --color-ink: oklch(91% 0.02 85);
+  --color-muted: oklch(74% 0.018 80);
+  --color-rule: oklch(44% 0.012 75);
+  --color-accent: oklch(66% 0.18 42);
+  --color-accent-ink: oklch(19% 0.015 50);
+  --color-focus: oklch(85% 0.14 80);
+  --color-cream: oklch(84% 0.03 85);
+  --color-cream-high: oklch(91% 0.025 85);
+  --color-cream-low: oklch(64% 0.025 85);
+  --color-label: oklch(25% 0.012 70);
+  --color-label-muted: oklch(39% 0.015 70);
+  --color-plastic: oklch(33% 0.008 80);
+  --color-plastic-high: oklch(42% 0.008 80);
+  --color-plastic-low: oklch(22% 0.008 80);
+  --color-well: oklch(17% 0.008 70);
+  --color-black: oklch(13% 0.007 80);
+  --color-metal: oklch(66% 0.012 80);
+  --color-metal-high: oklch(80% 0.012 80);
+  --color-metal-low: oklch(47% 0.012 80);
+  --color-key-high: oklch(74% 0.17 45);
+  --color-key-low: oklch(48% 0.14 38);
+  --color-screen: oklch(15% 0.018 145);
+  --color-phosphor: oklch(90% 0.025 110);
+  --color-red: oklch(62% 0.19 30);
+  --color-shadow: oklch(8% 0.01 70 / 0.55);
+  --color-clear: oklch(20% 0.01 70 / 0);
+  --color-glass: oklch(92% 0.02 100 / 0.025);
+  --color-overlay: oklch(10% 0.01 70 / 0.8);
+  --color-scan: oklch(7% 0.01 120 / 0.16);
+  --color-cart-orange: oklch(74% 0.12 55);
+  --color-cart-yellow: oklch(83% 0.1 85);
+  --color-cart-red: oklch(71% 0.1 35);
+  --color-cart-blue: oklch(77% 0.055 230);
+  --color-cart-teal: oklch(77% 0.07 165);
+  --color-cart-purple: oklch(78% 0.04 310);
+  --color-cart-green: oklch(78% 0.06 125);
+  --color-cart-cream: oklch(84% 0.035 90);
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --text-small: 0.6875rem;
+  --text-label: 0.75rem;
+  --text-body: 0.875rem;
+  --text-large: 1.125rem;
+  --text-display: 1.75rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 240ms;
+  --dur-long: 420ms;
+  --radius-sm: 3px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --rule-width: 1px;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-drag: 100;
+  --z-modal: 200;
+}
