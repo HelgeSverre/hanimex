@@ -815,7 +815,7 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
     stage.className = "scene-stage";
     stage.setAttribute("aria-label", "3D console desk");
     stage.innerHTML =
-      '<div class="scene-toolbar"><button class="quiet-button" id="scene-library">Cartridges</button><span class="scene-hint">Drag to rotate · Scroll to zoom</span><div class="scene-view-actions"><button class="quiet-button" id="scene-repair" hidden>Clean contacts</button><button class="quiet-button" id="scene-cable" hidden>Reconnect cable</button><button class="quiet-button" id="scene-eject" disabled>Eject</button><button class="quiet-button" id="scene-tv">TV view</button></div></div>';
+      '<div class="scene-toolbar"><button class="quiet-button" id="scene-library">Cartridges</button><span class="scene-hint">Drag to rotate · Shift-drag to pan · Scroll to zoom</span><div class="scene-view-actions"><button class="quiet-button" id="scene-repair" hidden>Clean contacts</button><button class="quiet-button" id="scene-cable" hidden>Reconnect cable</button><button class="quiet-button" id="scene-eject" disabled>Eject</button><button class="quiet-button" id="scene-tv">TV view</button></div></div>';
     const app = el(".app");
     const library = el<HTMLElement>(".library");
     const workbench = el<HTMLElement>(".workbench");

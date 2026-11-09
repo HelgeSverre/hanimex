@@ -109,7 +109,8 @@ export class WebGLDesk {
       }`,
     toneMapped: false,
   });
-  private slotPosition = new THREE.Vector3(4, 0.59, -0.95);
+  private slotPosition = new THREE.Vector3();
+  private cameraGesture = false;
   private drag?: Drag;
   private frameId = 0;
   private previous = 0;
@@ -167,7 +168,7 @@ export class WebGLDesk {
     this.renderer.domElement.id = "scene-screen";
     this.renderer.domElement.setAttribute(
       "aria-label",
-      "3D console desk. Drag empty space to rotate. Scroll to zoom. Pull the TV cable to unplug it. Press C to unplug or reconnect it. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
+      "3D console desk. Drag empty space to rotate. Shift-drag to pan. Scroll to zoom. Pull the TV cable to unplug it. Press C to unplug or reconnect it. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
     );
     this.container.prepend(this.renderer.domElement);
     this.scene.background = new THREE.Color(0x29251f);
@@ -175,7 +176,9 @@ export class WebGLDesk {
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
     this.orbit.enableDamping = !this.reduceMotion;
     this.orbit.dampingFactor = 0.09;
-    this.orbit.enablePan = false;
+    this.orbit.enablePan = true;
+    this.orbit.screenSpacePanning = true;
+    this.orbit.panSpeed = 0.8;
     this.orbit.minDistance = 6;
     this.orbit.maxDistance = 72;
     this.orbit.minPolarAngle = 0.28;
@@ -184,6 +187,11 @@ export class WebGLDesk {
     this.camera.position.set(8, 12, 19);
     this.orbit.addEventListener("start", () => {
       this.cameraGoal = undefined;
+      this.cameraGesture = true;
+      this.host.aim(undefined);
+    });
+    this.orbit.addEventListener("end", () => {
+      this.cameraGesture = false;
     });
     this.addLights();
     this.addDesk();
@@ -399,24 +407,25 @@ export class WebGLDesk {
     };
     for (let n = 0; n < 220; n++) {
       const y = random() * 512;
-      c.beginPath();
-      c.moveTo(0, y);
-      c.bezierCurveTo(
-        160,
-        y + random() * 12,
-        320,
-        y - random() * 12,
-        512,
-        y + random() * 4,
-      );
+      const bend = (random() - 0.5) * 18;
       c.strokeStyle =
         n % 3 === 0 ? "rgba(35,24,15,.12)" : "rgba(173,139,94,.10)";
       c.lineWidth = random() * 1.2 + 0.2;
-      c.stroke();
-    }
-    for (const y of [128, 256, 384]) {
-      c.fillStyle = "rgba(24,18,12,.23)";
-      c.fillRect(0, y, 512, 1);
+      // Equal end positions and tangents tile across X. Wrapped copies also
+      // preserve strokes crossing the top/bottom of the texture across Y.
+      for (const offset of [-512, 0, 512]) {
+        c.beginPath();
+        c.moveTo(0, y + offset);
+        c.bezierCurveTo(
+          512 / 3,
+          y + offset + bend,
+          1024 / 3,
+          y + offset - bend,
+          512,
+          y + offset,
+        );
+        c.stroke();
+      }
     }
     const t = new THREE.CanvasTexture(canvas);
     t.colorSpace = THREE.SRGBColorSpace;
@@ -646,6 +655,10 @@ export class WebGLDesk {
       slotMaterial,
       0.06,
     );
+    // Derive the seated pose from the socket itself, with the contact tongue
+    // buried below its lip. This follows any future console/slot movement.
+    slot.getWorldPosition(this.slotPosition);
+    this.slotPosition.y -= 0.01;
     this.mesh(
       group,
       2.14,
@@ -1036,6 +1049,8 @@ export class WebGLDesk {
     if (e.button !== 0 || this.drag) return;
     this.host.gesture();
     this.focus();
+    // OrbitControls owns modified drags, including those starting on hardware.
+    if (e.shiftKey || e.ctrlKey || e.metaKey) return;
     const intersection = this.hit(e);
     if (!intersection) return;
     const hit = this.hitData(intersection.object);
@@ -1080,6 +1095,10 @@ export class WebGLDesk {
     }
   }
   private pointerMove(e: PointerEvent) {
+    if (this.cameraGesture && !this.drag) {
+      this.renderer.domElement.style.cursor = "grabbing";
+      return;
+    }
     const intersection = this.hit(e),
       data = intersection ? this.hitData(intersection.object) : undefined;
     const d = this.drag;
@@ -1185,6 +1204,7 @@ export class WebGLDesk {
     this.renderer.domElement.releasePointerCapture(e.pointerId);
   }
   private cancelDrag() {
+    this.cameraGesture = false;
     if (this.drag?.hit.kind === "cable" && this.cableConnected) {
       this.cableBend.set(3, 0.1, -3.5);
       this.updateCable();
@@ -1254,7 +1274,7 @@ export class WebGLDesk {
         if (target) card.position.lerp(target, factor);
         card.rotation.x = THREE.MathUtils.lerp(
           card.rotation.x,
-          state.active === id ? -0.08 : -0.14,
+          state.active === id ? 0 : -0.14,
           factor,
         );
         card.rotation.z = THREE.MathUtils.lerp(card.rotation.z, 0, factor);
