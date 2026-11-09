@@ -56,3 +56,11 @@ A 240-field run with the submarine control at threshold 300 cleared `subMoveDisa
 `submarine-chip-inspector` is stacked on the emulator milestone. **Open cartridge** loads the recovered segment polygons only when needed. The display colors each polygon from its node's actual state in the worker that supplies the TV raster. It is a sampled live view, not an animation of every transition at hardware speed. Named signals are selectable without a pointer; pointer selection also supports unnamed nodes. Pan/zoom, pause/resume, half-clock, full-clock, and 228-clock scanline stepping are available. The sidebar shows raw pins and the live TV output. Closing the inspector releases its pause; ejecting destroys the inspector and worker.
 
 `npm run build:chip` also regenerates `layout.json` on this branch. The layout preserves all recovered segments and the in-app attribution links to the authors and CC BY 4.0.
+
+The reproducible native long-run check passed on 2026-11-09:
+
+```sh
+cargo run --release --manifest-path crates/ay38605/Cargo.toml --example validate
+```
+
+After 200 warm-up fields, measured submarine centroids were 45.5 (neutral), 51.5 (right), and 47.5 (left). The torpedo region went from zero to 20 asserted video samples after fire. The complete 252-field check took 257.7 seconds on the development machine. This establishes basic pin-controlled movement/firing, not full mode, collision, score-limit, or analog accuracy. All seven JavaScript/Wasm tests and Rust Clippy also passed. Deployed browser checks confirmed half-clock stepping (LOW → HIGH), full-clock and scanline counts, desktop/mobile inspector layout, and disposal on eject without console errors.
