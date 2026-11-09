@@ -1,3 +1,4 @@
+import { demoScenes } from "./clippy";
 export type CartridgeId =
   | "sports"
   | "motorcycle"
@@ -6,7 +7,8 @@ export type CartridgeId =
   | "submarine"
   | "wipeout"
   | "shooting"
-  | "fundamental";
+  | "fundamental"
+  | "clippy";
 export interface Cartridge {
   id: CartridgeId;
   code: string;
@@ -115,7 +117,8 @@ export const cartridges: readonly Cartridge[] = [
       "Breakthrough II",
     ],
     story: "Keep the ball in play and clear the blocks.",
-    controls: "W / S and Up / Down move the bats. Space and Enter serve. SPEED changes ball speed; L-TEAM changes bat size and R-TEAM changes ball size.",
+    controls:
+      "W / S and Up / Down move the bats. Space and Enter serve. SPEED changes ball speed; L-TEAM changes bat size and R-TEAM changes ball size.",
   },
   {
     id: "shooting",
@@ -143,6 +146,21 @@ export const cartridges: readonly Cartridge[] = [
       "W / S and up / down move the bats. Space or Enter serves or fires.",
   },
 ];
+export const secretCartridge: Cartridge = {
+  id: "clippy",
+  code: "PC-000",
+  name: "CLIPPY.EXE",
+  short: "Clippy.exe",
+  chip: "Fictional demo",
+  color: "cream",
+  modes: demoScenes,
+  story:
+    "A fictional Windows 95 demo cartridge. Ten scenes, one very persistent assistant.",
+  controls:
+    "Keys 1–10 select scenes. Left stick or WASD orbits; right stick or arrows bends Clippy. Fire/Space drops a beat; right fire/Enter glitches. SPEED changes tempo, L-TEAM changes palette, R-TEAM adds trails, AUTO runs the show. Power gives a fake blue screen; Reset reboots.",
+};
 export function cartridgeById(id: string): Cartridge | undefined {
-  return cartridges.find((c) => c.id === id);
+  return id === "clippy"
+    ? secretCartridge
+    : cartridges.find((c) => c.id === id);
 }

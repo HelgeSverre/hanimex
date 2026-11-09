@@ -1,3 +1,4 @@
+import { ClippyDemo } from "./clippy";
 import type { CartridgeId } from "./catalog";
 export const W = 640,
   H = 480;
@@ -862,6 +863,8 @@ export class Shooting extends Base {
 }
 export function createGame(id: CartridgeId, mode = 0): Game {
   switch (id) {
+    case "clippy":
+      return new ClippyDemo(mode);
     case "sports":
       return new Sports(mode);
     case "fundamental":

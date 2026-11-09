@@ -5,6 +5,14 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { cartridges, type CartridgeId } from "./catalog";
 
+// Keep the loose lead on top of the desk as its TV endpoint is lifted.
+class DeskCableCurve extends THREE.CatmullRomCurve3 {
+  override getPoint(t: number, target = new THREE.Vector3()) {
+    const point = super.getPoint(t, target);
+    point.y = Math.max(0.06, point.y);
+    return point;
+  }
+}
 export interface DeskState {
   active?: CartridgeId;
   mode: number;
@@ -27,6 +35,7 @@ export interface DeskHost {
   fire(n: number, down: boolean): void;
   stick(n: number, x: number, y: number): void;
   aim(value: { x: number; y: number; fire: boolean } | undefined): void;
+  discover(): void;
   gesture(): void;
   sound(event: "drop" | "explode", strength?: number): void;
 }
@@ -37,7 +46,8 @@ type Hit =
   | { kind: "fire"; index: number }
   | { kind: "stick"; index: number }
   | { kind: "cable" }
-  | { kind: "screen" };
+  | { kind: "screen" }
+  | { kind: "tv" };
 interface Drag {
   pointer: number;
   hit: Hit;
@@ -115,6 +125,11 @@ export class WebGLDesk {
   private slotPosition = new THREE.Vector3();
   private cameraGesture = false;
   private consoleBody?: THREE.Group;
+  private television?: THREE.Group;
+  private tvLifted = false;
+  private secretFound = false;
+  private lastActive?: CartridgeId;
+  private socketMesh?: THREE.Mesh;
   private fallen = new Map<
     CartridgeId,
     { velocity: THREE.Vector3; landed: boolean }
@@ -147,7 +162,7 @@ export class WebGLDesk {
   private cancel = () => this.cancelDrag();
   private cableKey = (event: KeyboardEvent) => {
     if (
-      event.code !== "KeyC" ||
+      !["KeyC", "KeyL"].includes(event.code) ||
       event.repeat ||
       event.ctrlKey ||
       event.metaKey ||
@@ -156,7 +171,8 @@ export class WebGLDesk {
       return;
     event.preventDefault();
     event.stopPropagation();
-    this.setCableConnected(!this.cableConnected);
+    if (event.code === "KeyL") this.liftTV();
+    else this.setCableConnected(!this.cableConnected);
   };
   private visibility = () => {
     if (document.hidden) this.cancelDrag();
@@ -189,7 +205,7 @@ export class WebGLDesk {
     this.renderer.domElement.id = "scene-screen";
     this.renderer.domElement.setAttribute(
       "aria-label",
-      "3D console desk. Drag empty space to rotate. Shift-drag to pan. Scroll to zoom. Pull the TV cable to unplug it. Press C to unplug or reconnect it. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
+      "3D console desk. Drag empty space to rotate. Shift-drag to pan. Scroll to zoom. Click the cabinet or press L to lift the TV. Pull the TV cable to unplug it. Press C to unplug or reconnect it. Use the Cartridges button for a keyboard-accessible cartridge shelf.",
     );
     this.container.prepend(this.renderer.domElement);
     this.scene.background = new THREE.Color(0x29251f);
@@ -226,6 +242,7 @@ export class WebGLDesk {
     const slot = this.addConsole();
     this.slotMaterial = slot.material;
     cartridges.forEach((c, n) => this.addCartridge(c.id, n));
+    this.addCartridge("clippy", -1);
     this.addCable();
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(container);
@@ -355,6 +372,7 @@ export class WebGLDesk {
     for (const child of group.children) {
       if (!(child instanceof THREE.Mesh) || Array.isArray(child.material))
         continue;
+      if (child.userData.hit) continue;
       const m = child.material;
       const key =
         m instanceof THREE.MeshStandardMaterial
@@ -479,6 +497,7 @@ export class WebGLDesk {
   private addTelevision() {
     const group = new THREE.Group();
     group.position.set(-4, 0, -1.85);
+    this.television = group;
     this.scene.add(group);
     const shell = standard(0x33342e, 0.8);
     const veneer = new THREE.MeshStandardMaterial({
@@ -487,8 +506,10 @@ export class WebGLDesk {
       roughness: 0.65,
     });
     // Separate cabinet sleeve and moulded rear cover give the tube its depth.
-    this.mesh(group, 9.6, 7, 4.9, 0, 3.7, -1.55, veneer, 0.08);
+    const cabinet = this.mesh(group, 9.6, 7, 4.9, 0, 3.7, -1.55, veneer, 0.08);
+    this.pickObject(cabinet, { kind: "tv" });
     const rear = this.mesh(group, 8.95, 6.4, 1.2, 0, 3.7, -4.35, shell, 0.1);
+    this.pickObject(rear, { kind: "tv" });
     const rearPositions = rear.geometry.getAttribute("position");
     for (let n = 0; n < rearPositions.count; n++) {
       const taper = 1 - 0.12 * (0.5 - rearPositions.getZ(n) / 1.2);
@@ -902,7 +923,10 @@ export class WebGLDesk {
   }
   private addCartridge(id: CartridgeId, index: number) {
     const group = new THREE.Group();
-    const position = new THREE.Vector3(-7.25 + index * 2.06, 0.06, 4.05);
+    const position =
+      id === "clippy"
+        ? new THREE.Vector3(-4, 0.1, -0.6)
+        : new THREE.Vector3(-7.25 + index * 2.06, 0.06, 4.05);
     group.position.copy(position);
     group.rotation.x = -0.14;
     this.scene.add(group);
@@ -962,6 +986,7 @@ export class WebGLDesk {
       );
     this.batchStatic(group);
     this.pickObject(group, { kind: "cart", id });
+    if (id === "clippy") return;
     this.label(
       this.scene,
       cartridges[index].code,
@@ -984,6 +1009,7 @@ export class WebGLDesk {
       -2.15,
       standard(colors.metal, 0.3, 0.7),
     );
+    this.socketMesh = socket;
     socket.rotation.z = Math.PI / 2;
     this.cablePlug = new THREE.Group();
     const grip = this.cylinder(
@@ -1023,7 +1049,7 @@ export class WebGLDesk {
     this.setCableConnected(true);
   }
   private updateCable() {
-    const curve = new THREE.CatmullRomCurve3([
+    const curve = new DeskCableCurve([
       new THREE.Vector3(5, 0.18, -1.14),
       new THREE.Vector3(6, 0.09, -3),
       this.cableBend.clone(),
@@ -1264,7 +1290,8 @@ export class WebGLDesk {
         if (!d.moved && this.host.state().active === h.id) this.host.eject();
         else this.host.insert(h.id);
       } else if (this.host.state().active === h.id) this.host.eject();
-    } else if (h.kind === "mode" && !d.moved) this.host.mode(h.index);
+    } else if (h.kind === "tv" && !d.moved) this.liftTV();
+    else if (h.kind === "mode" && !d.moved) this.host.mode(h.index);
     else if (h.kind === "switch" && !d.moved) this.host.toggle(h.id);
     this.cancelDrag();
     this.renderer.domElement.releasePointerCapture(e.pointerId);
@@ -1284,6 +1311,17 @@ export class WebGLDesk {
     this.orbit.enabled = true;
     this.renderer.domElement.style.cursor = "grab";
     this.slotMaterial.color.setHex(colors.well);
+  }
+  private liftTV() {
+    this.tvLifted = !this.tvLifted;
+    if (this.tvLifted) {
+      this.secretFound = true;
+      this.host.discover();
+      const status = this.container.querySelector("#scene-mischief-status");
+      if (status)
+        status.textContent =
+          "You found PC-000. Select the cartridge under the TV or in the cartridge shelf.";
+    }
   }
   private throwCartridge(id: CartridgeId, velocity: THREE.Vector3) {
     const card = this.cards.get(id);
@@ -1394,10 +1432,7 @@ export class WebGLDesk {
         fall.landed = true;
       }
     }
-    if (
-      this.fallen.size === cartridges.length &&
-      [...this.fallen.values()].every((f) => f.landed)
-    )
+    if (cartridges.every((c) => this.fallen.get(c.id)?.landed))
       this.explodeConsole();
     if (!this.exploded || this.reduceMotion) return;
     this.blastAge += dt;
@@ -1496,8 +1531,37 @@ export class WebGLDesk {
         if (this.camera.position.distanceTo(this.cameraGoal.position) < 0.015)
           this.cameraGoal = undefined;
       }
+      if (state.active === "clippy" && this.lastActive !== "clippy") {
+        this.tvLifted = false;
+        this.secretFound = true;
+      }
+      this.lastActive = state.active;
+      if (this.television) {
+        const goal = this.tvLifted ? 2.4 : 0;
+        if (Math.abs(this.television.position.y - goal) > 0.001) {
+          this.television.position.y = this.reduceMotion
+            ? goal
+            : THREE.MathUtils.lerp(this.television.position.y, goal, factor);
+          this.cableSocket.y = 0.55 + this.television.position.y;
+          if (this.socketMesh) this.socketMesh.position.y = this.cableSocket.y;
+          if (this.cableConnected) {
+            this.cableEnd.copy(this.cableSocket);
+            this.updateCable();
+          }
+        }
+      }
       for (const [id, card] of this.cards) {
-        card.visible = this.view !== "tv";
+        card.visible =
+          this.view !== "tv" &&
+          (id !== "clippy" || this.secretFound || state.active === id);
+        card.scale.setScalar(
+          id === "clippy" &&
+            state.active !== id &&
+            this.drag?.object !== card &&
+            !this.fallen.has(id)
+            ? 0.7
+            : 1,
+        );
         if (
           this.drag?.hit.kind === "cart" &&
           this.drag.hit.id === id &&
@@ -1513,7 +1577,7 @@ export class WebGLDesk {
         if (target) card.position.lerp(target, factor);
         card.rotation.x = THREE.MathUtils.lerp(
           card.rotation.x,
-          state.active === id ? 0 : -0.14,
+          state.active === id ? 0 : id === "clippy" ? -Math.PI / 2 : -0.14,
           factor,
         );
         card.rotation.z = THREE.MathUtils.lerp(card.rotation.z, 0, factor);

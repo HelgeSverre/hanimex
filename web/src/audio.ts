@@ -1,8 +1,12 @@
+import type { DemoNote } from "./clippy";
 import type { SoundEvent } from "./games";
 /** Short procedural effects only. No samples or microphone data leave this page. */
 export class ConsoleAudio {
   private context?: AudioContext;
   private output?: GainNode;
+  private demoOutput?: GainNode;
+  private demoNoise?: AudioBuffer;
+  private demoSources = new Set<AudioScheduledSourceNode>();
   private soundEnabled = true;
   get enabled() {
     return this.soundEnabled;
@@ -28,6 +32,83 @@ export class ConsoleAudio {
       if (this.context.state === "suspended") await this.context.resume();
     } catch {
       /* Audio is an enhancement; gameplay stays available. */
+    }
+  }
+  stopDemo() {
+    if (this.demoSources.size === 0) return;
+    this.demoSources.forEach((source) => source.stop());
+    this.demoSources.clear();
+  }
+  demoNotes(notes: DemoNote[]) {
+    const c = this.context;
+    if (!this.enabled || !c || c.state !== "running" || !notes.length) return;
+    if (!this.demoOutput) {
+      this.demoOutput = c.createGain();
+      this.demoOutput.gain.value = 0.7;
+      this.demoOutput.connect(this.output!);
+    }
+    for (const note of notes) {
+      const start = c.currentTime;
+      const gain = c.createGain(),
+        filter = c.createBiquadFilter();
+      let source: AudioScheduledSourceNode;
+      if (note.voice === "snare" || note.voice === "hat") {
+        if (!this.demoNoise) {
+          this.demoNoise = c.createBuffer(
+            1,
+            Math.ceil(c.sampleRate * 0.3),
+            c.sampleRate,
+          );
+          const samples = this.demoNoise.getChannelData(0);
+          for (let i = 0; i < samples.length; i++)
+            samples[i] = Math.random() * 2 - 1;
+        }
+        const noise = c.createBufferSource();
+        noise.buffer = this.demoNoise;
+        source = noise;
+        filter.type = note.voice === "hat" ? "highpass" : "bandpass";
+        filter.frequency.value = note.voice === "hat" ? 6500 : 1700;
+      } else {
+        const oscillator = c.createOscillator();
+        oscillator.type =
+          note.voice === "kick"
+            ? "sine"
+            : note.voice === "bass"
+              ? "sawtooth"
+              : "triangle";
+        oscillator.frequency.setValueAtTime(
+          note.voice === "kick" ? 140 : 440 * 2 ** ((note.midi - 69) / 12),
+          start,
+        );
+        if (note.voice === "kick")
+          oscillator.frequency.exponentialRampToValueAtTime(
+            42,
+            start + note.length,
+          );
+        source = oscillator;
+        filter.type = "lowpass";
+        filter.frequency.value = note.voice === "bass" ? 650 : 4000;
+      }
+      const levels = {
+        kick: 0.16,
+        snare: 0.12,
+        hat: 0.035,
+        bass: 0.065,
+        lead: 0.06,
+      };
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(levels[note.voice], start + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + note.length);
+      source.connect(filter).connect(gain).connect(this.demoOutput);
+      this.demoSources.add(source);
+      source.onended = () => {
+        this.demoSources.delete(source);
+        source.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      };
+      source.start(start);
+      source.stop(start + note.length);
     }
   }
   /** Plastic clack + low thump, or a longer noise burst and falling bass. */
