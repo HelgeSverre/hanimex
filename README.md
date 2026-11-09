@@ -1,6 +1,6 @@
 # Hanimex — Submarine chip experiment
 
-Branch: `submarine-chip-inspector`, based on `submarine-netlist`. Submarine runs the recovered transistor netlist in Rust/WebAssembly. It currently runs well below normal speed, with diagnostic monochrome video and no analog audio. [Implementation and accuracy limits](research/ay38605/EMULATOR.md).
+Branch: `submarine-gate-logic`. Submarine now has compiled logic and a selectable transistor reference, both with the live chip inspector. The compiled version is faster, but **full speed is not reached**. [Implementation and measurements](research/ay38605/GATE-LOGIC.md).
 
 [Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
 

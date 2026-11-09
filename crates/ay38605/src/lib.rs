@@ -1,9 +1,15 @@
 //! AY-3-8605 switch-level model. Game behavior comes exclusively from the netlist.
 // Solver adapted from Visual6502 / Cole Johnson (MIT); see LICENSE.
 // The generated netlist is CC BY 4.0; see DATA-LICENSE.md.
+mod compiled;
 #[allow(dead_code)] // Preserve all recovered node names for probes.
 mod data;
+pub mod reference;
+#[cfg(not(feature = "reference-engine"))]
+pub use GateCircuit as Circuit;
 use data::*;
+#[cfg(feature = "reference-engine")]
+pub use reference::ReferenceCircuit as Circuit;
 use std::cell::RefCell;
 
 const NODE_COUNT: usize = 1524;
@@ -12,49 +18,42 @@ const WIDTH: usize = 228;
 const HEIGHT: usize = 320;
 
 #[derive(Debug)]
-pub struct Circuit {
+pub struct GateCircuit {
+    #[cfg(feature = "profile")]
+    pub metrics: [u64; 3],
     pub state: [u8; NODE_COUNT],
     pulls: [i8; NODE_COUNT],
-    on: [bool; TRANS_COUNT],
-    gates: Vec<Vec<usize>>,
-    terminals: Vec<Vec<usize>>,
-    c1: [usize; TRANS_COUNT],
-    c2: [usize; TRANS_COUNT],
-    seen: [u32; NODE_COUNT],
     queued: [bool; NODE_COUNT],
-    group: Vec<usize>,
     next: Vec<usize>,
-    generation: u32,
+    work: Vec<usize>,
+    ground_count: [u16; NODE_COUNT],
+    power_count: [u16; NODE_COUNT],
+    bridge_count: [u16; NODE_COUNT],
 }
-impl Default for Circuit {
+impl Default for GateCircuit {
     fn default() -> Self {
         let mut c = Self {
+            #[cfg(feature = "profile")]
+            metrics: [0; 3],
             state: [0; NODE_COUNT],
             pulls: [0; NODE_COUNT],
-            on: [false; TRANS_COUNT],
-            gates: vec![vec![]; NODE_COUNT],
-            terminals: vec![vec![]; NODE_COUNT],
-            c1: [0; TRANS_COUNT],
-            c2: [0; TRANS_COUNT],
-            seen: [0; NODE_COUNT],
             queued: [false; NODE_COUNT],
-            group: Vec::with_capacity(NODE_COUNT),
             next: Vec::with_capacity(NODE_COUNT),
-            generation: 0,
+            work: Vec::with_capacity(NODE_COUNT),
+            ground_count: [0; NODE_COUNT],
+            power_count: [0; NODE_COUNT],
+            bridge_count: [0; NODE_COUNT],
         };
         for &(n, pull) in NODES {
             c.pulls[n] = i8::from(pull);
         }
-        for (t, &(gate, mut a, mut b)) in TRANSISTORS.iter().enumerate() {
+        for &(gate, mut a, mut b) in TRANSISTORS {
             if a == GND || a == VCC {
                 std::mem::swap(&mut a, &mut b);
             }
-            c.c1[t] = a;
-            c.c2[t] = b;
-            c.gates[gate].push(t);
-            c.terminals[a].push(t);
-            c.terminals[b].push(t);
-            c.on[t] = gate == VCC;
+            if gate == VCC {
+                c.connection_change(a, b, true);
+            }
         }
         c.state[VCC] = 1;
         c
@@ -68,99 +67,144 @@ impl std::fmt::Display for UnstableCircuit {
     }
 }
 impl std::error::Error for UnstableCircuit {}
-impl Circuit {
-    fn visit(&mut self, n: usize) {
-        if self.seen[n] == self.generation {
+impl GateCircuit {
+    #[inline(always)]
+    fn connection_change(&mut self, a: usize, b: usize, on: bool) {
+        let delta = if on { 1 } else { u16::MAX };
+        if b == GND {
+            self.ground_count[a] = self.ground_count[a].wrapping_add(delta);
+        } else if b == VCC {
+            self.power_count[a] = self.power_count[a].wrapping_add(delta);
+        } else {
+            self.bridge_count[a] = self.bridge_count[a].wrapping_add(delta);
+            self.bridge_count[b] = self.bridge_count[b].wrapping_add(delta);
+        }
+    }
+    #[inline(always)]
+    fn compiled_recalc(&mut self, n: usize) {
+        #[cfg(feature = "profile")]
+        {
+            self.metrics[0] += 1;
+        }
+        let other = compiled::PEERS[n];
+        if other == 65535 {
+            let (gates, base, size) = compiled::BLOCKS[compiled::NODE_BLOCK[n]];
+            let mut pattern = 0;
+            for (bit, &gate) in gates.iter().enumerate() {
+                pattern |= (self.state[gate] as usize) << bit;
+            }
+            let (start, len) = compiled::VIEWS[base + pattern * size + compiled::NODE_LOCAL[n]];
+            let group = &compiled::MEMBERS[start..start + len];
+            let mut ground = 0;
+            let mut power = 0;
+            for &g in group {
+                ground |= self.ground_count[g];
+                power |= self.power_count[g];
+            }
+            let v = if ground != 0 {
+                0
+            } else if power != 0 {
+                1
+            } else {
+                self.floating_value(group)
+            };
+            for &g in group {
+                self.update_node(g, v);
+            }
             return;
         }
-        self.seen[n] = self.generation;
-        self.group.push(n);
-        if n == GND || n == VCC {
+        let linked = other != n && self.bridge_count[n] != 0;
+        let ground = self.ground_count[n] + if linked { self.ground_count[other] } else { 0 };
+        let power = self.power_count[n] + if linked { self.power_count[other] } else { 0 };
+        let v = if ground != 0 {
+            0
+        } else if power != 0 {
+            1
+        } else if linked {
+            self.floating_value(&[n, other])
+        } else {
+            self.floating_value(&[n])
+        };
+        self.update_node(n, v);
+        if linked {
+            self.update_node(other, v);
+        }
+    }
+    #[inline(always)]
+    fn floating_value(&self, group: &[usize]) -> u8 {
+        for &n in group {
+            if self.pulls[n] == 1 {
+                return 1;
+            }
+            if self.pulls[n] == -1 {
+                return 0;
+            }
+            if self.state[n] != 0 {
+                return 1;
+            }
+        }
+        0
+    }
+    #[inline(always)]
+    fn update_node(&mut self, g: usize, value: u8) {
+        if self.state[g] == value {
             return;
         }
-        for i in 0..self.terminals[n].len() {
-            let t = self.terminals[n][i];
-            if self.on[t] {
-                self.visit(if self.c1[t] == n {
-                    self.c2[t]
-                } else {
-                    self.c1[t]
-                });
+        #[cfg(feature = "profile")]
+        {
+            self.metrics[1] += 1;
+        }
+        self.state[g] = value;
+        for &(a, b) in
+            &compiled::FANOUT[compiled::FANOUT_OFFSETS[g]..compiled::FANOUT_OFFSETS[g + 1]]
+        {
+            self.connection_change(a, b, value != 0);
+            self.enqueue(a);
+            if value == 0 {
+                self.enqueue(b);
             }
         }
     }
+
+    #[inline(always)]
     fn enqueue(&mut self, n: usize) {
         if n == GND || n == VCC || self.queued[n] {
             return;
+        }
+        #[cfg(feature = "profile")]
+        {
+            self.metrics[2] += 1;
         }
         self.queued[n] = true;
         self.next.push(n);
     }
     fn settle(&mut self, mut list: Vec<usize>) -> Result<(), UnstableCircuit> {
         self.next.clear();
-        self.queued.fill(false);
         for _ in 0..100 {
             if list.is_empty() {
+                self.work = list;
                 return Ok(());
+            }
+            for &n in &list {
+                self.queued[n] = false;
             }
             for &n in &list {
                 if n == GND || n == VCC {
                     continue;
                 }
-                self.group.clear();
-                self.generation = self.generation.wrapping_add(1);
-                if self.generation == 0 {
-                    self.seen.fill(0);
-                    self.generation = 1;
-                }
-                self.visit(n);
-                let mut value = 0;
-                if self.seen[GND] == self.generation {
-                } else if self.seen[VCC] == self.generation {
-                    value = 1;
-                } else {
-                    for &g in &self.group {
-                        if self.pulls[g] == 1 {
-                            value = 1;
-                            break;
-                        }
-                        if self.pulls[g] == -1 {
-                            break;
-                        }
-                        if self.state[g] != 0 {
-                            value = 1;
-                            break;
-                        }
-                    }
-                }
-                for i in 0..self.group.len() {
-                    let g = self.group[i];
-                    if g == VCC || self.state[g] == value {
-                        continue;
-                    }
-                    self.state[g] = value;
-                    for j in 0..self.gates[g].len() {
-                        let t = self.gates[g][j];
-                        if self.on[t] == (value != 0) {
-                            continue;
-                        }
-                        self.on[t] = value != 0;
-                        self.enqueue(self.c1[t]);
-                        if value == 0 {
-                            self.enqueue(self.c2[t]);
-                        }
-                    }
-                }
+                self.compiled_recalc(n);
             }
             list.clear();
             std::mem::swap(&mut list, &mut self.next);
-            self.queued.fill(false);
         }
         Err(UnstableCircuit)
     }
     pub fn drive(&mut self, n: usize, high: bool) -> Result<(), UnstableCircuit> {
         self.pulls[n] = if high { 1 } else { -1 };
-        self.settle(vec![n])
+        let mut work = std::mem::take(&mut self.work);
+        work.clear();
+        work.push(n);
+        self.settle(work)
     }
 }
 

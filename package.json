@@ -8,7 +8,10 @@
     "build": "tsc --noEmit && vite build web",
     "preview": "vite preview web --host 127.0.0.1",
     "test": "node --import tsx --test web/src/*.test.ts",
-    "build:chip": "node scripts/build-chip.mjs"
+    "build:chip": "node scripts/build-chip.mjs",
+    "test:engines": "node scripts/check-chip-engines.mjs",
+    "test:engines:long": "node scripts/check-chip-engines.mjs --long",
+    "bench:chip": "node scripts/benchmark-chip.mjs"
   },
   "devDependencies": {
     "@types/three": "^0.187.0",

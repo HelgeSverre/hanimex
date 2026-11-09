@@ -14,7 +14,9 @@ let input: Extract<ChipCommand, { kind: "input" }> = {
 };
 let chip: ChipWasm | undefined;
 let clocks = 128,
-  elapsed = 0,
+  activeMs = 0,
+  runSince = 0,
+  runClocks = 0,
   lastSent = 0;
 const fail = (error: unknown) => {
   running = false;
@@ -42,7 +44,14 @@ function publish() {
       nodes,
       clocks,
       fields: chip.chip_fields(),
-      speed: elapsed ? clocks / (elapsed / 1000) / 3_579_545 : 0,
+      speed:
+        ((runClocks /
+          Math.max(
+            1,
+            activeMs + (running ? performance.now() - runSince : 0),
+          )) *
+          1000) /
+        3_579_545,
     },
     [raster.buffer, nodes.buffer],
   );
@@ -55,10 +64,8 @@ function advance(count: number) {
       throw new Error("Chip input failed");
     dirty = false;
   }
-  const start = performance.now();
   if (count === 0.5 ? chip.chip_half_step() : chip.chip_run(count))
     throw new Error("Chip circuit did not settle");
-  elapsed += performance.now() - start;
   clocks += count;
 }
 worker.onmessage = ({ data }) => {
@@ -67,6 +74,8 @@ worker.onmessage = ({ data }) => {
       input = data;
       dirty = true;
     } else if (data.kind === "run") {
+      if (running && !data.running) activeMs += performance.now() - runSince;
+      if (!running && data.running) runSince = performance.now();
       running = data.running;
       if (!running) publish();
     } else if (!running) {
@@ -82,18 +91,27 @@ worker.onmessage = ({ data }) => {
   }
 };
 async function start() {
-  const response = await fetch(new URL("./ay38605.wasm", import.meta.url));
+  const binary =
+    self.name === "reference"
+      ? new URL("./ay38605-reference.wasm", import.meta.url)
+      : new URL("./ay38605.wasm", import.meta.url);
+  const response = await fetch(binary);
   if (!response.ok) throw new Error("Could not load the chip simulator");
   const { instance } = await WebAssembly.instantiate(
     await response.arrayBuffer(),
   );
   chip = instance.exports as unknown as ChipWasm;
   if (chip.chip_init()) throw new Error("Chip reset failed");
+  if (running) runSince = performance.now();
   publish();
   const tick = () => {
     try {
       if (running) {
-        advance(2048);
+        const deadline = performance.now() + 16;
+        do {
+          advance(256);
+          runClocks += 256;
+        } while (performance.now() < deadline);
         if (performance.now() - lastSent > 100) publish();
       }
       setTimeout(tick, running ? 0 : 50);

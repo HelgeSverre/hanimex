@@ -2,12 +2,20 @@ import type { ChipInspector } from "./inspector";
 import type { Controls, Game, SoundEvent } from "../games";
 import type { ChipFrame, ChipCommand } from "./runtime";
 
+const engine =
+  new URLSearchParams(location.search).get("engine") === "reference"
+    ? "reference"
+    : "compiled";
+const engineLabel =
+  engine === "reference" ? "Transistor reference" : "Compiled logic";
+
 /** Browser adapter; the worker supplies pixels from chip pins, never game objects. */
 export class SubmarineChipGame implements Game {
   scores = [0, 0];
   ended = false;
   private worker = new Worker(new URL("./worker.ts", import.meta.url), {
     type: "module",
+    name: engine,
   });
   private display = document.createElement("canvas");
   private context: CanvasRenderingContext2D;
@@ -31,6 +39,22 @@ export class SubmarineChipGame implements Game {
     this.status.className = "chip-status";
     this.status.innerHTML =
       "<span>AY-3-8605 · starting</span><small>Transistor simulation · sound not modeled</small><button class='chip-open'>Open cartridge</button>";
+    this.status.querySelector("small")!.textContent =
+      engineLabel + " · sound not modeled";
+    const switchEngine = document.createElement("a");
+    const url = new URL(location.href);
+    url.searchParams.set(
+      "engine",
+      engine === "reference" ? "compiled" : "reference",
+    );
+    switchEngine.href = url.href;
+    switchEngine.className = "chip-open";
+    switchEngine.textContent =
+      engine === "reference"
+        ? "Use compiled logic"
+        : "Use transistor reference";
+    switchEngine.title = "Switching engines resets the cartridge";
+    this.status.append(switchEngine);
     document.body.append(this.status);
     this.status.querySelector("button")!.onclick = async () => {
       const button = this.status.querySelector("button")!;

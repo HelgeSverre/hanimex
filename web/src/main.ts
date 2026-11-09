@@ -72,9 +72,9 @@ root.innerHTML = `<a class="skip-link" href="#screen">Skip to game screen</a><di
 <section class="console-area" aria-label="Hanimex-inspired game console"><div class="console-intro"><h2 class="sr-only">Console</h2><span class="status-led on" id="power-status">POWER ON</span></div><div class="console" id="console">${wing(0)}<div class="console-middle"><button class="cartridge-slot" id="slot" aria-label="Empty cartridge slot. Select a cartridge from the shelf."><span class="slot-caption">INSERT CARTRIDGE</span></button><div class="key-bank" aria-label="Game selection">${Array.from({ length: 10 }, (_, n) => `<button class="game-key" data-mode="${n}" aria-label="Game ${n + 1}" aria-pressed="false" disabled>${n + 1}</button>`).join("")}</div><div class="console-controls">${switchMarkup("power", "ON/OFF", true, "power")}${switchMarkup("speed", "SPEED", false)}${switchMarkup("left-size", "L-TEAM", false)}${switchMarkup("right-size", "R-TEAM", false)}${switchMarkup("serve", "AUTO", true)}<div class="toggle-cell reset-cell"><span>GAME RESET</span><button id="reset" class="reset-key" aria-label="Reset game">RESET</button></div></div><div class="console-badge">HANIMEX</div></div>${wing(1)}</div><div class="console-bottom"><div class="mode-title"><p id="game-title"></p><span id="game-mode"></span></div><button class="text-button" id="eject" disabled>${icon("eject")}Eject</button></div><div class="insert-hint" id="insert-hint">Drag or click a cartridge to insert.</div><div class="state-toast" role="status" aria-live="polite" id="status-message"></div></section></main>
 <section class="library" aria-labelledby="library-title"><div class="library-heading"><h2 id="library-title">Cartridges</h2></div><div class="cartridge-shelf">${cartridges.map((c) => `<div class="cartridge-wrap" data-cartridge="${c.id}"><button class="cartridge" data-id="${c.id}" style="--cart-color:${cartColor(c)}" aria-label="Insert ${c.short}, ${c.code}" aria-pressed="false">${cartridgeMarkup(c)}</button><span class="cartridge-caption">${c.code}</span></div>`).join("")}</div></section>
 <footer class="app-footer"><div class="footer-controls"><p><span class="keycap">W A S D</span> Player 1 <span class="keycap">SPACE</span> Fire</p><p class="secondary-control"><span class="keycap">← ↑ ↓ →</span> Player 2 <span class="keycap">ENTER</span> Fire</p><p class="secondary-control"><span class="keycap">P</span> Pause</p></div><button class="recreation-note" id="about-open">Browser recreation · About</button></footer></div>
-<dialog class="dialog" id="help-dialog" aria-labelledby="help-title"><button class="dialog-close" data-close="help-dialog">Close</button><h2 id="help-title">How to play</h2><p>Drag a cartridge from the shelf into the console slot. You can also click one or press Enter while it’s focused. The orange keys select the games on that cartridge.</p><div class="dialog-controls"><div><strong>PLAYER ONE</strong><p>W A S D to move<br>Space to serve / fire</p></div><div><strong>PLAYER TWO</strong><p>Arrow keys to move<br>Enter to serve / fire</p></div></div><p>Drag either stick on the console to move. The red buttons serve or fire. SPEED, L-TEAM and R-TEAM change the ball or bat settings in the sports games. AUTO serves the ball for you.</p><h3 id="help-game-name">The game</h3><p id="help-game-info">Insert a cartridge to see its controls.</p><h3>Optional contact faults</h3><label><input id="nostalgia-toggle" type="checkbox"/>Nostalgia mode: occasional bad contacts</label><p>When enabled, cartridges occasionally fail to load. Blow into your microphone or use the hold button, then reinsert. Turn this setting off for normal loading.</p><button class="quiet-button" id="try-ritual">Try a contact fault</button></dialog>
-<dialog class="dialog" id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" data-close="about-dialog">Close</button><h2 id="about-title">About this recreation</h2><p>Inspired by the Hanimex and RPG SD-050 consoles in the Soundic PC-50x family. “625-B” was part of the PAL television label. Each cartridge held an entire game chip, rather than an ordinary ROM.</p><h3>What is implemented</h3><p>Submarine runs the recovered AY-3-8605 transistor netlist in Rust/WebAssembly. It is experimental and runs below hardware speed; colour decoding and analog sound are not yet modeled. Other cartridges remain behavioral recreations. The console and cartridge labels are newly drawn.</p><p>The project includes research, a Rust prototype, and recovered Submarine chip data traced by Cole Johnson from Sean Riddle’s die photographs.</p><h3>Credits</h3><p><a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson’s Submarine study</a> · tracing with Sean Riddle’s die photos · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br><a href="https://www.pong-story.com/sd050.htm" target="_blank" rel="noopener">David Winter’s Pong-Story</a><br><a href="https://typographic.systems/obel-mono" target="_blank" rel="noopener">Obel Mono by Typographic Systems</a> · SIL OFL<br>Inter by Rasmus Andersson · SIL OFL</p></dialog>
-<dialog class="dialog" id="blow-dialog" aria-labelledby="blow-title"><button class="dialog-close" data-close="blow-dialog">Close</button><h2 id="blow-title">Cartridge not detected</h2><p>Clean the contacts, then reinsert the cartridge.</p><div class="blow-cartridge" id="blow-cart"><span>SUBMARINE<br>PC-505</span></div><div class="blow-progress" role="progressbar" aria-label="Cartridge cleaning" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="blow-meter"></span></div><p id="blow-status" class="blow-status" role="status" aria-live="polite">Use your microphone, or hold the button for a second.</p><div class="blow-actions"><button class="primary-button" id="use-mic">Use microphone</button><button class="quiet-button hold-blow" id="hold-blow">Hold to blow</button><button class="primary-button" id="reinsert" hidden>Reinsert cartridge</button></div><p class="tiny-note">Microphone audio is measured only in this tab. Nothing is recorded or uploaded.</p></dialog>`;
+<dialog class="dialog" id="help-dialog" aria-labelledby="help-title"><button class="dialog-close" data-close="help-dialog">Close</button><h2 id="help-title">How to play</h2><p>Drag a cartridge from the shelf into the console slot. You can also click one or press Enter while it’s focused. The orange keys select the games on that cartridge.</p><div class="dialog-controls"><div><strong>PLAYER ONE</strong><p>W A S D to move<br>Space to serve / fire</p></div><div><strong>PLAYER TWO</strong><p>Arrow keys to move<br>Enter to serve / fire</p></div></div><p>Drag either stick on the console to move. The red buttons serve or fire. SPEED, L-TEAM and R-TEAM change the ball or bat settings in the sports games. AUTO serves the ball for you.</p><h3 id="help-game-name">The game</h3><p id="help-game-info">Insert a cartridge to see its controls.</p><h3>Optional contact faults</h3><label><input id="nostalgia-toggle" type="checkbox"/>Nostalgia mode: occasional bad contacts</label><p>When enabled, each cartridge insertion has a 30% chance of bad contacts. Blow into your microphone or use the hold button, then reinsert. Turn this setting off for normal loading.</p><button class="quiet-button" id="try-ritual">Try a contact fault</button></dialog>
+<dialog class="dialog" id="about-dialog" aria-labelledby="about-title"><button class="dialog-close" data-close="about-dialog">Close</button><h2 id="about-title">About this recreation</h2><p>Inspired by the Hanimex and RPG SD-050 consoles in the Soundic PC-50x family. “625-B” was part of the PAL television label. Each cartridge held an entire game chip, rather than an ordinary ROM.</p><h3>What is implemented</h3><p>Submarine runs compiled AY-3-8605 logic or the preserved transistor reference in Rust/WebAssembly. It is experimental and runs below hardware speed; colour decoding and analog sound are not yet modeled. Other cartridges remain behavioral recreations. The console and cartridge labels are newly drawn.</p><p>The project includes research, a Rust prototype, and recovered Submarine chip data traced by Cole Johnson from Sean Riddle’s die photographs.</p><h3>Credits</h3><p><a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson’s Submarine study</a> · tracing with Sean Riddle’s die photos · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br><a href="https://www.pong-story.com/sd050.htm" target="_blank" rel="noopener">David Winter’s Pong-Story</a><br><a href="https://typographic.systems/obel-mono" target="_blank" rel="noopener">Obel Mono by Typographic Systems</a> · SIL OFL<br>Inter by Rasmus Andersson · SIL OFL</p></dialog>
+<dialog class="dialog" id="blow-dialog" aria-labelledby="blow-title"><button class="dialog-close" data-close="blow-dialog">Close</button><h2 id="blow-title">Give it a little blow</h2><p>Ah, bad contacts. You know what to do.</p><div class="blow-cartridge" id="blow-cart"><span>SUBMARINE<br>PC-505</span></div><div class="blow-progress" role="progressbar" aria-label="Cartridge cleaning" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="blow-meter"></span></div><p id="blow-status" class="blow-status" role="status" aria-live="polite">Use your microphone, or hold the button for a second.</p><div class="blow-actions"><button class="primary-button" id="use-mic">Use microphone</button><button class="quiet-button hold-blow" id="hold-blow">Hold to blow</button><button class="primary-button" id="reinsert" hidden>Reinsert cartridge</button></div><p class="tiny-note">Microphone audio is measured only in this tab. Nothing is recorded or uploaded.</p></dialog>`;
 function el<T extends HTMLElement = HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (!element) throw new Error(`Missing element ${selector}`);
@@ -211,7 +211,7 @@ function insert(cartridge: Cartridge, clean = false) {
   active = cartridge;
   mode = cartridge.id === "sports" ? 2 : cartridge.id === "submarine" ? 3 : 0;
   replaceGame(cartridge.id, mode);
-  contactFault = !clean && nostalgia && Math.random() < 0.22;
+  contactFault = !clean && nostalgia && Math.random() < 0.30;
   bootTime = 0.3;
   paused = false;
   clearInput();
@@ -586,15 +586,14 @@ let micStream: MediaStream | undefined,
   micAnalyser: AnalyserNode | undefined,
   micFrame = 0,
   micEpoch = 0,
-  micDeadline = 0,
-  micStarted = 0,
-  micBaseline = 0.015;
+  micDeadline = 0;
 let blowProgress = 0,
   holding = false,
   cleaned = false;
 const blowDialog = el<HTMLDialogElement>("#blow-dialog");
 function stopMic() {
   micEpoch++;
+  blowDialog.classList.remove("is-blowing");
   cancelAnimationFrame(micFrame);
   micStream?.getTracks().forEach((t) => t.stop());
   micStream = undefined;
@@ -614,10 +613,11 @@ function updateBlow(amount: number) {
   );
   if (blowProgress >= 1) {
     cleaned = true;
+    blowDialog.classList.add("is-clean");
     holding = false;
     stopMic();
     el("#blow-status").textContent =
-      "Contacts cleaned. Reinsert the cartridge.";
+      "That should do it. Try again.";
     el<HTMLButtonElement>("#hold-blow").disabled = true;
     el<HTMLButtonElement>("#use-mic").hidden = true;
     el<HTMLButtonElement>("#reinsert").hidden = false;
@@ -626,6 +626,7 @@ function updateBlow(amount: number) {
 }
 function openRepair() {
   if (!active) return;
+  blowDialog.classList.remove("is-clean", "is-blowing");
   blowProgress = 0;
   cleaned = false;
   holding = false;
@@ -672,11 +673,9 @@ el("#use-mic").addEventListener("click", async () => {
     micAnalyser = micContext.createAnalyser();
     micAnalyser.fftSize = 1024;
     micContext.createMediaStreamSource(stream).connect(micAnalyser);
-    micStarted = performance.now();
-    micDeadline = micStarted + 12000;
-    micBaseline = 0.015;
+    micDeadline = performance.now() + 12000;
     el("#blow-status").textContent =
-      "Listening locally. Blow toward your microphone.";
+      "Listening… a little puff will do.";
     const buffer = new Float32Array(1024);
     let previous = performance.now();
     const measure = (now: number) => {
@@ -687,8 +686,10 @@ el("#use-mic").addEventListener("click", async () => {
       let energy = 0;
       for (const value of buffer) energy += value * value;
       const rms = Math.sqrt(energy / buffer.length);
-      if (now - micStarted < 400) micBaseline = Math.max(micBaseline, rms);
-      else if (rms > Math.max(0.035, micBaseline * 2.3)) updateBlow(dt / 0.8);
+// Deliberately forgiving: a quiet puff counts without startup calibration.
+      const audible = rms > 0.006;
+      blowDialog.classList.toggle("is-blowing", audible || holding);
+      if (audible) updateBlow(dt / 0.6);
       if (cleaned) return;
       if (now > micDeadline) {
         stopMic();
@@ -710,25 +711,31 @@ hold.addEventListener("pointerdown", (e) => {
   if (cleaned) return;
   hold.setPointerCapture(e.pointerId);
   holding = true;
+  blowDialog.classList.add("is-blowing");
   el("#blow-status").textContent = "Blowing…";
 });
 hold.addEventListener("lostpointercapture", () => {
   holding = false;
+  blowDialog.classList.remove("is-blowing");
 });
 hold.addEventListener("keydown", (e) => {
   if (e.code === "Space" || e.code === "Enter") {
     e.preventDefault();
     holding = true;
+    blowDialog.classList.add("is-blowing");
   }
 });
 hold.addEventListener("keyup", () => {
   holding = false;
+  blowDialog.classList.remove("is-blowing");
 });
 hold.addEventListener("blur", () => {
   holding = false;
+  blowDialog.classList.remove("is-blowing");
 });
 blowDialog.addEventListener("close", () => {
   holding = false;
+  blowDialog.classList.remove("is-blowing");
 });
 el("#reinsert").addEventListener("click", () => {
   const cart = active;
@@ -930,7 +937,9 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
       const view2d = document.createElement("a");
       view2d.id = "view-2d";
       view2d.className = "quiet-button";
-      view2d.href = "?view=2d";
+      const viewUrl = new URL(location.href);
+      viewUrl.searchParams.set("view", "2d");
+      view2d.href = viewUrl.href;
       view2d.textContent = "2D view";
       el(".top-actions").prepend(view2d);
       document.querySelectorAll<HTMLButtonElement>(".cartridge").forEach((b) =>
@@ -962,10 +971,21 @@ if (new URLSearchParams(location.search).get("view") !== "2d") {
 if (new URLSearchParams(location.search).get("view") === "2d") {
   const link = document.createElement("a");
   link.className = "quiet-button";
-  link.href = "./";
+  const viewUrl = new URL(location.href);
+  viewUrl.searchParams.delete("view");
+  link.href = viewUrl.href;
   link.textContent = "3D view";
   link.style.textDecoration = "none";
   el(".top-actions").prepend(link);
 }
 
 window.addEventListener("pagehide", () => game?.setRunning?.(false));
+
+// A hidden document may stop animation frames before the game sees its next frame.
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) game?.setRunning?.(false);
+});
+if (new URLSearchParams(location.search).has("engine")) {
+  const cartridge = cartridgeById("submarine");
+  if (cartridge) insert(cartridge, true);
+}

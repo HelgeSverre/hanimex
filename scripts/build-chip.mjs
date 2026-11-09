@@ -1,10 +1,28 @@
-import { execFileSync } from 'node:child_process';
-import { copyFileSync, chmodSync } from 'node:fs';
-execFileSync(process.execPath, ['scripts/build-netlist.mjs'], {stdio:'inherit'});
-for (const args of [['fmt'], ['build','--release','--target','wasm32-unknown-unknown']]) {
-  execFileSync('cargo',[...args,'--manifest-path','crates/ay38605/Cargo.toml'],{stdio:'inherit'});
+import { execFileSync } from "node:child_process";
+import { copyFileSync, chmodSync } from "node:fs";
+for (const script of ["build-netlist", "build-gates", "build-chip-layout"])
+  execFileSync(process.execPath, [`scripts/${script}.mjs`], {
+    stdio: "inherit",
+  });
+const manifest = ["--manifest-path", "crates/ay38605/Cargo.toml"];
+execFileSync("cargo", ["fmt", ...manifest], { stdio: "inherit" });
+for (const reference of [false, true]) {
+  execFileSync(
+    "cargo",
+    [
+      "build",
+      "--release",
+      "--target",
+      "wasm32-unknown-unknown",
+      ...manifest,
+      ...(reference ? ["--features", "reference-engine"] : []),
+    ],
+    { stdio: "inherit" },
+  );
+  const path = `web/src/chip/ay38605${reference ? "-reference" : ""}.wasm`;
+  copyFileSync(
+    "crates/ay38605/target/wasm32-unknown-unknown/release/ay38605.wasm",
+    path,
+  );
+  chmodSync(path, 0o644);
 }
-copyFileSync('crates/ay38605/target/wasm32-unknown-unknown/release/ay38605.wasm','web/src/chip/ay38605.wasm');
-
-chmodSync("web/src/chip/ay38605.wasm",0o644);
-execFileSync(process.execPath,["scripts/build-chip-layout.mjs"],{stdio:"inherit"});

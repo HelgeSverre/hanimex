@@ -1,5 +1,7 @@
 # AY-3-8605 switch-level experiment
 
+This document describes the transistor reference. The `submarine-gate-logic` branch adds a faster compiled implementation; see [GATE-LOGIC.md](GATE-LOGIC.md).
+
 The `submarine-netlist` branch replaces the Submarine browser recreation with a Rust/Wasm switch-level simulator. The other cartridges remain behavioral recreations. Production remains on `main`.
 
 ## What runs

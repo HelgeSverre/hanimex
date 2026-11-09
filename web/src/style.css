@@ -1859,3 +1859,33 @@ a {
 .chip-inspector a { color: inherit; }
 @media(max-width: 700px) { .chip-inspector-body { grid-template-columns: 1fr; padding: .75rem; } .chip-inspector header { padding: .75rem; } .chip-probes { display: grid; gap: .4rem; } .chip-video { max-width: 300px; } }
 .chip-inspector header { position: sticky; top: 0; z-index: 1; background: #202621; }
+
+.chip-status a.chip-open { text-align: center; text-decoration: none; }
+
+/* The repair ritual: motion follows breath or the held button. */
+#blow-dialog { text-align: center; }
+#blow-dialog .blow-actions { justify-content: center; }
+#blow-dialog .blow-cartridge { transform: rotate(-9deg); }
+#blow-dialog.is-clean .blow-cartridge { transform: rotate(0); }
+#blow-dialog.is-clean .blow-progress span { background: var(--color-cart-teal); }
+#blow-dialog .blow-cartridge::before {
+  content: "·  ·  ·";
+  position: absolute;
+  bottom: -36px;
+  color: var(--color-metal);
+  font-size: 26px;
+  opacity: 0;
+}
+#blow-dialog.is-blowing .blow-cartridge::before { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  #blow-dialog[open] { animation: repair-arrive 250ms ease-out; }
+  #blow-dialog .blow-cartridge { transition: transform 300ms ease-out; }
+  #blow-dialog.is-blowing .blow-cartridge { animation: repair-wiggle 350ms ease-in-out infinite alternate; }
+  #blow-dialog.is-blowing .blow-cartridge::before { animation: repair-dust 650ms ease-out infinite; }
+  #blow-dialog.is-clean .blow-cartridge { animation: repair-ready 400ms ease-out; }
+  #blow-dialog .blow-progress span { transition: transform 80ms linear; }
+}
+@keyframes repair-arrive { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes repair-wiggle { from { transform: rotate(-11deg) translateY(0); } to { transform: rotate(-5deg) translateY(-4px); } }
+@keyframes repair-dust { from { opacity: .8; transform: translateY(-8px) scale(.7); } to { opacity: 0; transform: translateY(18px) scale(1.5); } }
+@keyframes repair-ready { 0% { transform: rotate(-9deg); } 60% { transform: rotate(4deg) translateY(-8px); } 100% { transform: rotate(0); } }
