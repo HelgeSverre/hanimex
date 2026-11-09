@@ -11,3 +11,8 @@ Palette: warm dark brown room, ivory physical hardware, charcoal molded plastic,
 Responsive: fill desktop viewport without vertical scrolling at ordinary laptop sizes; smaller screens stack TV and console and allow the cartridge shelf to scroll. Each cartridge remains keyboard insertable. Controls and instructions remain available.
 
 Accuracy: all game cores are behavioral browser recreations, explicitly distinguished from original-chip/netlist verification. Do not fabricate restored ROMs or preservation accuracy.
+
+
+## WebGL experiment
+
+On branch webgl-experiment, the first viewport is a real Three.js/WebGL desk scene. A larger, deeper and boxier CRT occupies the left; the cream/charcoal/orange console is on the right; eight cartridge objects sit at the front. Game graphics are a live CanvasTexture on the 4:3 curved screen. Raycasting drives cartridge pick/drop, keys, switches, sticks and screen aim. TV view hides foreground cartridges so they cannot obscure play. Orbit/zoom and an HTML cartridge popover provide alternate access; ?view=2d preserves the original interface. The original production domain remains on main; the experiment is published separately.

@@ -1679,3 +1679,155 @@ a {
 .console-bottom:has(.mode-title p:empty) {
   display: none;
 }
+/* WebGL experiment: the existing UI remains available at ?view=2d. */
+.webgl-mode .app {
+  height: 100svh;
+  min-height: 560px;
+  display: grid;
+  grid-template-rows: 92px minmax(0, 1fr) 56px;
+  padding-inline: 0;
+}
+.webgl-mode .masthead {
+  padding-inline: clamp(20px, 3vw, 56px);
+  z-index: var(--z-raised);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-rule);
+}
+.webgl-mode .app-footer {
+  padding: 12px clamp(20px, 3vw, 56px);
+  position: relative;
+  z-index: var(--z-raised);
+  background: var(--color-paper);
+  margin: 0;
+}
+.scene-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+  background: var(--color-paper);
+}
+.scene-stage > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline-offset: -4px;
+}
+.scene-toolbar {
+  position: absolute;
+  left: clamp(20px, 3vw, 56px);
+  right: clamp(20px, 3vw, 56px);
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  pointer-events: none;
+}
+.scene-toolbar button {
+  pointer-events: auto;
+  background: var(--color-paper);
+}
+.scene-hint {
+  color: var(--color-ink);
+  font-size: 11px;
+  text-shadow: 0 1px 4px var(--color-shadow);
+}
+.scene-view-actions {
+  display: flex;
+  gap: 10px;
+}
+.webgl-mode .library:not(:popover-open) {
+  display: none;
+}
+.webgl-mode .library:popover-open {
+  position: fixed;
+  inset: auto 20px 85px;
+  margin: 0;
+  padding: 20px;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  z-index: var(--z-modal);
+  max-width: none;
+  width: auto;
+  box-shadow: 0 16px 40px var(--color-shadow);
+}
+.webgl-mode #view-2d {
+  text-decoration: none;
+  font-size: 12px;
+}
+.webgl-mode .scene-stage .mobile-controls {
+  position: absolute;
+  bottom: 72px;
+  left: 20px;
+  right: 20px;
+  width: auto;
+  display: none;
+}
+@media (max-width: 800px) {
+  .webgl-mode .app {
+    grid-template-rows: 78px minmax(0, 1fr) 70px;
+  }
+  .webgl-mode .masthead {
+    gap: 12px;
+    padding-inline: 16px;
+  }
+  .webgl-mode .wordmark p {
+    display: none;
+  }
+  .webgl-mode .top-actions {
+    gap: 6px;
+  }
+  .webgl-mode .quiet-button {
+    min-height: 38px;
+  }
+  .scene-hint {
+    display: none;
+  }
+  .scene-toolbar {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+  .scene-view-actions {
+    gap: 7px;
+  }
+  .webgl-mode .app-footer {
+    padding-inline: 16px;
+    gap: 8px;
+  }
+  .webgl-mode .library:popover-open {
+    inset: auto 12px 92px;
+    padding: 16px;
+  }
+  .webgl-mode .tv-view .mobile-controls {
+    display: flex;
+  }
+  .webgl-mode .scene-stage .mobile-controls button {
+    background: var(--color-paper);
+  }
+  .webgl-mode .cartridge-shelf {
+    padding-bottom: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .webgl-mode .brand-symbol {
+    display: none;
+  }
+  .webgl-mode .wordmark h1 {
+    font-size: 16px;
+  }
+  .webgl-mode #view-2d {
+    padding-inline: 7px;
+  }
+  .webgl-mode .app-footer .recreation-note {
+    font-size: 9px;
+  }
+  .webgl-mode .scene-toolbar .quiet-button {
+    font-size: 11px;
+    padding-inline: 9px;
+  }
+}

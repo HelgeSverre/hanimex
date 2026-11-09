@@ -97,6 +97,7 @@ let simAccumulator = 0,
   lastTime = performance.now(),
   idleTime = 0;
 const controls = emptyControls();
+let focusScene: (() => void) | undefined;
 const keys = new Set<string>();
 const stickInputs = [
   { x: 0, y: 0, fire: false },
@@ -218,6 +219,7 @@ function insert(cartridge: Cartridge, clean = false) {
       : `${cartridge.short} inserted. ${cartridge.modes[mode]}.`,
   );
   canvas.focus({ preventScroll: true });
+  focusScene?.();
 }
 function eject() {
   if (!active) return;
@@ -821,3 +823,137 @@ function clampInput(n: number) {
 }
 syncUI();
 requestAnimationFrame(frame);
+
+// This branch defaults to the WebGL desk; ?view=2d retains the original interface.
+if (new URLSearchParams(location.search).get("view") !== "2d") {
+  void (async () => {
+    await document.fonts.ready;
+    const { WebGLDesk } = await import("./webgl");
+    const stage = document.createElement("main");
+    stage.className = "scene-stage";
+    stage.setAttribute("aria-label", "3D console desk");
+    stage.innerHTML =
+      '<div class="scene-toolbar"><button class="quiet-button" id="scene-library">Cartridges</button><span class="scene-hint">Drag to rotate · Scroll to zoom</span><div class="scene-view-actions"><button class="quiet-button" id="scene-repair" hidden>Clean contacts</button><button class="quiet-button" id="scene-eject" disabled>Eject</button><button class="quiet-button" id="scene-tv">TV view</button></div></div>';
+    const app = el(".app");
+    const library = el<HTMLElement>(".library");
+    const workbench = el<HTMLElement>(".workbench");
+    app.insertBefore(stage, el(".app-footer"));
+    let tv = false;
+    let desk: InstanceType<typeof WebGLDesk>;
+    const restore2D = () => {
+      desk?.dispose();
+      focusScene = undefined;
+      const mobile = stage.querySelector(".mobile-controls");
+      if (mobile) el(".tv-area").append(mobile);
+      document.body.classList.remove("webgl-mode");
+      el<HTMLAnchorElement>(".skip-link").href = "#screen";
+      workbench.hidden = false;
+      library.removeAttribute("popover");
+      stage.remove();
+      document.querySelector("#view-2d")?.remove();
+    };
+    try {
+      desk = new WebGLDesk(stage, canvas, {
+        state: () => ({
+          active: active?.id,
+          mode,
+          modeCount: active?.modes.length ?? 0,
+          fault: contactFault,
+          powered,
+          fast: controls.fast,
+          autoServe: controls.autoServe,
+          smallLeft: controls.smallLeft,
+          smallRight: controls.smallRight,
+          left: controls.left,
+          right: controls.right,
+        }),
+        insert: (id) => {
+          const cart = cartridgeById(id);
+          if (cart) insert(cart);
+          desk.focus();
+        },
+        eject: () => {
+          eject();
+          desk.focus();
+        },
+        mode: (n) => {
+          setMode(n);
+          desk.focus();
+        },
+        toggle: (id) => {
+          el(`#${id}`).click();
+          desk.focus();
+        },
+        fire: (n, down) => {
+          stickInputs[n].fire = down;
+        },
+        stick: (n, x, y) => {
+          stickInputs[n].x = x;
+          stickInputs[n].y = y;
+        },
+        aim: (value) => {
+          aim = value;
+        },
+        gesture: () => {
+          void audio.wake();
+        },
+      });
+      focusScene = () => desk.focus();
+      document.body.classList.add("webgl-mode");
+      el<HTMLAnchorElement>(".skip-link").href = "#scene-screen";
+      workbench.hidden = true;
+      library.setAttribute("popover", "auto");
+      el("#scene-library").addEventListener("click", () =>
+        library.togglePopover(),
+      );
+      el("#scene-repair").addEventListener("click", openRepair);
+      el("#scene-eject").addEventListener("click", () => {
+        eject();
+        desk.focus();
+      });
+      el("#scene-tv").addEventListener("click", () => {
+        tv = !tv;
+        desk.setTVView(tv);
+        el("#scene-tv").textContent = tv ? "Desk view" : "TV view";
+        desk.focus();
+      });
+      const view2d = document.createElement("a");
+      view2d.id = "view-2d";
+      view2d.className = "quiet-button";
+      view2d.href = "?view=2d";
+      view2d.textContent = "2D view";
+      el(".top-actions").prepend(view2d);
+      document.querySelectorAll<HTMLButtonElement>(".cartridge").forEach((b) =>
+        b.addEventListener("click", () => {
+          if (library.matches(":popover-open")) library.hidePopover();
+          desk.focus();
+        }),
+      );
+      const mobile = el(".mobile-controls");
+      stage.append(mobile);
+      stage.addEventListener("webgl-unavailable", () => {
+        restore2D();
+        setStatus("WebGL is unavailable. Using the 2D console.");
+      });
+      window.addEventListener(
+        "pagehide",
+        (event) => {
+          if (!event.persisted) desk.dispose();
+        },
+        { once: true },
+      );
+    } catch {
+      restore2D();
+      setStatus("WebGL is unavailable. Using the 2D console.");
+    }
+  })();
+}
+
+if (new URLSearchParams(location.search).get("view") === "2d") {
+  const link = document.createElement("a");
+  link.className = "quiet-button";
+  link.href = "./";
+  link.textContent = "3D view";
+  link.style.textDecoration = "none";
+  el(".top-actions").prepend(link);
+}
