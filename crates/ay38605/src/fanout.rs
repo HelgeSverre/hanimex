@@ -1,4 +1,4 @@
-// Generated from CC BY 4.0 AY-3-8605 data: Cole Johnson / Sean Riddle.
+// Generated from CC BY 4.0 AY38605 data: Cole Johnson / Sean Riddle.
 use super::GateCircuit;
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn fanout_5(c: &mut GateCircuit, high: bool) {

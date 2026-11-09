@@ -12,10 +12,13 @@
     "test:engines": "node scripts/check-chip-engines.mjs",
     "test:engines:long": "node scripts/check-chip-engines.mjs --long",
     "bench:chip": "node scripts/benchmark-chip.mjs",
-    "test:edges": "node scripts/check-chip-edges.mjs",
+    "test:edges": "node scripts/check-chip-edges.mjs && node scripts/check-chip-edges.mjs ay38606",
     "test:games": "node scripts/check-chip-games.mjs",
     "build:recovered": "node scripts/build-recovered-chips.mjs",
-    "test:recovered": "node scripts/check-recovered-chips.mjs"
+    "test:recovered": "node scripts/check-recovered-chips.mjs",
+    "build:wipeout": "node scripts/build-wipeout.mjs",
+    "test:wipeout": "node scripts/check-wipeout.mjs && node scripts/check-wipeout-play.mjs",
+    "test:wipeout:long": "node scripts/check-wipeout.mjs --long"
   },
   "devDependencies": {
     "@types/three": "^0.187.0",

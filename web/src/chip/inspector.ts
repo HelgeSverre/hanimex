@@ -1,8 +1,11 @@
-import { names } from "./netlist";
+import { names as wipeoutNames } from "./wipeout-names";
+import { names as submarineNames } from "./netlist";
 import type { ChipFrame } from "./runtime";
 type Snapshot = Extract<ChipFrame, { kind: "frame" }>;
 interface Callbacks {
   engine: "compiled" | "reference";
+  chipId: "ay38605" | "ay38606";
+  mode: number;
   pause(paused: boolean): void;
   step(clocks: number): void;
 }
@@ -18,7 +21,9 @@ export class ChipInspector {
   private context: CanvasRenderingContext2D;
   private segments: Segment[] = [];
   private latest?: Snapshot;
-  private selected = names.clk as number;
+  private selected: number;
+  private names: Record<string, number>;
+  private extent = 2000;
   private paused = false;
   private zoom = 1;
   private pan = { x: 0, y: 0 };
@@ -35,12 +40,15 @@ export class ChipInspector {
     private callbacks: Callbacks,
     private video: HTMLCanvasElement,
   ) {
+    const wipeout = callbacks.chipId === "ay38606";
+    this.names = wipeout ? wipeoutNames : submarineNames;
+    this.selected = this.names.clk;
     this.dialog.className = "chip-inspector";
     this.dialog.setAttribute("aria-labelledby", "chip-inspector-title");
-    this.dialog.innerHTML = `<header><div><span class="chip-part">PC-505 / SUBMARINE</span><h2 id="chip-inspector-title">AY-3-8605</h2></div><button data-action="close">Close cartridge</button></header>
+    this.dialog.innerHTML = `<header><div><span class="chip-part">${wipeout ? "PC-506 / SUPER WIPEOUT" : "PC-505 / SUBMARINE"}</span><h2 id="chip-inspector-title">${wipeout ? "AY-3-8606-1" : "AY-3-8605"}</h2></div><button data-action="close">Close cartridge</button></header>
     <div class="chip-inspector-body"><section class="chip-die"><div class="chip-die-tools"><button data-action="out" aria-label="Zoom out">−</button><button data-action="in" aria-label="Zoom in">+</button><button data-action="fit">Fit</button><span>Drag to pan · click a wire</span></div><canvas class="die-map" width="1000" height="1000" tabindex="0" aria-label="Chip layout. Select a named signal using the signal menu for its current value."></canvas></section>
     <section class="chip-probes"><nav class="chip-engines" aria-label="Simulation engine"></nav><p class="chip-caption">Switching engines restarts the cartridge.</p><canvas class="chip-video" width="640" height="480" aria-label="Live output from the chip"></canvas><output class="chip-time" aria-live="off"></output><div class="chip-step"><button data-action="pause">Pause chip</button><button data-action="edge" disabled>½ clock</button><button data-action="clock" disabled>1 clock</button><button data-action="line" disabled>1 line</button></div><label>Signal<select class="chip-signal"></select></label><output class="chip-value"></output><dl class="chip-pins"></dl><p class="chip-caption">Lit wires are high. Running view samples the circuit; pause and step to inspect changes.</p></section></div>
-    <footer>1,524 nodes · 2,789 transistor entries · <a href="https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html" target="_blank" rel="noopener">Cole Johnson / Sean Riddle</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> · <a href="?lab=ay38606">Other chips</a></footer>`;
+    <footer>${wipeout ? "1,633 nodes · 2,990 transistor entries" : "1,524 nodes · 2,789 transistor entries"} · <a href="${wipeout ? "https://nerdstuffbycole.blogspot.com/2019/03/the-ay-3-8606-another-successfully.html" : "https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html"}" target="_blank" rel="noopener">Cole Johnson / Sean Riddle</a> · <a href="${wipeout ? "https://creativecommons.org/licenses/by-sa/4.0/" : "https://creativecommons.org/licenses/by/4.0/"}" target="_blank" rel="noopener">${wipeout ? "CC BY-SA 4.0" : "CC BY 4.0"}</a> · <a href="?lab=ay38500">Pong workbench</a></footer>`;
     const engines = this.dialog.querySelector(".chip-engines")!;
     for (const [value, label] of [
       ["compiled", "Compiled logic"],
@@ -49,7 +57,9 @@ export class ChipInspector {
       const link = document.createElement("a"),
         url = new URL(location.href);
       url.searchParams.set("engine", value);
+      url.searchParams.set("cartridge", wipeout ? "wipeout" : "submarine");
       url.searchParams.set("inspect", "1");
+      url.searchParams.set("mode", String(callbacks.mode + 1));
       link.href = url.href;
       link.textContent = label;
       if (value === callbacks.engine) link.setAttribute("aria-current", "page");
@@ -62,7 +72,7 @@ export class ChipInspector {
     this.context = context;
     const select =
       this.dialog.querySelector<HTMLSelectElement>(".chip-signal")!;
-    for (const [name, node] of Object.entries(names)) {
+    for (const [name, node] of Object.entries(this.names)) {
       const option = new Option(name, String(node));
       select.add(option);
     }
@@ -136,12 +146,12 @@ export class ChipInspector {
         const x =
           ((((event.clientX - rect.left) * 1000) / rect.width - this.pan.x) /
             this.zoom) *
-          2;
+          (this.extent / 1000);
         const y =
-          2000 -
+          this.extent -
           ((((event.clientY - rect.top) * 1000) / rect.height - this.pan.y) /
             this.zoom) *
-            2;
+            (this.extent / 1000);
         this.context.save();
         this.context.resetTransform();
         const hit = this.segments.find((s) =>
@@ -150,9 +160,7 @@ export class ChipInspector {
         this.context.restore();
         if (hit) {
           this.selected = hit.node;
-          select.value = Object.values(names).includes(
-            hit.node as (typeof names)[keyof typeof names],
-          )
+          select.value = Object.values(this.names).includes(hit.node)
             ? String(hit.node)
             : "";
           this.draw();
@@ -180,9 +188,18 @@ export class ChipInspector {
   }
   private async load() {
     try {
-      const response = await fetch(new URL("./layout.json", import.meta.url));
+      const response = await fetch(
+        this.callbacks.chipId === "ay38606"
+          ? new URL("./recovered/ay38606.json", import.meta.url)
+          : new URL("./layout.json", import.meta.url),
+      );
       if (!response.ok) throw new Error("Layout unavailable");
-      const rows: number[][] = await response.json();
+      const data = await response.json();
+      const rows: number[][] = Array.isArray(data) ? data : data.segments;
+      this.extent = rows.reduce(
+        (max, row) => row.slice(2).reduce((max, n) => Math.max(max, n), max),
+        0,
+      );
       if (this.disposed) return;
       this.segments = rows.map(([node, layer, ...points]) => {
         const path = new Path2D();
@@ -225,7 +242,10 @@ export class ChipInspector {
     c.fillStyle = "#0c1819";
     c.fillRect(0, 0, 1000, 1000);
     c.translate(this.pan.x, this.pan.y + 1000 * this.zoom);
-    c.scale(this.zoom / 2, -this.zoom / 2);
+    c.scale(
+      (this.zoom * 1000) / this.extent,
+      (-this.zoom * 1000) / this.extent,
+    );
     const state = this.latest?.nodes;
     for (const s of this.segments) {
       const high = state?.[s.node];
@@ -239,21 +259,31 @@ export class ChipInspector {
     for (const s of this.segments)
       if (s.node === this.selected) c.stroke(s.path);
     const label =
-      Object.entries(names).find(([, node]) => node === this.selected)?.[0] ??
-      "unnamed";
+      Object.entries(this.names).find(
+        ([, node]) => node === this.selected,
+      )?.[0] ?? "unnamed";
     this.dialog.querySelector(".chip-value")!.textContent =
       `${label} · node ${this.selected} · ${state ? (state[this.selected] ? "HIGH" : "LOW") : "—"}`;
     if (!this.latest) return;
     this.dialog.querySelector(".chip-time")!.textContent =
       `${(this.latest.speed * 100).toFixed(1)}% speed · ${this.latest.clocks.toLocaleString()} clocks · ${(this.latest.clocks / 3579545).toFixed(4)} s simulated · field ${this.latest.fields}`;
+    const n = this.names;
     const probes: [string, number][] = [
-      ["Clock", names.clk],
-      ["Sync", names.pin2Sync],
-      ["Left video", names.pin2LVideo],
-      ["Right video", names.pin2RVideo],
-      ["Torpedo input", names.pinFireT],
-      ["Depth charge input", names.pinFireDC],
-      ["Sub movement inhibit", names.subMoveDisable],
+      ["Clock", n.clk],
+      ["Sync", n.pin2Sync],
+      ["Left video", n.pin2LVideo],
+      ["Right video", n.pin2RVideo],
+      ...((this.callbacks.chipId === "ay38606"
+        ? [
+            ["Left serve", n.pinLeftServe],
+            ["Right serve", n.pinRightServe],
+            ["Block reset", n.blocksReset],
+          ]
+        : [
+            ["Torpedo input", n.pinFireT],
+            ["Depth charge input", n.pinFireDC],
+            ["Sub movement inhibit", n.subMoveDisable],
+          ]) as [string, number][]),
     ];
     const dl = this.dialog.querySelector(".chip-pins")!;
     dl.replaceChildren();

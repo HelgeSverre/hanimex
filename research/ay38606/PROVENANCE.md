@@ -10,12 +10,16 @@ The upstream notices disagree. The generated JavaScript headers say **CC BY 3.0 
 
 The Rust solver code retains its separate MIT license.
 
+## Archived console support
+
+The original simulator’s [support.js](https://web.archive.org/web/20200928213704id_/http://nerdydelights.droppages.com/ChipSim/MultiSim/UniqueFiles/ay38606/support.js) was recovered on 2026-11-09 and preserved verbatim as `support.js`, including its MIT notice. It documents selection strobing, paddle charging and pin defaults. Its SHA-256 is recorded in `support-sha256.txt`. The archived transistor tuples and names match the imported Chip Processing artifacts.
+
 ## Implementation status
 
 A separate Rust/Wasm build runs the actual recovered switch network. The browser circuit workbench renders its node bytes on the recovered polygons and provides run/pause, reset, named probes and half-clock stepping. It reuses the unchanged Submarine transistor solver with this chip’s own node count, transistor topology and power rails.
 
-This is a **pin-level workbench**, not a playable cartridge adapter. Selection strobing, paddle charging, video decoding, reset duration and sound are not yet modeled as a console. The existing playable cartridge remains a behavioral recreation. The imported silicon variant also needs checking against the PAL Hanimex cartridge.
+The console now also runs a playable Rust/Wasm adapter with compiled gates, latch cells and horizontal timing logic. A separate build retains the unchanged transistor solver. Both feed the same live chip inspector. See [adapter and validation](PLAYABLE.md) for controls, tests and limitations. The imported NTSC silicon variant still needs checking against the PAL Hanimex cartridge; colour and analog sound are unfinished.
 
 `npm run test:recovered` compares every node against the preserved JavaScript solver over 10,200 clock edges per chip, with input changes, repeated reset and invalid-pin checks. This validates the solver port, not physical-console fidelity or gameplay.
 
-Run `npm run build:recovered` to regenerate the Rust data, layout and Wasm binaries. Open `?lab=ay38606` in the app.
+Run `npm run build:recovered` to regenerate the workbench data, layout and Wasm binaries. Open `?lab=ay38606` in the app. The playable engines are regenerated with `npm run build:wipeout`; open `?cartridge=wipeout`.

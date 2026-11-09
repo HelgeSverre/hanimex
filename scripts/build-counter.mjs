@@ -219,9 +219,14 @@ function emitShared(name, type, items, render) {
     out += `const ${name}_${id}: &[${type}]=&[${render(item)}];\n`;
   out += `pub const ${name}: &[&[${type}]]=&[${refs.map((id) => name + "_" + id)}];\n`;
 }
-emitShared("DELTAS", "(usize,i16,i16,i16)", deltas, (ds) =>
-  ds.map(([n, d]) => "(" + [n, ...d] + ")").join(","),
-);
+for (const [kind, name] of ["GROUND", "POWER", "BRIDGE"].entries()) {
+  emitShared(
+    name,
+    "(usize,i16)",
+    deltas.map((ds) => ds.flatMap(([n, d]) => (d[kind] ? [[n, d[kind]]] : []))),
+    (ds) => ds.map((d) => "(" + d + ")").join(","),
+  );
+}
 
 const programs = new Map(),
   programIds = [];

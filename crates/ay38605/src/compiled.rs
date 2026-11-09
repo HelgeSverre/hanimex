@@ -1,4 +1,4 @@
-// Generated gate-block classification from the CC BY 4.0 AY-3-8605 netlist.
+// Generated gate-block classification from the CC BY 4.0 AY38605 netlist.
 // Cole Johnson tracing / Sean Riddle die photographs.
 pub const PEERS: [usize; 1524] = [
     0, 1, 2, 3, 10, 5, 6, 7, 8, 1368, 4, 11, 12, 13, 14, 15, 16, 1369, 18, 19, 20, 21, 1376, 23,

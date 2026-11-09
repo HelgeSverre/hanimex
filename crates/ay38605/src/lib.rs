@@ -253,10 +253,14 @@ impl GateCircuit {
             for &(node, value) in counter::CHANGES[row] {
                 self.state[node] = value;
             }
-            for &(node, ground, power, bridge) in counter::DELTAS[row] {
-                self.ground_count[node] = self.ground_count[node].wrapping_add_signed(ground);
-                self.power_count[node] = self.power_count[node].wrapping_add_signed(power);
-                self.bridge_count[node] = self.bridge_count[node].wrapping_add_signed(bridge);
+            for &(node, delta) in counter::GROUND[row] {
+                self.ground_count[node] = self.ground_count[node].wrapping_add_signed(delta);
+            }
+            for &(node, delta) in counter::POWER[row] {
+                self.power_count[node] = self.power_count[node].wrapping_add_signed(delta);
+            }
+            for &(node, delta) in counter::BRIDGE[row] {
+                self.bridge_count[node] = self.bridge_count[node].wrapping_add_signed(delta);
             }
             self.counter_frozen = true;
             self.next.clear();

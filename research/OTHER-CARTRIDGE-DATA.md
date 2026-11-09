@@ -13,7 +13,8 @@ existing AY-3-8605 work. The score circuitry is reported by its tracer to be
 shared with 8605, which makes it a good test for reusable counter/latch
 recognition. Both 8606 and 8500 are now imported and run in separate Rust/Wasm
 transistor workbenches, compared with the preserved JavaScript solver.
-Console wiring and optimized engines are still unfinished. See the
+Wipeout now has a playable console adapter, compiled engine and live inspector;
+Pong remains a pin-level workbench. See the
 [8606 provenance](ay38606/PROVENANCE.md) and [8500 provenance](ay38500/PROVENANCE.md).
 
 ## Evidence matrix
@@ -51,10 +52,10 @@ AY-3-8500 is a dedicated pong IC in the PC-508 mapping; it is not a ROM dump.
 1. **Imported:** AY-3-8606 and AY-3-8500 under separate provenance folders,
    with original notices, hashes, Rust data and layout derivatives. Their
    transistor ports match the preserved JavaScript solver through 10,200
-   edges each. Optimized circuit engines remain to be implemented.
-2. Reuse the 8605 host abstraction only after verifying pin-level differences:
-   selection is strobed, and paddle/ball/skill pins differ. Keep a distinct
-   PC-506 adapter and inspector title so it cannot silently pretend to be 8605.
+   edges each. Wipeout now also has a compiled engine and playable adapter.
+2. **Playable:** PC-506 uses its own strobed selection, paddle charging, reset
+   and video adapter, with a distinct inspector and transistor reference.
+   See [Wipeout implementation](ay38606/PLAYABLE.md).
 3. Use **AY-3-8500** second. Its finished HDL is potentially a useful oracle,
    but its CC BY-SA data and separate code licensing should be kept isolated
    from the CC BY 8605/8606 artifact paths.

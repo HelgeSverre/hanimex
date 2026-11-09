@@ -1,41 +1,14 @@
-# Hanimex — Submarine chip experiment
+# Hanimex
 
-Branch: `submarine-propagation`. Submarine uses compiled timing, latch and fanout logic, with a selectable transistor reference and live chip inspector. **Full speed is not reached.** [Implementation and validation](research/ay38605/PROPAGATION.md).
+[Play](https://hanimex.vercel.app) · [Submarine](https://hanimex.vercel.app/?cartridge=submarine) · [Super Wipeout](https://hanimex.vercel.app/?cartridge=wipeout)
 
-[Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
+A browser recreation of the Hanimex / Soundic PC-50x console family. Drag a cartridge into the console, select a game, and play. The scene uses Three.js/WebGL; `?view=2d` opens the original interface.
 
-The scene uses Three.js/WebGL: a deep CRT cabinet with a live game-canvas texture, a modeled console, raycast cartridge dragging, physical game keys and sticks, orbit/zoom controls, and a close TV view. The original interface remains available at `?view=2d`.
+**Submarine and Super Wipeout run recovered chip circuits in Rust/WebAssembly.** Open **Chip** to inspect live wires, select the transistor reference, pause or step half a clock. The same node states drive the TV and inspector.
 
-A browser recreation of the Hanimex / Soundic PC-50x console family. Drag a cartridge into the console, select a game, and play.
+Both run below hardware speed. Video is monochrome; original colour decoding and analog sound are unfinished. Wipeout uses the recovered NTSC AY-3-8606-1, rather than a verified PAL cartridge variant. Comparison with the recovered simulator does not replace testing against a physical console.
 
-Eight swappable cartridges, a CRT display, keyboard and touch controls, and optional contact failures. Blow into the microphone or hold a button to clean the contacts. Microphone audio stays in the browser; it is not recorded or uploaded.
-
-**The other seven cartridges are behavioral recreations, not cycle-accurate emulators.** Some selections share a simplified game model. Original-chip timing, graphics, audio, and every variation remain unverified.
-
-Insert Submarine and choose **Chip** in the header to inspect its live silicon layout. Select a signal, pan/zoom, pause, or step the circuit by a clock edge, clock, or scanline. The viewer samples actual states from the same chip instance driving the TV.
-
-Wipeout and Fundamental now have separate circuit workbenches: [AY-3-8606](https://hanimex-chip.vercel.app/?lab=ay38606) · [AY-3-8500](https://hanimex-chip.vercel.app/?lab=ay38500). They run the recovered transistor networks with live wire inspection and clock stepping. Console controls and video adapters are still unfinished; the playable cartridges remain recreations.
-
-## Run
-
-```sh
-npm ci
-npm run dev
-```
-
-Open the local URL printed by Vite. The app uses TypeScript, Three.js, and Canvas; it has no backend or accounts. Fonts are self-hosted Obel Mono and Inter.
-
-```sh
-npm run build
-npm test
-npm run test:edges
-npm run test:games
-npm run test:recovered
-```
-
-To regenerate the checked-in Wasm binaries, install Rust with the `wasm32-unknown-unknown` target, then run `npm run build:chip` and `npm run build:recovered`.
-
-Vercel builds with `npm run build` and serves `web/dist`.
+The other six playable cartridges are behavioral recreations. Some selections share simplified game models. Fundamental also has a separate [Pong circuit workbench](https://hanimex.vercel.app/?lab=ay38500), with live inspection but no console adapter yet.
 
 ## Controls
 
@@ -44,29 +17,47 @@ Vercel builds with `npm run build` and serves `web/dist`.
 | Player 1 | W A S D | Space |
 | Player 2 | Arrow keys | Enter |
 
-Click or drag a cartridge to insert it. The orange keys select a game. P pauses; the console reset button restarts. The on-screen sticks and fire buttons also work. Shooting Gallery accepts pointer aiming.
+Click or drag a cartridge to insert it. The orange keys select a game. P pauses; reset restarts. On-screen sticks and buttons support touch. Wipeout uses W/S and Up/Down for its bats; SPEED changes ball speed, L-TEAM changes bat size, and R-TEAM changes ball size.
 
-Contact failures are off by default. Enable **Nostalgia mode** in **How to play**, or use **Try a contact fault** to test the microphone/button interaction. Microphone access requires HTTPS or localhost.
+Contact failures are off by default. **Nostalgia mode** adds a 30% insertion-failure chance. Blow into the microphone or hold the button to clean the contacts. Audio stays in the browser and is never recorded or uploaded.
+
+## Run
+
+```sh
+npm ci
+npm run dev
+npm run build
+npm test
+```
+
+Vercel builds with `npm run build` and serves `web/dist`. There is no backend. Obel Mono and Inter are self-hosted.
+
+The Wasm binaries are checked in. To regenerate them, install Rust with the `wasm32-unknown-unknown` target:
+
+```sh
+npm run build:chip
+npm run build:wipeout
+npm run build:recovered
+```
+
+Circuit checks:
+
+```sh
+npm run test:edges
+npm run test:games
+npm run test:wipeout
+npm run test:wipeout:long
+npm run test:recovered
+```
 
 ## Research
 
-The “625-B RPG” photographs identify an RPG SD-050, a relative of the Hanimex machines. `625-B` belongs to the PAL television label. The cartridges contain dedicated game circuitry, not conventional program ROMs.
+These cartridges contain dedicated game circuitry, not conventional program ROMs. The “625-B RPG” photographs identify an RPG SD-050, a relative of the Hanimex machines; `625-B` belongs to the PAL television label.
 
 - [Hardware and cartridge identification](research/HARDWARE.md)
-- [Other cartridges with recovered chip data](research/OTHER-CARTRIDGE-DATA.md)
-- [Emulation sources and accuracy gaps](research/EMULATION.md)
+- [Recovered chips and remaining gaps](research/OTHER-CARTRIDGE-DATA.md)
+- [Submarine implementation and benchmarks](research/ay38605/TIMING-UPDATES.md)
+- [Wipeout adapter and validation](research/ay38606/PLAYABLE.md)
 - [Source provenance](research/PROVENANCE.md)
-- [Recovered AY-3-8605 Submarine data](research/ay38605/README.md)
-- [Interface-writing research](research/WRITING.md)
 
-The recovered chip data retains its original attribution and license notices. Manufacturer PDFs are kept locally; their source URLs are recorded in the research. This branch executes the Submarine transistor netlist; see the implementation notes above.
-
-An earlier experimental Rust submarine model is in `src/`. Run it with `cargo run -- play`; check it with `cargo test` and `cargo clippy --all-targets -- -D warnings`. It follows an early GI system description that differs from the later AY-3-8605 datasheet; see the provenance notes.
-
-## Credits
-
-- [David Winter / Pong-Story](https://www.pong-story.com/sd050.htm), hardware documentation
-- [Cole Johnson](https://nerdstuffbycole.blogspot.com/2019/10/shooter-game-in-silicon-inside-ay-3.html) and [Sean Riddle](https://seanriddledecap.blogspot.com/2018/05/gi-ay-3-8605-ball-and-paddle-games-ay-3.html), chip tracing and die photographs
-- [Obel Mono / Typographic Systems](https://typographic.systems/obel-mono) and [Inter / Rasmus Andersson](https://rsms.me/inter/), SIL Open Font License
-
-Console and cartridge graphics in the app are newly drawn from hardware references. This project is not affiliated with the original manufacturers.
+Chip data retains its original attribution and notices. The Wipeout and Pong imports record conflicting upstream notices and preserve their share-alike attribution separately from the MIT simulation code.

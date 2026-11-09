@@ -1,3 +1,4 @@
+const [chipId, engine] = self.name.split(":");
 import type { ChipCommand, ChipFrame, ChipWasm } from "./runtime";
 const worker = self as unknown as {
   postMessage(message: ChipFrame, transfer?: Transferable[]): void;
@@ -35,7 +36,7 @@ function publish() {
   const nodes = new Uint8Array(
     chip.memory.buffer,
     chip.chip_nodes(),
-    1524,
+    chipId === "ay38606" ? 1633 : 1524,
   ).slice();
   worker.postMessage(
     {
@@ -92,9 +93,13 @@ worker.onmessage = ({ data }) => {
 };
 async function start() {
   const binary =
-    self.name === "reference"
-      ? new URL("./ay38605-reference.wasm", import.meta.url)
-      : new URL("./ay38605.wasm", import.meta.url);
+    chipId === "ay38606"
+      ? engine === "reference"
+        ? new URL("./ay38606-reference.wasm", import.meta.url)
+        : new URL("./ay38606.wasm", import.meta.url)
+      : engine === "reference"
+        ? new URL("./ay38605-reference.wasm", import.meta.url)
+        : new URL("./ay38605.wasm", import.meta.url);
   const response = await fetch(binary);
   if (!response.ok) throw new Error("Could not load the chip simulator");
   const { instance } = await WebAssembly.instantiate(

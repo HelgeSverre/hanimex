@@ -1,12 +1,15 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+const id =
+  process.argv.find((arg) => arg.startsWith("--chip="))?.slice(7) ?? "ay38605";
+if (!["ay38605", "ay38606"].includes(id)) throw new Error("Unknown chip");
 const baseline = process.argv
   .find((arg) => arg.startsWith("--baseline="))
   ?.slice("--baseline=".length);
 const files = [
-  "web/src/chip/ay38605-reference.wasm",
+  `web/src/chip/${id}-reference.wasm`,
   ...(baseline ? [baseline] : []),
-  "web/src/chip/ay38605.wasm",
+  `web/src/chip/${id}.wasm`,
 ];
 const binaries = files.map((file) => readFileSync(file));
 const modules = await Promise.all(

@@ -1,20 +1,24 @@
 import fs from "node:fs";
 import vm from "node:vm";
 import { findLatchCells, drivenNodes } from "./chip-latches.mjs";
+const id = process.argv[2] ?? "ay38605";
+if (!["ay38605", "ay38606"].includes(id)) throw new Error("Unknown chip");
 const c = vm.createContext({});
 for (const file of ["transdefs", "segdefs", "nodenames"])
-  vm.runInContext(fs.readFileSync(`research/ay38605/${file}.js`, "utf8"), c);
+  vm.runInContext(fs.readFileSync(`research/${id}/${file}.js`, "utf8"), c);
+c.transdefs = c.transdefs.filter((t) => !(id === "ay38606" ? t[5] : t[6]));
+const nodeCount = Math.max(...c.segdefs.map((s) => s[0])) + 1;
 const cells = findLatchCells(
   c.transdefs.map((t) => t.slice(1, 4)),
   new Map(c.segdefs.map((s) => [s[0], s[1] === "+"])),
   drivenNodes(c.nodenames),
+  c.nodenames.gnd,
 );
 const latchNodes = new Set(cells.flatMap((c) => [c.store, c.data]));
 const rails = [c.nodenames.gnd, c.nodenames.vcc];
-let output =
-  "// Generated from CC BY 4.0 AY-3-8605 data: Cole Johnson / Sean Riddle.\nuse super::GateCircuit;\n";
+let output = `// Generated from ${id === "ay38605" ? "CC BY 4.0" : "CC BY-SA 4.0"} ${id.toUpperCase()} data: Cole Johnson / Sean Riddle.\nuse super::GateCircuit;\n`;
 const functions = [];
-for (let gate = 0; gate < 1524; gate++) {
+for (let gate = 0; gate < nodeCount; gate++) {
   const ts = c.transdefs
     .filter((t) => !t[6] && t[1] === gate)
     .map((t) => (rails.includes(t[2]) ? [t[3], t[2]] : [t[2], t[3]]));
@@ -54,7 +58,7 @@ for (let gate = 0; gate < 1524; gate++) {
   functions.push(`fanout_${gate}`);
 }
 output +=
-  "fn empty(_: &mut GateCircuit, _: bool) {}\npub const RUN: [fn(&mut GateCircuit,bool);1524]=[" +
+  `fn empty(_: &mut GateCircuit, _: bool) {}\npub const RUN: [fn(&mut GateCircuit,bool);${nodeCount}]=[` +
   functions +
   "];\n";
-fs.writeFileSync("crates/ay38605/src/fanout.rs", output);
+fs.writeFileSync(`crates/${id}/src/fanout.rs`, output);

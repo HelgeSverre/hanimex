@@ -10,13 +10,10 @@ const engineLabel =
   engine === "reference" ? "Transistor reference" : "Compiled logic";
 
 /** Browser adapter; the worker supplies pixels from chip pins, never game objects. */
-export class SubmarineChipGame implements Game {
+export class ChipGame implements Game {
   scores = [0, 0];
   ended = false;
-  private worker = new Worker(new URL("./worker.ts", import.meta.url), {
-    type: "module",
-    name: engine,
-  });
+  private worker: Worker;
   private display = document.createElement("canvas");
   private context: CanvasRenderingContext2D;
   private image = new ImageData(228, 320);
@@ -28,9 +25,17 @@ export class SubmarineChipGame implements Game {
   private disposed = false;
   private latest?: Extract<ChipFrame, { kind: "frame" }>;
   private previousInput = "";
+  private paddles = [125, 125];
   private error = "";
   private received = false;
-  constructor(private mode: number) {
+  constructor(
+    private mode: number,
+    private chipId: "ay38605" | "ay38606" = "ay38605",
+  ) {
+    this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
+      type: "module",
+      name: `${chipId}:${engine}`,
+    });
     this.display.width = 228;
     this.display.height = 320;
     const context = this.display.getContext("2d");
@@ -53,6 +58,8 @@ export class SubmarineChipGame implements Game {
         this.inspector ??= new ChipInspector(
           {
             engine,
+            chipId,
+            mode,
             pause: (paused) => {
               this.inspectorPaused = paused;
               this.setRunning(this.desiredRunning);
@@ -84,7 +91,28 @@ export class SubmarineChipGame implements Game {
           offset = n * 4;
         // Monochrome diagnostic decode of the separate video channels.
         // Original AY-3-8615 colour and external analog audio are not simulated.
-        const ink = v & 48 ? 8 : v & 4 ? 225 : v & 2 ? 184 : v & 1 ? 25 : 8;
+        const ink =
+          this.chipId === "ay38606"
+            ? v & 48
+              ? 8
+              : v & 1
+                ? 225
+                : v & 2
+                  ? 185
+                  : v & 8
+                    ? 150
+                    : v & 4
+                      ? 12
+                      : 245
+            : v & 48
+              ? 8
+              : v & 4
+                ? 225
+                : v & 2
+                  ? 184
+                  : v & 1
+                    ? 25
+                    : 8;
         this.image.data[offset] = ink;
         this.image.data[offset + 1] = ink;
         this.image.data[offset + 2] = Math.round(ink * 0.94);
@@ -112,17 +140,34 @@ export class SubmarineChipGame implements Game {
       this.send({ kind: "run", running });
     }
   }
-  update(_dt: number, input: Controls) {
+  update(dt: number, input: Controls) {
+    if (this.chipId === "ay38606") {
+      for (const [i, player] of [input.left, input.right].entries())
+        this.paddles[i] = Math.max(
+          25,
+          Math.min(225, this.paddles[i] + player.y * dt * 120),
+        );
+    }
     const command: ChipCommand = {
       kind: "input",
       mode: this.mode + 1,
-      sub: Math.round(200 + input.left.x * 100),
-      des: Math.round(200 + input.right.x * 100),
+      sub: Math.round(
+        this.chipId === "ay38606" ? this.paddles[0] : 200 + input.left.x * 100,
+      ),
+      des: Math.round(
+        this.chipId === "ay38606" ? this.paddles[1] : 200 + input.right.x * 100,
+      ),
       buttons:
-        +input.left.fire |
-        (+input.right.fire << 1) |
-        (+input.smallLeft << 2) |
-        (+input.smallRight << 3),
+        this.chipId === "ay38606"
+          ? +(input.left.fire || input.autoServe) |
+            (+(input.right.fire || input.autoServe) << 1) |
+            (+input.smallLeft << 2) |
+            (+input.fast << 3) |
+            (+input.smallRight << 4)
+          : +input.left.fire |
+            (+input.right.fire << 1) |
+            (+input.smallLeft << 2) |
+            (+input.smallRight << 3),
     };
     const key = JSON.stringify(command);
     if (key !== this.previousInput) {

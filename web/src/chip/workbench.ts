@@ -15,10 +15,10 @@ export async function openWorkbench(id: "ay38606" | "ay38500") {
   app.className = "circuit-workbench";
   app.innerHTML = `<header><a href="/?engine=compiled">← Console</a><nav aria-label="Cartridge"><a href="?lab=ay38606">Super Wipeout</a><a href="?lab=ay38500">Fundamental</a></nav></header>
   <main><section class="workbench-die"><canvas width="1000" height="1000" aria-label="Live transistor circuit layout"></canvas></section>
-  <section class="workbench-controls"><p>${title}</p><h1>${chipName}</h1><p>Transistor reference</p><p class="workbench-note">Pin-level model. Console controls and video are not wired yet.</p>
+  <section class="workbench-controls"><p>${title}</p><h1>${chipName}</h1><p>Transistor reference</p><p class="workbench-note">${id === "ay38606" ? 'Pin-level workbench. <a href="/?cartridge=wipeout">Play Super Wipeout</a>' : "Pin-level model. Console controls and video are not wired yet."}</p>
   <div class="workbench-buttons"><button data-action="run" disabled>Run chip</button><button data-action="edge" disabled>½ clock</button><button data-action="clock" disabled>1 clock</button><button data-action="reset" disabled>Reset circuit</button></div>
   <label>Signal<select aria-label="Signal"></select></label><output class="workbench-value" aria-live="off"></output><output class="workbench-time" aria-live="off"></output><p class="workbench-status" role="status">Loading circuit…</p>
-  <footer>Cole Johnson / Sean Riddle · <a href="https://github.com/HelgeSverre/hanimex/tree/submarine-propagation/research/${id}" target="_blank" rel="noopener">Source and data notices</a></footer></section></main>`;
+  <footer>Cole Johnson / Sean Riddle · <a href="https://github.com/HelgeSverre/hanimex/tree/main/research/${id}" target="_blank" rel="noopener">Source and data notices</a></footer></section></main>`;
   app
     .querySelector<HTMLAnchorElement>(`a[href="?lab=${id}"]`)!
     .setAttribute("aria-current", "page");
