@@ -1,0 +1,44 @@
+#Basic parameter file #needed commands: pmos/nmos positioning? eliminate pullups/grounders
+#legacy_transdefs_format
+input_folder=input
+output_folder=output
+########Transistor Layer
+layer=Transistor
+debug_image
+file=TV.png
+color.fill=255,255,0
+endlayer
+########Surface Metal Layer
+layer=Metal
+#debug_image
+file=interconnect.png
+color.fill=0,182,0
+color.diagonal=0,0,255
+color.low=0,100,0
+color.high=0,255,0
+connectsTo=Vias
+transConnect=Gate
+endlayer
+########Via Layer
+layer=Vias
+#debug_image
+file=TV.png
+color.fill=75,0,75
+connectsTo=Diffusion
+endlayer
+########Doping Layer
+layer=diffusion
+#debug_image
+file=diffusion.png
+color.fill=219,219,219
+color.diagonal=0,0,255
+transConnect=SourceDrain
+endlayer
+########Output file header/license
+start_header
+Polygon and netlist source file of the AY-3-8606-1 (Wipeout)
+Based on die photos from Sean Riddle and highlighting done by Cole Johnson
+(http://seanriddledecap.blogspot.com/2018/05/blog-post_7.html)
+This work is licensed under the Creative Commons Attribution 4.0 United States License. 
+To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/us/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+end_header

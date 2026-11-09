@@ -1,0 +1,11 @@
+crates/ay38605/src/counter.rs linguist-generated=true
+crates/ay38605/src/latches.rs linguist-generated=true
+crates/ay38605/src/fanout.rs linguist-generated=true
+crates/recovered-chips/src/ay*.rs linguist-generated=true
+web/src/chip/recovered/*.json linguist-generated=true
+crates/ay38606/src/compiled.rs linguist-generated=true
+crates/ay38606/src/counter.rs linguist-generated=true
+crates/ay38606/src/data.rs linguist-generated=true
+crates/ay38606/src/fanout.rs linguist-generated=true
+crates/ay38606/src/latches.rs linguist-generated=true
+web/src/chip/wipeout-names.ts linguist-generated=true

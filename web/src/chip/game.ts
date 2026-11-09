@@ -1,0 +1,200 @@
+import type { ChipInspector } from "./inspector";
+import type { Controls, Game, SoundEvent } from "../games";
+import type { ChipFrame, ChipCommand } from "./runtime";
+
+const engine =
+  new URLSearchParams(location.search).get("engine") === "reference"
+    ? "reference"
+    : "compiled";
+const engineLabel =
+  engine === "reference" ? "Transistor reference" : "Compiled logic";
+
+/** Browser adapter; the worker supplies pixels from chip pins, never game objects. */
+export class ChipGame implements Game {
+  scores = [0, 0];
+  ended = false;
+  private worker: Worker;
+  private display = document.createElement("canvas");
+  private context: CanvasRenderingContext2D;
+  private image = new ImageData(228, 320);
+  private status = document.createElement("aside");
+  private running = false;
+  private desiredRunning = false;
+  private inspectorPaused = false;
+  private inspector?: ChipInspector;
+  private disposed = false;
+  private latest?: Extract<ChipFrame, { kind: "frame" }>;
+  private previousInput = "";
+  private paddles = [125, 125];
+  private error = "";
+  private received = false;
+  constructor(
+    private mode: number,
+    private chipId: "ay38605" | "ay38606" = "ay38605",
+  ) {
+    this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
+      type: "module",
+      name: `${chipId}:${engine}`,
+    });
+    this.display.width = 228;
+    this.display.height = 320;
+    const context = this.display.getContext("2d");
+    if (!context) throw new Error("Chip display unavailable");
+    this.context = context;
+    this.status.className = "chip-status";
+    this.status.innerHTML =
+      '<button class="quiet-button chip-open" aria-label="Inspect cartridge circuit"><span>Chip</span><span class="chip-speed" aria-hidden="true">Starting</span></button>';
+    this.status.querySelector("button")!.title =
+      engineLabel + " · sound not modeled";
+    (document.querySelector(".top-actions") ?? document.body).append(
+      this.status,
+    );
+    this.status.querySelector("button")!.onclick = async () => {
+      const button = this.status.querySelector("button")!;
+      button.disabled = true;
+      try {
+        const { ChipInspector } = await import("./inspector");
+        if (this.disposed) return;
+        this.inspector ??= new ChipInspector(
+          {
+            engine,
+            chipId,
+            mode,
+            pause: (paused) => {
+              this.inspectorPaused = paused;
+              this.setRunning(this.desiredRunning);
+            },
+            step: (clocks) => this.send({ kind: "step", clocks }),
+          },
+          this.display,
+        );
+        this.inspector.open(this.latest);
+      } catch {
+        button.querySelector("span")!.textContent = "Retry chip";
+      } finally {
+        button.disabled = false;
+      }
+    };
+    this.worker.onmessage = ({ data }: MessageEvent<ChipFrame>) => {
+      if (data.kind === "error") {
+        this.error = data.message;
+        this.status.querySelector(".chip-speed")!.textContent = "Error";
+        this.status.querySelector("button")!.title = data.message;
+        return;
+      }
+      this.latest = data;
+      this.received = true;
+      this.status.querySelector(".chip-speed")!.textContent =
+        `${(data.speed * 100).toFixed(0)}%`;
+      for (let n = 0; n < data.raster.length; n++) {
+        const v = data.raster[n],
+          offset = n * 4;
+        // Monochrome diagnostic decode of the separate video channels.
+        // Original AY-3-8615 colour and external analog audio are not simulated.
+        const ink =
+          this.chipId === "ay38606"
+            ? v & 48
+              ? 8
+              : v & 1
+                ? 225
+                : v & 2
+                  ? 185
+                  : v & 8
+                    ? 150
+                    : v & 4
+                      ? 12
+                      : 245
+            : v & 48
+              ? 8
+              : v & 4
+                ? 225
+                : v & 2
+                  ? 184
+                  : v & 1
+                    ? 25
+                    : 8;
+        this.image.data[offset] = ink;
+        this.image.data[offset + 1] = ink;
+        this.image.data[offset + 2] = Math.round(ink * 0.94);
+        this.image.data[offset + 3] = 255;
+      }
+      this.context.putImageData(this.image, 0, 0);
+      this.inspector?.update(data);
+    };
+    if (new URLSearchParams(location.search).get("inspect") === "1")
+      this.status.querySelector("button")!.click();
+    this.worker.onerror = () => {
+      this.error = "Chip simulator failed";
+      this.status.querySelector(".chip-speed")!.textContent = "Error";
+      this.status.querySelector("button")!.title = this.error;
+    };
+  }
+  private send(data: ChipCommand) {
+    this.worker.postMessage(data);
+  }
+  setRunning(running: boolean) {
+    this.desiredRunning = running;
+    running = running && !this.inspectorPaused;
+    if (running !== this.running) {
+      this.running = running;
+      this.send({ kind: "run", running });
+    }
+  }
+  update(dt: number, input: Controls) {
+    if (this.chipId === "ay38606") {
+      for (const [i, player] of [input.left, input.right].entries())
+        this.paddles[i] = Math.max(
+          25,
+          Math.min(225, this.paddles[i] + player.y * dt * 120),
+        );
+    }
+    const command: ChipCommand = {
+      kind: "input",
+      mode: this.mode + 1,
+      sub: Math.round(
+        this.chipId === "ay38606" ? this.paddles[0] : 200 + input.left.x * 100,
+      ),
+      des: Math.round(
+        this.chipId === "ay38606" ? this.paddles[1] : 200 + input.right.x * 100,
+      ),
+      buttons:
+        this.chipId === "ay38606"
+          ? +(input.left.fire || input.autoServe) |
+            (+(input.right.fire || input.autoServe) << 1) |
+            (+input.smallLeft << 2) |
+            (+input.fast << 3) |
+            (+input.smallRight << 4)
+          : +input.left.fire |
+            (+input.right.fire << 1) |
+            (+input.smallLeft << 2) |
+            (+input.smallRight << 3),
+    };
+    const key = JSON.stringify(command);
+    if (key !== this.previousInput) {
+      this.previousInput = key;
+      this.send(command);
+    }
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = "#101610";
+    ctx.fillRect(0, 0, 640, 480);
+    if (this.received) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(this.display, 20, 19, 184, 240, 0, 0, 640, 480);
+    } else {
+      ctx.fillStyle = "#e5e7d3";
+      ctx.font = '15px "Obel Mono",monospace';
+      ctx.textAlign = "center";
+      ctx.fillText(this.error || "STARTING CHIP", 320, 240);
+    }
+  }
+  drainSounds(): SoundEvent[] {
+    return [];
+  }
+  dispose() {
+    this.disposed = true;
+    this.inspector?.dispose();
+    this.worker.terminate();
+    this.status.remove();
+  }
+}

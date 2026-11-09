@@ -115,7 +115,7 @@ export const cartridges: readonly Cartridge[] = [
       "Breakthrough II",
     ],
     story: "Keep the ball in play and clear the blocks.",
-    controls: "A / D or arrow keys move the bat. Space or Enter serves.",
+    controls: "W / S and Up / Down move the bats. Space and Enter serve. SPEED changes ball speed; L-TEAM changes bat size and R-TEAM changes ball size.",
   },
   {
     id: "shooting",

@@ -1,0 +1,32 @@
+{
+  "node": "v26.9.0",
+  "arch": "arm64",
+  "nominalClockHz": 3579545,
+  "engines": [
+    {
+      "file": "ay38605-reference.wasm",
+      "sha256": "54378fa81290d8cf614623125f7f4fc4b25baad705257102b2f5159cca35cd80",
+      "samplesClocksPerSecond": [
+        88064.42644081142,
+        88171.93669435875,
+        89307.74889953963,
+        87733.67363891788
+      ],
+      "medianClocksPerSecond": 88118.1815675851,
+      "hardwareSpeedPercent": 2.4617145913121665
+    },
+    {
+      "file": "ay38605.wasm",
+      "sha256": "9a68e7011b2000a43354c1a447fb551ea0f12e9dfd06e0fa23806e0ed6415d75",
+      "samplesClocksPerSecond": [
+        303606.38879288256,
+        260347.25768097636,
+        305457.33931176877,
+        307014.20023262926
+      ],
+      "medianClocksPerSecond": 304531.86405232566,
+      "hardwareSpeedPercent": 8.507557917342167
+    }
+  ],
+  "speedup": 3.4559481214300263
+}

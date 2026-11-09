@@ -1,0 +1,45 @@
+{
+  "node": "v26.9.0",
+  "arch": "arm64",
+  "nominalClockHz": 3579545,
+  "engines": [
+    {
+      "file": "web/src/chip/ay38605-reference.wasm",
+      "sha256": "808e72d19fe89fe3ae11f145023a161c08a0818e626f8cd40060b9f32960dd0d",
+      "samplesClocksPerSecond": [
+        90661.59505703919,
+        88850.0416762227,
+        89722.5308303439,
+        85665.10479020774
+      ],
+      "medianClocksPerSecond": 89286.2862532833,
+      "hardwareSpeedPercent": 2.4943473612786904
+    },
+    {
+      "file": "work/baseline-gates.wasm",
+      "sha256": "9a68e7011b2000a43354c1a447fb551ea0f12e9dfd06e0fa23806e0ed6415d75",
+      "samplesClocksPerSecond": [
+        306279.5344397936,
+        306078.02113017545,
+        305032.153256255,
+        307323.32301775983
+      ],
+      "medianClocksPerSecond": 306178.77778498456,
+      "hardwareSpeedPercent": 8.553566941747752
+    },
+    {
+      "file": "web/src/chip/ay38605.wasm",
+      "sha256": "b456649f44919254d50bc75d24347c070d48f81f0f64eaaddffb0743328c0141",
+      "samplesClocksPerSecond": [
+        396303.02069256187,
+        386558.2113178442,
+        388640.3020288569,
+        393089.10052369226
+      ],
+      "medianClocksPerSecond": 390864.7012762746,
+      "hardwareSpeedPercent": 10.919396215895445
+    }
+  ],
+  "speedup": 4.3776566108650465,
+  "speedupOverGateBaseline": 1.2765897888284115
+}

@@ -1,0 +1,58 @@
+/*
+* Generated from source images by the ChipTools image processor
+* Polygon and netlist source file of the AY-3-8606-1 (Wipeout)
+* Based on die photos from Sean Riddle and highlighting done by Cole Johnson
+* (http://seanriddledecap.blogspot.com/2018/05/blog-post_7.html)
+* This work is licensed under the Creative Commons Attribution 3.0 United States License. 
+* To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/us/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+*/
+var nodenames = {
+gnd: 902,
+vcc: 1249,
+reset: 1379,
+clk: 95,
+clock1: 1149,
+clock2: 1156,
+internal_reset: 1376,
+gametype_latch: 992,
+hrz_sync: 774,
+blocksReset: 1045,
+blocksAdvance1: 778,
+blocksAdvance2: 1269,
+outputSEshifter: 993,
+hrzScoreStart: 800,
+pinLeftBat: 4,
+pinTest1: 5,
+pinRVideo: 0,
+pinLVideo: 1,
+pinBounds: 2,
+pinBackground: 3,
+pinColorburst: 12,
+pinBlanking: 187,
+pinSync: 372,
+pinS1: 680,
+pinS2: 726,
+pinS3: 956,
+pinStrobe1: 1211,
+pinStrobe2: 1388,
+pinStrobe3: 1387,
+pinStrobe4: 1386,
+pinBallspeed: 1384,
+pinBallsize: 1380,
+pinBatsize: 1385,
+pinRightServe: 655,
+pinRightBat: 527,
+pinTest2: 427,
+pinSoundOut: 213,
+pinLeftServe: 316,
+pin2RVideo: 8,
+pin2LVideo: 13,
+pin2Bounds: 14,
+pin2Background: 15,
+pin2Colorburst: 31,
+pin2Blanking: 332,
+pin2Sync: 486,
+pin2Strobe1: 1122,
+pin2Strobe2: 1383,
+pin2Strobe3: 1382,
+pin2Strobe4: 1381,};

@@ -1,0 +1,18 @@
+[package]
+name = "ay38606"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Switch-level AY-3-8606 simulation from the recovered Cole Johnson netlist"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[features]
+profile = []
+reference-engine = []
