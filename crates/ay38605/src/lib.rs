@@ -1,7 +1,8 @@
-//! AY-3-8605 switch-level model. Game behavior comes exclusively from the netlist.
+//! AY-3-8605 netlist model with a compiled horizontal timing state machine.
 // Solver adapted from Visual6502 / Cole Johnson (MIT); see LICENSE.
 // The generated netlist is CC BY 4.0; see DATA-LICENSE.md.
 mod compiled;
+mod counter;
 #[allow(dead_code)] // Preserve all recovered node names for probes.
 mod data;
 pub mod reference;
@@ -19,6 +20,10 @@ const HEIGHT: usize = 320;
 
 #[derive(Debug)]
 pub struct GateCircuit {
+    // Debug invariant: no event may re-enter the closed timing region while
+    // its batched transition is being propagated through the rest of the chip.
+    counter_frozen: bool,
+    counter_cursor: Option<usize>,
     #[cfg(feature = "profile")]
     pub metrics: [u64; 3],
     pub state: [u8; NODE_COUNT],
@@ -33,6 +38,8 @@ pub struct GateCircuit {
 impl Default for GateCircuit {
     fn default() -> Self {
         let mut c = Self {
+            counter_frozen: false,
+            counter_cursor: None,
             #[cfg(feature = "profile")]
             metrics: [0; 3],
             state: [0; NODE_COUNT],
@@ -82,6 +89,10 @@ impl GateCircuit {
     }
     #[inline(always)]
     fn compiled_recalc(&mut self, n: usize) {
+        debug_assert!(
+            !(self.counter_frozen && counter::IS_NODE[n]),
+            "macro boundary must be closed"
+        );
         #[cfg(feature = "profile")]
         {
             self.metrics[0] += 1;
@@ -200,11 +211,39 @@ impl GateCircuit {
         Err(UnstableCircuit)
     }
     pub fn drive(&mut self, n: usize, high: bool) -> Result<(), UnstableCircuit> {
+        // External writes invalidate the cursor. Re-entry checks the entire
+        // 86-node vector plus clock/disable, not just the nine-bit table index.
+        let target = if n == CLK && high != (self.state[CLK] != 0) {
+            self.counter_cursor.or_else(|| counter::find(&self.state))
+        } else {
+            self.counter_cursor = None;
+            None
+        };
         self.pulls[n] = if high { 1 } else { -1 };
         let mut work = std::mem::take(&mut self.work);
         work.clear();
-        work.push(n);
-        self.settle(work)
+        if let Some(row) = target {
+            // Preserve canonical node bytes and connection counts so both the
+            // inspector and an immediate return to the gate solver see reality.
+            self.state[CLK] = u8::from(high);
+            for &(node, value) in counter::CHANGES[row] {
+                self.state[node] = value;
+            }
+            for &(node, ground, power, bridge) in counter::DELTAS[row] {
+                self.ground_count[node] = self.ground_count[node].wrapping_add_signed(ground);
+                self.power_count[node] = self.power_count[node].wrapping_add_signed(power);
+                self.bridge_count[node] = self.bridge_count[node].wrapping_add_signed(bridge);
+            }
+            work.extend_from_slice(counter::QUEUES[row]);
+            self.counter_frozen = true;
+            let result = self.settle(work);
+            self.counter_frozen = false;
+            self.counter_cursor = result.as_ref().ok().map(|()| counter::NEXT[row]);
+            result
+        } else {
+            work.push(n);
+            self.settle(work)
+        }
     }
 }
 
@@ -431,4 +470,74 @@ pub extern "C" fn chip_half_step() -> u32 {
             .as_mut()
             .map_or(1, |c| u32::from(c.half_step().is_err()))
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn drive_both(
+        compiled: &mut GateCircuit,
+        reference: &mut reference::ReferenceCircuit,
+        node: usize,
+        high: bool,
+    ) -> Result<(), UnstableCircuit> {
+        compiled.drive(node, high)?;
+        reference.drive(node, high)?;
+        assert_eq!(
+            compiled.state, reference.state,
+            "after driving node {node} to {high}"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn counter_matches_reference_through_disable_reset_and_repeated_levels()
+    -> Result<(), UnstableCircuit> {
+        let mut compiled = GateCircuit::default();
+        let mut reference = reference::ReferenceCircuit::default();
+        for n in [PIN_S1, PIN_S2, PIN_S3, PIN_SKILL1, PIN_SKILL2, PIN_TEST] {
+            compiled.pulls[n] = 1;
+            reference.pulls[n] = 1;
+        }
+        compiled.pulls[RESET] = -1;
+        reference.pulls[RESET] = -1;
+        compiled.settle(NODES.iter().map(|n| n.0).collect())?;
+        reference.settle(NODES.iter().map(|n| n.0).collect())?;
+        assert_eq!(compiled.state, reference.state);
+        let mut macro_edges = 0;
+        for edge in 0..20_000 {
+            // Include the all-keys-down disable state, then re-enter the normal
+            // orbit. External writes invalidate the cached transition index.
+            if edge % 997 == 0 {
+                for (bit, node) in [PIN_S1, PIN_S2, PIN_S3, PIN_FIRE_T, PIN_FIRE_DC]
+                    .into_iter()
+                    .enumerate()
+                {
+                    drive_both(
+                        &mut compiled,
+                        &mut reference,
+                        node,
+                        (edge / 997) & (1 << bit) != 0,
+                    )?;
+                }
+            }
+            if edge % 4096 == 0 {
+                drive_both(&mut compiled, &mut reference, RESET, false)?;
+            } else if edge % 4096 == 256 {
+                drive_both(&mut compiled, &mut reference, RESET, true)?;
+            }
+            let high = compiled.state[CLK] == 0;
+            drive_both(&mut compiled, &mut reference, CLK, high)?;
+            macro_edges += usize::from(compiled.counter_cursor.is_some());
+            if edge % 127 == 0 {
+                drive_both(&mut compiled, &mut reference, CLK, high)?;
+            }
+        }
+        assert!(
+            macro_edges > 1000,
+            "comparison must exercise the macro, not only fallback"
+        );
+        Ok(())
+    }
 }

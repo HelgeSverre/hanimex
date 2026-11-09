@@ -2,6 +2,8 @@
 
 Branch: `submarine-gate-logic`, based on `submarine-chip-inspector`.
 
+The next experiment, `submarine-sequential-blocks`, adds an 86-node horizontal timing state machine. See [SEQUENTIAL-BLOCKS.md](SEQUENTIAL-BLOCKS.md). The measurements below describe the earlier gate-only engine.
+
 **Full speed has not been reached.** The recorded paired benchmark measured **3.46×** the transistor reference: 304,532 versus 88,118 clocks/s on Node 26.9.0 / arm64. That is **8.51% of nominal hardware speed**, not real time. Raw trials and binary hashes are in [gate-benchmark.json](gate-benchmark.json). Browser wall-clock throughput is lower than a tight compute benchmark and is displayed in the UI. Measurements depend on machine load; use the paired benchmark below rather than comparing unrelated runs.
 
 ## Compilation

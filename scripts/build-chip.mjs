@@ -6,7 +6,13 @@ for (const script of ["build-netlist", "build-gates", "build-chip-layout"])
   });
 const manifest = ["--manifest-path", "crates/ay38605/Cargo.toml"];
 execFileSync("cargo", ["fmt", ...manifest], { stdio: "inherit" });
-for (const reference of [false, true]) {
+for (const reference of [true, false]) {
+  if (!reference) {
+    execFileSync(process.execPath, ["scripts/build-counter.mjs"], {
+      stdio: "inherit",
+    });
+    execFileSync("cargo", ["fmt", ...manifest], { stdio: "inherit" });
+  }
   execFileSync(
     "cargo",
     [

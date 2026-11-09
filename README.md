@@ -1,6 +1,6 @@
 # Hanimex — Submarine chip experiment
 
-Branch: `submarine-gate-logic`. Submarine now has compiled logic and a selectable transistor reference, both with the live chip inspector. The compiled version is faster, but **full speed is not reached**. [Implementation and measurements](research/ay38605/GATE-LOGIC.md).
+Branch: `submarine-sequential-blocks`. Submarine uses an 86-node horizontal timing state machine alongside the compiled gate solver. The transistor reference and live chip inspector remain available. **Full speed is not reached.** [Implementation and validation](research/ay38605/SEQUENTIAL-BLOCKS.md).
 
 [Chip experiment](https://hanimex-chip.vercel.app) · [Main site](https://hanimex.vercel.app)
 
@@ -46,6 +46,7 @@ Contact failures are off by default. Enable **Nostalgia mode** in **How to play*
 The “625-B RPG” photographs identify an RPG SD-050, a relative of the Hanimex machines. `625-B` belongs to the PAL television label. The cartridges contain dedicated game circuitry, not conventional program ROMs.
 
 - [Hardware and cartridge identification](research/HARDWARE.md)
+- [Other cartridges with recovered chip data](research/OTHER-CARTRIDGE-DATA.md)
 - [Emulation sources and accuracy gaps](research/EMULATION.md)
 - [Source provenance](research/PROVENANCE.md)
 - [Recovered AY-3-8605 Submarine data](research/ay38605/README.md)
