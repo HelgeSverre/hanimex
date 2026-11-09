@@ -1,8 +1,8 @@
-# Hanimex — WebGL experiment
+# Hanimex
 
-[3D demo](https://hanimex-webgl.vercel.app) · [Original 2D version](https://hanimex.vercel.app)
+[Play](https://hanimex.vercel.app) · [2D view](https://hanimex.vercel.app/?view=2d)
 
-Branch: `webgl-experiment`. The scene uses Three.js/WebGL: a deep CRT cabinet with a live game-canvas texture, a modeled console, raycast cartridge dragging, physical game keys and sticks, orbit/zoom controls, and a close TV view. The original interface remains available at `?view=2d`.
+The scene uses Three.js/WebGL: a deep CRT cabinet with a live game-canvas texture, a modeled console, raycast cartridge dragging, physical game keys and sticks, orbit/zoom controls, and a close TV view. The original interface remains available at `?view=2d`.
 
 A browser recreation of the Hanimex / Soundic PC-50x console family. Drag a cartridge into the console, select a game, and play.
 
@@ -17,7 +17,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. The app uses TypeScript and Canvas; it has no backend or accounts. Fonts are self-hosted Obel Mono and Inter.
+Open the local URL printed by Vite. The app uses TypeScript, Three.js, and Canvas; it has no backend or accounts. Fonts are self-hosted Obel Mono and Inter.
 
 ```sh
 npm run build
