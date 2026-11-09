@@ -1,0 +1,152 @@
+{
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+  "rounds": 4,
+  "durationMs": 5000,
+  "samples": [
+    {
+      "chipId": "ay38605",
+      "round": 0,
+      "version": "timer",
+      "clocks": 4167424,
+      "milliseconds": 5059,
+      "clocksPerSecond": 823764.3803123147
+    },
+    {
+      "chipId": "ay38605",
+      "round": 0,
+      "version": "message",
+      "clocks": 5475840,
+      "milliseconds": 5068.199999999953,
+      "clocksPerSecond": 1080430.9222209167
+    },
+    {
+      "chipId": "ay38605",
+      "round": 1,
+      "version": "message",
+      "clocks": 5393408,
+      "milliseconds": 5071.20000000007,
+      "clocksPerSecond": 1063536.835462992
+    },
+    {
+      "chipId": "ay38605",
+      "round": 1,
+      "version": "timer",
+      "clocks": 3695360,
+      "milliseconds": 5065.300000000047,
+      "clocksPerSecond": 729544.1533571489
+    },
+    {
+      "chipId": "ay38605",
+      "round": 2,
+      "version": "timer",
+      "clocks": 4096000,
+      "milliseconds": 5053.199999999953,
+      "clocksPerSecond": 810575.47692552
+    },
+    {
+      "chipId": "ay38605",
+      "round": 2,
+      "version": "message",
+      "clocks": 5368320,
+      "milliseconds": 5072.699999999953,
+      "clocksPerSecond": 1058276.6574013936
+    },
+    {
+      "chipId": "ay38605",
+      "round": 3,
+      "version": "message",
+      "clocks": 5419776,
+      "milliseconds": 5070,
+      "clocksPerSecond": 1068989.349112426
+    },
+    {
+      "chipId": "ay38605",
+      "round": 3,
+      "version": "timer",
+      "clocks": 4095232,
+      "milliseconds": 5054.899999999907,
+      "clocksPerSecond": 810150.9426497212
+    },
+    {
+      "chipId": "ay38606",
+      "round": 0,
+      "version": "timer",
+      "clocks": 4861440,
+      "milliseconds": 5053.199999999953,
+      "clocksPerSecond": 962051.7691759765
+    },
+    {
+      "chipId": "ay38606",
+      "round": 0,
+      "version": "message",
+      "clocks": 6278912,
+      "milliseconds": 5064.699999999953,
+      "clocksPerSecond": 1239740.1622998514
+    },
+    {
+      "chipId": "ay38606",
+      "round": 1,
+      "version": "message",
+      "clocks": 6233088,
+      "milliseconds": 5069.79999999993,
+      "clocksPerSecond": 1229454.416347802
+    },
+    {
+      "chipId": "ay38606",
+      "round": 1,
+      "version": "timer",
+      "clocks": 4753920,
+      "milliseconds": 5048.699999999953,
+      "clocksPerSecond": 941612.6923762639
+    },
+    {
+      "chipId": "ay38606",
+      "round": 2,
+      "version": "timer",
+      "clocks": 4642560,
+      "milliseconds": 5056.599999999977,
+      "clocksPerSecond": 918118.8941185819
+    },
+    {
+      "chipId": "ay38606",
+      "round": 2,
+      "version": "message",
+      "clocks": 6161664,
+      "milliseconds": 5070.800000000047,
+      "clocksPerSecond": 1215126.6072414496
+    },
+    {
+      "chipId": "ay38606",
+      "round": 3,
+      "version": "message",
+      "clocks": 6021632,
+      "milliseconds": 5069.400000000023,
+      "clocksPerSecond": 1187839.1920148286
+    },
+    {
+      "chipId": "ay38606",
+      "round": 3,
+      "version": "timer",
+      "clocks": 4771072,
+      "milliseconds": 5054.29999999993,
+      "clocksPerSecond": 943962.9622301933
+    }
+  ],
+  "summary": [
+    {
+      "chipId": "ay38605",
+      "before": 810363.2097876206,
+      "after": 1066263.092287709,
+      "speedup": 1.3157841809812103,
+      "hardwareSpeedPercent": 29.78767112266249
+    },
+    {
+      "chipId": "ay38606",
+      "before": 942787.8273032287,
+      "after": 1222290.5117946258,
+      "speedup": 1.2964640361245359,
+      "hardwareSpeedPercent": 34.14653291953658
+    }
+  ],
+  "baselineCommit": "96477fd3942a806c72abd2352dd135c445657803"
+}

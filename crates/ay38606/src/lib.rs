@@ -30,6 +30,10 @@ pub struct GateCircuit {
     counter_cursor: Option<usize>,
     #[cfg(feature = "profile")]
     pub metrics: [u64; 3],
+    #[cfg(feature = "profile")]
+    pub visits: [u64; NODE_COUNT],
+    #[cfg(feature = "profile")]
+    pub waves: std::collections::HashMap<Vec<usize>, u64>,
     pub state: [u8; NODE_COUNT],
     pulls: [i8; NODE_COUNT],
     queued: [u32; NODE_COUNT],
@@ -47,6 +51,10 @@ impl Default for GateCircuit {
             counter_cursor: None,
             #[cfg(feature = "profile")]
             metrics: [0; 3],
+            #[cfg(feature = "profile")]
+            visits: [0; NODE_COUNT],
+            #[cfg(feature = "profile")]
+            waves: std::collections::HashMap::new(),
             state: [0; NODE_COUNT],
             pulls: [0; NODE_COUNT],
             queued: [0; NODE_COUNT],
@@ -102,6 +110,7 @@ impl GateCircuit {
         #[cfg(feature = "profile")]
         {
             self.metrics[0] += 1;
+            self.visits[n] += 1;
         }
         let other = compiled::PEERS[n];
         let source = latches::SOURCE[n];
@@ -223,6 +232,10 @@ impl GateCircuit {
                 return Ok(());
             }
             self.next_generation();
+            #[cfg(feature = "profile")]
+            {
+                *self.waves.entry(list.clone()).or_default() += 1;
+            }
             for &n in &list {
                 if n == GND || n == VCC {
                     continue;

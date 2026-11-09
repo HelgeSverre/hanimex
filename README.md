@@ -58,6 +58,7 @@ These cartridges contain dedicated game circuitry, not conventional program ROMs
 - [Recovered chips and remaining gaps](research/OTHER-CARTRIDGE-DATA.md)
 - [Submarine implementation and benchmarks](research/ay38605/TIMING-UPDATES.md)
 - [Wipeout adapter and validation](research/ay38606/PLAYABLE.md)
+- [Chip profiling and browser scheduling](research/performance/README.md)
 - [Source provenance](research/PROVENANCE.md)
 
 Chip data retains its original attribution and notices. The Wipeout and Pong imports record conflicting upstream notices and preserve their share-alike attribution separately from the MIT simulation code.

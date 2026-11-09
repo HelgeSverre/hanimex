@@ -14,6 +14,7 @@ let input: Extract<ChipCommand, { kind: "input" }> = {
   buttons: 0,
 };
 let chip: ChipWasm | undefined;
+let scheduleTick: (() => void) | undefined;
 let clocks = 128,
   activeMs = 0,
   runSince = 0,
@@ -78,6 +79,7 @@ worker.onmessage = ({ data }) => {
       if (running && !data.running) activeMs += performance.now() - runSince;
       if (!running && data.running) runSince = performance.now();
       running = data.running;
+      if (running) scheduleTick?.();
       if (!running) publish();
     } else if (!running) {
       advance(
@@ -109,7 +111,15 @@ async function start() {
   if (chip.chip_init()) throw new Error("Chip reset failed");
   if (running) runSince = performance.now();
   publish();
+  const channel = new MessageChannel();
+  let tickPending = false;
+  scheduleTick = () => {
+    if (!running || tickPending) return;
+    tickPending = true;
+    channel.port2.postMessage(null);
+  };
   const tick = () => {
+    tickPending = false;
     try {
       if (running) {
         const deadline = performance.now() + 16;
@@ -119,11 +129,14 @@ async function start() {
         } while (performance.now() < deadline);
         if (performance.now() - lastSent > 100) publish();
       }
-      setTimeout(tick, running ? 0 : 50);
+      // Message tasks yield to input without the nested-timer minimum delay.
+      // Paused workers schedule nothing; the next run command wakes them.
+      scheduleTick?.();
     } catch (error) {
       fail(error);
     }
   };
-  tick();
+  channel.port1.onmessage = tick;
+  scheduleTick();
 }
 void start().catch(fail);
